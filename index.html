@@ -1,200 +1,135 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FALAAI - Rede Social Escolar</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
-  <style>
-    body.dark-mode {
-      background-color: #121212;
-      color: white;
-    }
-    .nav-bottom {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-around;
-      background: #fff;
-      border-top: 1px solid #ccc;
-    }
-    .dark-mode .nav-bottom {
-      background: #222;
-      border-color: #555;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FALAAI - Jornal Rede Social Escolar</title>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container mt-4" id="app"></div>
-  <div class="nav-bottom">
-    <button onclick="navigate('feed')">Feed</button>
-    <button onclick="navigate('temas')">Temas</button>
-    <button onclick="navigate('perfil')">Perfil</button>
-    <button onclick="navigate('dms')">DMs</button>
-    <button onclick="toggleDarkMode()">🌙</button>
+  <div id="app">
+    <!-- Navegação Inferior -->
+    <nav class="nav-bottom">
+      <button data-page="feed" class="nav-btn active" aria-label="Feed">🏠</button>
+      <button data-page="search" class="nav-btn" aria-label="Pesquisar Usuários">🔍</button>
+      <button data-page="categories" class="nav-btn" aria-label="Categorias">📚</button>
+      <button data-page="messages" class="nav-btn" aria-label="Mensagens">💬</button>
+      <button data-page="profile" class="nav-btn" aria-label="Perfil">👤</button>
+    </nav>
+
+    <!-- Área principal -->
+    <main id="main-content"></main>
   </div>
-  <script>
-    const app = document.getElementById('app');
-    const localData = JSON.parse(localStorage.getItem('falaai-data') || '{}');
-    let currentUser = localData.user || null;
-    const db = localData.db || { posts: [], users: [], dms: {}, likes: {}, comments: {} };
 
-    function saveDB() {
-      localStorage.setItem('falaai-data', JSON.stringify({ user: currentUser, db }));
-    }
+  <template id="tmpl-login">
+    <section class="login-screen">
+      <h1>FALAAI</h1>
+      <h2>Jornal e Rede Social Escolar</h2>
+      <form id="form-login">
+        <input type="text" id="login-username" placeholder="Usuário" required />
+        <input type="password" id="login-password" placeholder="Senha" required />
+        <button type="submit">Entrar</button>
+      </form>
+      <p>Não tem conta? <button id="btn-to-register" class="link-btn">Cadastre-se</button></p>
+    </section>
+  </template>
 
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-    }
+  <template id="tmpl-register">
+    <section class="register-screen">
+      <h1>Cadastro - FALAAI</h1>
+      <form id="form-register">
+        <input type="text" id="register-username" placeholder="Usuário (mín 3 caracteres)" minlength="3" required />
+        <input type="password" id="register-password" placeholder="Senha (mín 6 caracteres)" minlength="6" required />
+        <input type="password" id="register-password-confirm" placeholder="Confirme a senha" minlength="6" required />
+        <button type="submit">Cadastrar</button>
+      </form>
+      <p>Já tem conta? <button id="btn-to-login" class="link-btn">Faça login</button></p>
+    </section>
+  </template>
 
-    function loginScreen() {
-      app.innerHTML = `
-        <h2>Login / Cadastro</h2>
-        <input class="form-control" placeholder="@usuario" id="user" />
-        <button class="btn btn-primary mt-2" onclick="login()">Entrar</button>
-      `;
-    }
+  <template id="tmpl-feed">
+    <section class="feed-screen">
+      <header>
+        <h2>Feed</h2>
+        <button id="btn-new-post" class="btn-primary">+ Novo Post</button>
+      </header>
+      <div id="posts-list"></div>
+    </section>
+  </template>
 
-    function login() {
-      const user = document.getElementById('user').value.trim();
-      if (!user) return alert('Digite o nome de usuário');
-      currentUser = user;
-      if (!db.users.includes(user)) db.users.push(user);
-      saveDB();
-      navigate('feed');
-    }
+  <template id="tmpl-new-post">
+    <section class="new-post-screen">
+      <h2>Novo Post</h2>
+      <form id="form-new-post">
+        <textarea id="post-content" placeholder="O que está acontecendo?" required maxlength="280"></textarea>
+        <select id="post-category" required>
+          <option value="" disabled selected>Escolha a categoria</option>
+          <option value="Cultura">Cultura</option>
+          <option value="Esportes">Esportes</option>
+          <option value="Tecnologia">Tecnologia</option>
+          <option value="Arte">Arte</option>
+          <option value="Notícias">Notícias</option>
+        </select>
+        <button type="submit">Publicar</button>
+        <button type="button" id="btn-cancel-post" class="btn-cancel">Cancelar</button>
+      </form>
+    </section>
+  </template>
 
-    function navigate(page) {
-      if (!currentUser) return loginScreen();
-      switch (page) {
-        case 'feed':
-          return feedPage();
-        case 'temas':
-          return temasPage();
-        case 'perfil':
-          return perfilPage();
-        case 'dms':
-          return dmsPage();
-      }
-    }
+  <template id="tmpl-profile">
+    <section class="profile-screen">
+      <header>
+        <h2 id="profile-username"></h2>
+        <button id="btn-logout" class="btn-danger">Sair</button>
+      </header>
+      <div id="profile-info">
+        <p><b>Seguindo:</b> <span id="profile-following-count">0</span></p>
+        <p><b>Seguidores:</b> <span id="profile-followers-count">0</span></p>
+      </div>
+      <div id="profile-posts"></div>
+    </section>
+  </template>
 
-    function feedPage() {
-      let html = `
-        <h3>Feed</h3>
-        <textarea id="postText" class="form-control" placeholder="Compartilhe algo..."></textarea>
-        <button class="btn btn-success mt-2" onclick="postar()">Postar</button>
-        <div id="posts" class="mt-4">
-          ${[...db.posts].reverse().map((p, i) => `
-            <div class="card mt-2">
-              <div class="card-body">
-                <strong>@${p.user}</strong>: ${p.text}<br />
-                <button onclick="curtir(${i})">Curtir (${db.likes[i]?.length || 0})</button>
-                <button onclick="comentar(${i})">Comentar</button>
-                <div><small>Comentários: ${(db.comments[i] || []).join(', ')}</small></div>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      `;
-      app.innerHTML = html;
-    }
+  <template id="tmpl-search">
+    <section class="search-screen">
+      <h2>Pesquisar Usuários</h2>
+      <input type="text" id="search-input" placeholder="Digite o nome do usuário..." />
+      <div id="search-results"></div>
+    </section>
+  </template>
 
-    function postar() {
-      const text = document.getElementById('postText').value.trim();
-      if (!text) return;
-      db.posts.push({ user: currentUser, text });
-      saveDB();
-      navigate('feed');
-    }
+  <template id="tmpl-categories">
+    <section class="categories-screen">
+      <h2>Categorias</h2>
+      <ul>
+        <li><button class="category-btn" data-cat="Cultura">Cultura</button></li>
+        <li><button class="category-btn" data-cat="Esportes">Esportes</button></li>
+        <li><button class="category-btn" data-cat="Tecnologia">Tecnologia</button></li>
+        <li><button class="category-btn" data-cat="Arte">Arte</button></li>
+        <li><button class="category-btn" data-cat="Notícias">Notícias</button></li>
+      </ul>
+      <div id="category-posts"></div>
+    </section>
+  </template>
 
-    function curtir(index) {
-      db.likes[index] = db.likes[index] || [];
-      if (!db.likes[index].includes(currentUser)) db.likes[index].push(currentUser);
-      else db.likes[index] = db.likes[index].filter(u => u !== currentUser);
-      saveDB();
-      navigate('feed');
-    }
+  <template id="tmpl-messages">
+    <section class="messages-screen">
+      <h2>Mensagens Diretas</h2>
+      <div id="dm-users-list"></div>
+      <div id="dm-chat-area" class="hidden">
+        <header>
+          <button id="btn-back-to-dm-list">← Voltar</button>
+          <h3 id="dm-chat-username"></h3>
+        </header>
+        <div id="dm-messages"></div>
+        <form id="form-send-dm">
+          <input type="text" id="dm-input" placeholder="Digite sua mensagem..." required />
+          <button type="submit">Enviar</button>
+        </form>
+      </div>
+    </section>
+  </template>
 
-    function comentar(index) {
-      const comment = prompt('Comentário:');
-      if (!comment) return;
-      db.comments[index] = db.comments[index] || [];
-      db.comments[index].push(`@${currentUser}: ${comment}`);
-      saveDB();
-      navigate('feed');
-    }
-
-    function temasPage() {
-      app.innerHTML = `
-        <h3>Temas</h3>
-        <button onclick="temaChat('Cultura Pop')">#Cultura Pop</button>
-        <button onclick="temaChat('Esportes')">#Esportes</button>
-        <button onclick="temaChat('Estudos')">#Estudos</button>
-        <div id="temaChat"></div>
-      `;
-    }
-
-    function temaChat(tema) {
-      const chatKey = `tema-${tema}`;
-      db[chatKey] = db[chatKey] || [];
-      let html = `<h4>${tema}</h4>
-        <div>${db[chatKey].map(m => `<div>@${m.user}: ${m.msg}</div>`).join('')}</div>
-        <input id="temaMsg" class="form-control" placeholder="Mensagem..." />
-        <button onclick="enviarTemaMsg('${tema}')">Enviar</button>
-      `;
-      document.getElementById('temaChat').innerHTML = html;
-    }
-
-    function enviarTemaMsg(tema) {
-      const msg = document.getElementById('temaMsg').value.trim();
-      if (!msg) return;
-      db[`tema-${tema}`].push({ user: currentUser, msg });
-      saveDB();
-      temaChat(tema);
-    }
-
-    function perfilPage() {
-      app.innerHTML = `
-        <h3>Perfil: @${currentUser}</h3>
-        <p>Postagens: ${db.posts.filter(p => p.user === currentUser).length}</p>
-        <p>Seguidores: ${db.followers?.[currentUser]?.length || 0}</p>
-        <p>Seguindo: ${(db.following?.[currentUser] || []).length}</p>
-      `;
-    }
-
-    function dmsPage() {
-      app.innerHTML = `
-        <h3>DMs</h3>
-        <input id="dmUser" class="form-control" placeholder="@usuario" />
-        <input id="dmMsg" class="form-control mt-1" placeholder="Mensagem..." />
-        <button onclick="enviarDM()" class="btn btn-primary mt-1">Enviar</button>
-        <div id="dmList" class="mt-3"></div>
-      `;
-      renderDMs();
-    }
-
-    function enviarDM() {
-      const user = document.getElementById('dmUser').value.trim();
-      const msg = document.getElementById('dmMsg').value.trim();
-      if (!user || !msg) return;
-      db.dms[user] = db.dms[user] || [];
-      db.dms[user].push({ from: currentUser, text: msg });
-      saveDB();
-      renderDMs();
-    }
-
-    function renderDMs() {
-      let html = '';
-      for (const [user, msgs] of Object.entries(db.dms)) {
-        html += `<h5>Com @${user}</h5>
-          ${msgs.map(m => `<div><strong>@${m.from}:</strong> ${m.text}</div>`).join('')}`;
-      }
-      document.getElementById('dmList').innerHTML = html;
-    }
-
-    if (currentUser) navigate('feed');
-    else loginScreen();
-  </script>
+<script src="app.js" type="module"></script>
 </body>
 </html>
