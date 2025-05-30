@@ -1,135 +1,168 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>FALAAI - Jornal Rede Social Escolar</title>
-<link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FALAAI - Rede Escolar</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background-color: #121212;
+      color: #f1f1f1;
+    }
+
+    header {
+      background: #1f1f1f;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-around;
+      background: #2c2c2c;
+      padding: 0.5rem 0;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .container {
+      padding: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    .post {
+      background: #1e1e1e;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .theme-selector, .chat-box, .dm-box {
+      margin-top: 1rem;
+    }
+
+    textarea, input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      background: #333;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button.send {
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: #6200ea;
+      border: none;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <div id="app">
-    <!-- Navegação Inferior -->
-    <nav class="nav-bottom">
-      <button data-page="feed" class="nav-btn active" aria-label="Feed">🏠</button>
-      <button data-page="search" class="nav-btn" aria-label="Pesquisar Usuários">🔍</button>
-      <button data-page="categories" class="nav-btn" aria-label="Categorias">📚</button>
-      <button data-page="messages" class="nav-btn" aria-label="Mensagens">💬</button>
-      <button data-page="profile" class="nav-btn" aria-label="Perfil">👤</button>
-    </nav>
+  <header>FALAAI - Jornal Escolar</header>
 
-    <!-- Área principal -->
-    <main id="main-content"></main>
+  <div class="container" id="main">
+    <div class="post">
+      <strong>@saintex</strong>: Bem-vindo ao FALAAI!
+    </div>
+    <div class="theme-selector">
+      <label>Escolha um tema:</label>
+      <select id="themeSelect">
+        <option value="cultura">Cultura Pop</option>
+        <option value="games">Games</option>
+        <option value="escola">Vida Escolar</option>
+      </select>
+    </div>
+    <div class="chat-box">
+      <h3>Chat do Tema</h3>
+      <div id="chatArea"></div>
+      <textarea id="chatInput" placeholder="Digite sua mensagem..."></textarea>
+      <button class="send" onclick="enviarMensagemTema()">Enviar</button>
+    </div>
+    <div class="dm-box">
+      <h3>DM (Mensagem Privada)</h3>
+      <input id="dmUser" placeholder="Para quem? (@usuario)" />
+      <textarea id="dmInput" placeholder="Digite sua mensagem..."></textarea>
+      <button class="send" onclick="enviarDM()">Enviar</button>
+    </div>
   </div>
 
-  <template id="tmpl-login">
-    <section class="login-screen">
-      <h1>FALAAI</h1>
-      <h2>Jornal e Rede Social Escolar</h2>
-      <form id="form-login">
-        <input type="text" id="login-username" placeholder="Usuário" required />
-        <input type="password" id="login-password" placeholder="Senha" required />
-        <button type="submit">Entrar</button>
-      </form>
-      <p>Não tem conta? <button id="btn-to-register" class="link-btn">Cadastre-se</button></p>
-    </section>
-  </template>
+  <nav>
+    <button onclick="mostrarFeed()">Feed</button>
+    <button onclick="mostrarPerfil()">Perfil</button>
+    <button onclick="mostrarChats()">Temas</button>
+  </nav>
 
-  <template id="tmpl-register">
-    <section class="register-screen">
-      <h1>Cadastro - FALAAI</h1>
-      <form id="form-register">
-        <input type="text" id="register-username" placeholder="Usuário (mín 3 caracteres)" minlength="3" required />
-        <input type="password" id="register-password" placeholder="Senha (mín 6 caracteres)" minlength="6" required />
-        <input type="password" id="register-password-confirm" placeholder="Confirme a senha" minlength="6" required />
-        <button type="submit">Cadastrar</button>
-      </form>
-      <p>Já tem conta? <button id="btn-to-login" class="link-btn">Faça login</button></p>
-    </section>
-  </template>
+  <script>
+    let user = localStorage.getItem("user") || prompt("Escolha um nome de usuário:");
+    localStorage.setItem("user", user);
 
-  <template id="tmpl-feed">
-    <section class="feed-screen">
-      <header>
-        <h2>Feed</h2>
-        <button id="btn-new-post" class="btn-primary">+ Novo Post</button>
-      </header>
-      <div id="posts-list"></div>
-    </section>
-  </template>
+    function enviarMensagemTema() {
+      let tema = document.getElementById("themeSelect").value;
+      let msg = document.getElementById("chatInput").value;
+      if (!msg) return;
+      let chats = JSON.parse(localStorage.getItem("chats_" + tema) || "[]");
+      chats.push({ user, msg });
+      localStorage.setItem("chats_" + tema, JSON.stringify(chats));
+      document.getElementById("chatInput").value = "";
+      renderChat(tema);
+    }
 
-  <template id="tmpl-new-post">
-    <section class="new-post-screen">
-      <h2>Novo Post</h2>
-      <form id="form-new-post">
-        <textarea id="post-content" placeholder="O que está acontecendo?" required maxlength="280"></textarea>
-        <select id="post-category" required>
-          <option value="" disabled selected>Escolha a categoria</option>
-          <option value="Cultura">Cultura</option>
-          <option value="Esportes">Esportes</option>
-          <option value="Tecnologia">Tecnologia</option>
-          <option value="Arte">Arte</option>
-          <option value="Notícias">Notícias</option>
-        </select>
-        <button type="submit">Publicar</button>
-        <button type="button" id="btn-cancel-post" class="btn-cancel">Cancelar</button>
-      </form>
-    </section>
-  </template>
+    function renderChat(tema) {
+      let chatArea = document.getElementById("chatArea");
+      let chats = JSON.parse(localStorage.getItem("chats_" + tema) || "[]");
+      chatArea.innerHTML = chats.map(c => `<p><strong>@${c.user}:</strong> ${c.msg}</p>`).join("");
+    }
 
-  <template id="tmpl-profile">
-    <section class="profile-screen">
-      <header>
-        <h2 id="profile-username"></h2>
-        <button id="btn-logout" class="btn-danger">Sair</button>
-      </header>
-      <div id="profile-info">
-        <p><b>Seguindo:</b> <span id="profile-following-count">0</span></p>
-        <p><b>Seguidores:</b> <span id="profile-followers-count">0</span></p>
-      </div>
-      <div id="profile-posts"></div>
-    </section>
-  </template>
+    document.getElementById("themeSelect").addEventListener("change", e => {
+      renderChat(e.target.value);
+    });
+    renderChat(document.getElementById("themeSelect").value);
 
-  <template id="tmpl-search">
-    <section class="search-screen">
-      <h2>Pesquisar Usuários</h2>
-      <input type="text" id="search-input" placeholder="Digite o nome do usuário..." />
-      <div id="search-results"></div>
-    </section>
-  </template>
+    function enviarDM() {
+      let para = document.getElementById("dmUser").value.replace("@", "");
+      let msg = document.getElementById("dmInput").value;
+      if (!msg || !para) return;
+      let key = `dm_${user}_to_${para}`;
+      let dms = JSON.parse(localStorage.getItem(key) || "[]");
+      dms.push({ msg });
+      localStorage.setItem(key, JSON.stringify(dms));
+      document.getElementById("dmInput").value = "";
+    }
 
-  <template id="tmpl-categories">
-    <section class="categories-screen">
-      <h2>Categorias</h2>
-      <ul>
-        <li><button class="category-btn" data-cat="Cultura">Cultura</button></li>
-        <li><button class="category-btn" data-cat="Esportes">Esportes</button></li>
-        <li><button class="category-btn" data-cat="Tecnologia">Tecnologia</button></li>
-        <li><button class="category-btn" data-cat="Arte">Arte</button></li>
-        <li><button class="category-btn" data-cat="Notícias">Notícias</button></li>
-      </ul>
-      <div id="category-posts"></div>
-    </section>
-  </template>
+    function mostrarFeed() {
+      alert("Feed geral em breve");
+    }
 
-  <template id="tmpl-messages">
-    <section class="messages-screen">
-      <h2>Mensagens Diretas</h2>
-      <div id="dm-users-list"></div>
-      <div id="dm-chat-area" class="hidden">
-        <header>
-          <button id="btn-back-to-dm-list">← Voltar</button>
-          <h3 id="dm-chat-username"></h3>
-        </header>
-        <div id="dm-messages"></div>
-        <form id="form-send-dm">
-          <input type="text" id="dm-input" placeholder="Digite sua mensagem..." required />
-          <button type="submit">Enviar</button>
-        </form>
-      </div>
-    </section>
-  </template>
+    function mostrarPerfil() {
+      alert(`Perfil de @${user}`);
+    }
 
-<script src="app.js" type="module"></script>
+    function mostrarChats() {
+      renderChat(document.getElementById("themeSelect").value);
+    }
+  </script>
 </body>
 </html>
