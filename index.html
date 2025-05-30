@@ -1,22 +1,36 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fala Aí! - Início</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fala Aí! - Estilo Twitter</title>
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container py-5 text-center">
-    <h1 class="text-info">📰 Fala Aí!</h1>
-    <p class="lead">Escolha um tema e participe das conversas!</p>
-    <div class="d-grid gap-3 col-6 mx-auto">
-      <a href="cultura-pop.html" class="btn btn-outline-info">🎬 Cultura Pop</a>
-      <a href="opiniao.html" class="btn btn-outline-info">🗣 Opinião</a>
-      <a href="estudante.html" class="btn btn-outline-info">🎓 Fala Estudante</a>
-      <a href="eventos.html" class="btn btn-outline-info">📅 Eventos da Escola</a>
-    </div>
+  <div id="app">
+    <aside class="sidebar">
+      <div class="logo">📰 Fala Aí!</div>
+      <nav class="menu">
+        <a href="#" class="active">🏠 Feed</a>
+        <a href="#">🎬 Cultura Pop</a>
+        <a href="#">🗣 Opinião</a>
+        <a href="#">🎓 Estudante</a>
+        <a href="#">📅 Eventos</a>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <section class="post-creator">
+        <input type="text" id="name" placeholder="Seu nome" />
+        <textarea id="content" placeholder="O que você tá pensando?" rows="3"></textarea>
+        <input type="file" id="imageUpload" />
+        <button onclick="createPost()">Publicar</button>
+      </section>
+
+      <section id="feed" class="feed"></section>
+    </main>
   </div>
+  <script src="script.js"></script>
 </body>
 </html>

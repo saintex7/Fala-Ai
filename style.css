@@ -1,21 +1,130 @@
-body {
-  background-color: #121212;
-  color: white;
-  font-family: 'Segoe UI', sans-serif;
+* {
+  box-sizing: border-box;
 }
-.upload-box, .chat-box {
-  background: #1e1e1e;
-  border-radius: 12px;
+body, html {
+  margin: 0; padding: 0; height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #121212;
+  color: #e1e8ed;
+}
+#app {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+.sidebar {
+  background-color: #15202b;
+  width: 250px;
   padding: 20px;
-  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
 }
-.msg {
-  background: #333;
-  padding: 10px 15px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-.msg span {
+.logo {
+  font-size: 28px;
   font-weight: bold;
-  color: #0dcaf0;
+  color: #1da1f2;
+  margin-bottom: 30px;
+  user-select: none;
+}
+.menu a {
+  color: #e1e8ed;
+  text-decoration: none;
+  padding: 10px 15px;
+  border-radius: 25px;
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  user-select: none;
+}
+.menu a.active, .menu a:hover {
+  background-color: #1da1f2;
+  color: white;
+}
+.main-content {
+  flex: 1;
+  background-color: #192734;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow-y: auto;
+}
+.post-creator {
+  background: #22303c;
+  padding: 15px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.post-creator input[type="text"],
+.post-creator textarea {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  resize: none;
+  font-size: 16px;
+  background: #15202b;
+  color: white;
+}
+.post-creator input[type="file"] {
+  color: white;
+}
+.post-creator button {
+  background-color: #1da1f2;
+  border: none;
+  border-radius: 25px;
+  color: white;
+  font-weight: bold;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.post-creator button:hover {
+  background-color: #0d8ddb;
+}
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.post {
+  background: #22303c;
+  border-radius: 15px;
+  padding: 15px;
+  user-select: none;
+}
+.post-header {
+  font-weight: 700;
+  color: #1da1f2;
+  margin-bottom: 8px;
+}
+.post-content {
+  white-space: pre-wrap;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+.post img {
+  max-width: 100%;
+  border-radius: 15px;
+}
+@media (max-width: 700px) {
+  #app {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+  .menu a {
+    margin: 0 10px 0 0;
+  }
+  .main-content {
+    height: calc(100vh - 70px);
+    overflow-y: auto;
+  }
 }
