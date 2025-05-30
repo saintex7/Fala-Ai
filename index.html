@@ -1,657 +1,637 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>FALAAI - Jornal Escolar Social</title>
+<title>FALAAI - Rede Social Completa</title>
 <style>
-  :root {
-    --bg-color: #f9f9f9;
-    --text-color: #222;
-    --card-bg: #fff;
-    --primary: #2a86ff;
-    --secondary: #444;
-  }
+  /* RESET básico e fonte */
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+  body { background:#f4f6f8; color:#222; min-height: 100vh; display: flex; flex-direction: column; }
+  header, nav, main { width: 100%; max-width: 900px; margin: auto; }
+  header { background: #3f51b5; color: white; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+  header h1 { font-weight: 700; font-size: 1.5rem; }
+  header button { background: transparent; border: none; color: white; font-size: 1rem; cursor: pointer; }
 
-  [data-theme="dark"] {
-    --bg-color: #121212;
-    --text-color: #eee;
-    --card-bg: #1e1e1e;
-    --primary: #4a90e2;
-    --secondary: #bbb;
-  }
+  /* Nav inferior */
+  nav { background: #fff; box-shadow: 0 -2px 6px rgba(0,0,0,0.1); position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); max-width: 900px; display: flex; justify-content: space-around; padding: 0.7rem 0; }
+  nav button { background: none; border: none; color: #555; font-size: 1.1rem; cursor: pointer; padding: 0.5rem 1rem; border-radius: 6px; transition: background-color 0.3s ease; }
+  nav button.active, nav button:hover { background: #3f51b5; color: white; }
 
-  * {
-    margin: 0; padding: 0; box-sizing: border-box;
-    transition: background-color 0.3s, color 0.3s;
-  }
+  main { padding-bottom: 60px; margin-top: 0.5rem; }
 
-  body {
-    background: var(--bg-color);
-    color: var(--text-color);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+  /* Páginas */
+  section.page { display: none; }
+  section.page.active { display: block; }
 
-  header {
-    background: var(--primary);
-    color: white;
-    padding: 1rem 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+  /* LOGIN */
+  #login { max-width: 350px; margin: 5rem auto 0; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 0 15px rgb(0 0 0 / 0.1); }
+  #login h2 { margin-bottom: 1rem; color: #3f51b5; font-weight: 700; text-align: center; }
+  #login form { display: flex; flex-direction: column; }
+  #login label { margin-top: 1rem; font-weight: 600; }
+  #login input { margin-top: 0.3rem; padding: 0.6rem; border-radius: 6px; border: 1px solid #ccc; font-size: 1rem; }
+  #login button { margin-top: 1.5rem; background: #3f51b5; color: white; border: none; padding: 0.8rem; font-weight: 700; border-radius: 6px; cursor: pointer; }
+  #login-error { color: red; margin-top: 1rem; font-weight: 700; display: none; text-align: center; }
 
-  header h1 {
-    font-weight: 700;
-    font-size: 1.8rem;
-    user-select: none;
-  }
+  /* FEED */
+  #feed h2 { margin-bottom: 1rem; color: #3f51b5; font-weight: 700; }
+  #feed form#postForm textarea { width: 100%; resize: vertical; padding: 0.8rem; border-radius: 10px; border: 1px solid #ccc; font-size: 1rem; }
+  #feed form#postForm button { margin-top: 0.5rem; background: #3f51b5; color: white; border: none; padding: 0.8rem 1rem; border-radius: 10px; cursor: pointer; font-weight: 700; }
+  #postsContainer { margin-top: 1rem; display: flex; flex-direction: column; gap: 1rem; }
 
-  main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
+  /* POSTAGEM */
+  .post { background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgb(0 0 0 / 0.08); }
+  .post-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.6rem; }
+  .post-header img.avatar-sm { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+  .post-header .author { font-weight: 700; color: #3f51b5; }
+  .post-header .admin-badge { background: #d33; color: white; font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 4px; margin-left: 6px; }
+  .post-content { white-space: pre-wrap; margin-bottom: 0.6rem; font-size: 1rem; line-height: 1.3; }
+  .post-actions { display: flex; gap: 1rem; font-size: 0.9rem; color: #555; align-items: center; }
+  .post-actions button, .post-actions span.like-btn { cursor: pointer; background: none; border: none; padding: 0; color: #555; display: flex; align-items: center; gap: 0.3rem; font-weight: 600; }
+  .post-actions span.like-btn.liked { color: #d33; }
+  .post-actions button.delete-btn { color: #d33; font-weight: 700; }
+  .comments-list { margin-top: 0.6rem; border-top: 1px solid #eee; padding-top: 0.5rem; max-height: 200px; overflow-y: auto; }
+  .comment { font-size: 0.9rem; margin-bottom: 0.3rem; }
+  .comment .comment-author { font-weight: 700; margin-right: 4px; }
+  .comment .comment-text { white-space: pre-wrap; }
+  .comment .comment-admin-badge { background: #d33; color: white; font-size: 0.6rem; padding: 0.1rem 0.3rem; border-radius: 3px; margin-left: 3px; }
+  .comment-form { margin-top: 0.4rem; display: flex; gap: 0.5rem; }
+  .comment-form input { flex: 1; padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid #ccc; font-size: 0.9rem; }
+  .comment-form button { background: #3f51b5; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-weight: 700; }
 
-  /* Navegação inferior (tipo Insta) */
-  nav.bottom-nav {
-    display: flex;
-    justify-content: space-around;
-    background: var(--card-bg);
-    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-    padding: 0.8rem 0;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    z-index: 10;
-  }
-  nav.bottom-nav button {
-    background: none;
-    border: none;
-    color: var(--secondary);
-    font-size: 0.9rem;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    user-select: none;
-  }
-  nav.bottom-nav button.active {
-    color: var(--primary);
-    font-weight: 700;
-  }
+  /* PERFIL */
+  #perfil h2 { color: #3f51b5; font-weight: 700; margin-bottom: 1rem; }
+  #perfil .profile-container { background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgb(0 0 0 / 0.08); max-width: 400px; margin: auto; }
+  #perfil img.avatar-large { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; display: block; margin: auto; margin-bottom: 1rem; cursor: pointer; }
+  #perfil input#avatarInput { display: none; }
+  #perfil textarea#bioInput { width: 100%; height: 100px; border-radius: 10px; border: 1px solid #ccc; padding: 0.8rem; font-size: 1rem; resize: vertical; }
+  #perfil .info-line { margin: 0.6rem 0; font-size: 1rem; text-align: center; color: #444; }
+  #saveMsg { text-align: center; font-size: 0.9rem; color: green; margin-top: 0.5rem; display: none; font-weight: 700; }
 
-  /* Conteúdo das seções */
-  section.page {
-    flex: 1;
-    padding: 1rem 1.5rem 5rem; /* bottom para não ficar escondido atrás do nav */
-    display: none;
-    overflow-y: auto;
-  }
-  section.page.active {
-    display: block;
-  }
+  /* CHAT (DM) */
+  #chat h2 { margin-bottom: 1rem; color: #3f51b5; font-weight: 700; }
+  #chat .chat-container { background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgb(0 0 0 / 0.08); max-width: 600px; margin: auto; display: flex; flex-direction: column; height: 400px; }
+  #chat .chat-messages { flex-grow: 1; overflow-y: auto; padding: 0.5rem; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 0.6rem; font-size: 0.9rem; background: #f9f9f9; }
+  #chat .chat-messages div { margin-bottom: 0.5rem; }
+  #chat .chat-input-area { display: flex; gap: 0.5rem; }
+  #chat input#chatInput { flex-grow: 1; padding: 0.5rem 0.8rem; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem; }
+  #chat button#sendChatBtn { background: #3f51b5; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 700; }
 
-  /* Feed (postagens) */
-  #feed .post {
-    background: var(--card-bg);
-    padding: 1rem;
-    margin-bottom: 1rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  }
-  #feed .post h3 {
-    margin-bottom: 0.3rem;
-    font-weight: 700;
-  }
-  #feed .post p {
-    margin-bottom: 0.6rem;
-  }
-  #feed .post .like-btn {
-    cursor: pointer;
-    color: var(--secondary);
-    font-weight: 600;
-    user-select: none;
-  }
-  #feed .post .like-btn.liked {
-    color: var(--primary);
-  }
+  /* LISTA DE USUÁRIOS PARA SEGUIR */
+  #feed #usersToFollow { margin-top: 1rem; background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgb(0 0 0 / 0.08); max-width: 400px; }
+  #feed #usersToFollow h3 { margin-bottom: 0.8rem; color: #3f51b5; font-weight: 700; }
+  #feed #usersToFollow ul { list-style: none; max-height: 200px; overflow-y: auto; }
+  #feed #usersToFollow li { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+  #feed #usersToFollow li button { background: #3f51b5; color: white; border: none; padding: 0.3rem 0.6rem; border-radius: 6px; font-weight: 700; cursor: pointer; }
 
-  /* Perfil */
-  #perfil {
-    max-width: 500px;
-    margin: 0 auto;
-  }
-  #perfil img.avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    display: block;
-    margin: 0 auto 1rem;
-  }
-  #perfil input[type="file"] {
-    display: none;
-  }
-  #perfil label.avatar-label {
-    background: var(--primary);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    text-align: center;
-    display: inline-block;
-    cursor: pointer;
-    margin-bottom: 1rem;
-    user-select: none;
-  }
-  #perfil h2 {
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-  #perfil textarea.bio {
-    width: 100%;
-    min-height: 80px;
-    padding: 0.8rem;
-    font-size: 1rem;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    resize: vertical;
-    margin-bottom: 1rem;
-  }
-  #perfil .save-msg {
-    text-align: center;
-    color: var(--primary);
-    font-weight: 700;
-    display: none;
-  }
+  /* DARK MODE */
+  body.dark { background: #222; color: #eee; }
+  body.dark header { background: #1a237e; }
+  body.dark nav { background: #111; box-shadow: 0 -2px 6px rgba(255,255,255,0.1); }
+  body.dark nav button { color: #bbb; }
+  body.dark nav button.active, body.dark nav button:hover { background: #3949ab; color: white; }
+  body.dark #login { background: #333; color: #eee; box-shadow: 0 0 20px rgb(255 255 255 / 0.15); }
+  body.dark input, body.dark textarea { background: #444; border-color: #555; color: #eee; }
+  body.dark .post, body.dark #perfil .profile-container, body.dark #feed #usersToFollow, body.dark #chat .chat-container { background: #333; box-shadow: 0 2px 8px rgb(255 255 255 / 0.1); }
+  body.dark .post-actions button, body.dark .post-actions span.like-btn, body.dark #feed #usersToFollow li button { color: #ccc; }
+  body.dark .post-actions button.delete-btn { color: #f55; }
+  body.dark .post-header .author { color: #8ab4f8; }
+  body.dark .post-header .admin-badge { background: #b22; }
+  body.dark .comment .comment-admin-badge { background: #b22; }
 
-  /* Login */
-  #login-form {
-    max-width: 320px;
-    margin: 3rem auto;
-    background: var(--card-bg);
-    padding: 2rem;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
-  #login-form h2 {
-    text-align: center;
-    margin-bottom: 1.5rem;
-    font-weight: 700;
-  }
-  #login-form label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-  }
-  #login-form input[type="text"],
-  #login-form input[type="password"] {
-    width: 100%;
-    padding: 0.7rem;
-    margin-bottom: 1rem;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-  }
-  #login-form button {
-    width: 100%;
-    padding: 0.8rem;
-    background: var(--primary);
-    color: white;
-    font-weight: 700;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    user-select: none;
-  }
-  #login-error {
-    color: #d33;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 1rem;
-    display: none;
-  }
-
-  /* Chat (DM) */
-  #dm .chat-box {
-    max-height: 400px;
-    overflow-y: auto;
-    background: var(--card-bg);
-    padding: 1rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    margin-bottom: 1rem;
-  }
-  #dm .chat-message {
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    max-width: 75%;
-    margin-bottom: 0.4rem;
-    word-wrap: break-word;
-    user-select: text;
-  }
-  #dm .chat-message.sent {
-    background: var(--primary);
-    color: white;
-    margin-left: auto;
-  }
-  #dm .chat-message.received {
-    background: var(--secondary);
-    color: white;
-    margin-right: auto;
-  }
-  #dm .chat-input {
-    display: flex;
-    gap: 0.5rem;
-  }
-  #dm .chat-input input {
-    flex: 1;
-    padding: 0.7rem 1rem;
-    font-size: 1rem;
-    border-radius: 25px;
-    border: 1px solid #ccc;
-  }
-  #dm .chat-input button {
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 25px;
-    padding: 0 1.2rem;
-    cursor: pointer;
-    font-weight: 700;
-  }
-
-  /* Tema toggle */
-  .theme-toggle-btn {
-    background: none;
-    border: 2px solid white;
-    color: white;
-    border-radius: 25px;
-    padding: 0.3rem 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    user-select: none;
-  }
-  .theme-toggle-btn:hover {
-    background: white;
-    color: var(--primary);
-  }
-
-  /* Scrollbar personalizado */
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-  ::-webkit-scrollbar-thumb {
-    background-color: var(--primary);
-    border-radius: 10px;
-  }
 </style>
 </head>
 <body>
 
 <header>
   <h1>FALAAI</h1>
-  <button class="theme-toggle-btn" id="btnThemeToggle">Modo Escuro</button>
+  <div>
+    <button id="btnToggleTheme" title="Alternar tema claro/escuro">🌓</button>
+    <button id="btnLogout" style="display:none;">Sair</button>
+  </div>
 </header>
 
 <main>
-  <!-- Login -->
-  <section id="login" class="page active">
-    <form id="login-form">
-      <h2>Entrar</h2>
-      <div id="login-error">Usuário ou senha incorretos</div>
-      <label for="username">Usuário</label>
-      <input type="text" id="username" required autocomplete="off" />
-      <label for="password">Senha</label>
-      <input type="password" id="password" required autocomplete="off" />
-      <button type="submit">Entrar</button>
-    </form>
-  </section>
 
-  <!-- Feed de postagens -->
-  <section id="feed" class="page">
-    <button id="btnLogout" style="float:right;margin-bottom:1rem;color:#d33;background:none;border:none;cursor:pointer;font-weight:700;">Sair</button>
-    <h2>Feed de Postagens</h2>
+<!-- LOGIN -->
+<section id="login" class="page active">
+  <h2>Entrar na FALAAI</h2>
+  <form id="loginForm">
+    <label for="usernameInput">Usuário:</label>
+    <input type="text" id="usernameInput" autocomplete="username" required />
+    <label for="passwordInput">Senha:</label>
+    <input type="password" id="passwordInput" autocomplete="current-password" required />
+    <button type="submit">Entrar</button>
+  </form>
+  <div id="login-error"></div>
+</section>
 
-    <form id="postForm" style="margin-bottom:1rem;">
-      <textarea id="postContent" rows="3" placeholder="Escreva uma nova postagem..." style="width:100%;padding:0.8rem;border-radius:10px;border:1px solid #ccc;"></textarea>
-      <button type="submit" style="margin-top:0.5rem;padding:0.6rem 1rem;border:none;background:var(--primary);color:#fff;border-radius:10px;cursor:pointer;font-weight:700;">Postar</button>
-    </form>
+<!-- FEED -->
+<section id="feed" class="page">
+  <h2>Feed de Posts</h2>
+  <form id="postForm">
+    <textarea id="postContent" placeholder="O que está rolando?" rows="3" maxlength="500" required></textarea>
+    <button type="submit">Publicar</button>
+  </form>
 
-    <div id="postsContainer"></div>
-  </section>
+  <div id="usersToFollow">
+    <h3>Usuários para seguir</h3>
+    <ul id="usersList"></ul>
+  </div>
 
-  <!-- Perfil do usuário -->
-  <section id="perfil" class="page">
-    <h2>Perfil</h2>
-    <img src="https://i.pravatar.cc/100" alt="Avatar" class="avatar" id="avatarImg" />
-    <label for="avatarInput" class="avatar-label">Alterar Avatar</label>
-    <input type="file" id="avatarInput" accept="image/*" />
-    <textarea id="bioInput" class="bio" placeholder="Escreva uma bio..."></textarea>
-    <div class="save-msg" id="saveMsg">Salvo automaticamente!</div>
-  </section>
+  <div id="postsContainer"></div>
+</section>
 
-  <!-- DM (Chat privado) -->
-  <section id="dm" class="page">
-    <h2>Chat</h2>
-    <div class="chat-box" id="chatBox"></div>
-    <div class="chat-input">
-      <input type="text" id="chatInput" placeholder="Digite sua mensagem..." />
+<!-- PERFIL -->
+<section id="perfil" class="page">
+  <h2>Meu Perfil</h2>
+  <div class="profile-container">
+    <label for="avatarInput">
+      <img src="" alt="Avatar" id="profileAvatar" class="avatar-large" title="Clique para trocar o avatar" />
+    </label>
+    <input type="file" accept="image/*" id="avatarInput" />
+    <textarea id="bioInput" maxlength="250" placeholder="Escreva uma bio..."></textarea>
+    <div class="info-line" id="profileUsername"></div>
+    <button id="btnSaveProfile">Salvar perfil</button>
+    <div id="saveMsg">Perfil salvo com sucesso!</div>
+  </div>
+</section>
+
+<!-- CHAT -->
+<section id="chat" class="page">
+  <h2>Chat Privado (DM)</h2>
+  <div class="chat-container">
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-area">
+      <input type="text" id="chatInput" placeholder="Digite sua mensagem..." maxlength="300" />
       <button id="sendChatBtn">Enviar</button>
     </div>
-  </section>
+  </div>
+</section>
+
 </main>
 
-<nav class="bottom-nav">
-  <button data-page="feed">Feed</button>
-  <button data-page="perfil">Perfil</button>
-  <button data-page="dm">Chat</button>
+<nav>
+  <button id="navFeed" class="active">Feed</button>
+  <button id="navPerfil">Perfil</button>
+  <button id="navChat">Chat</button>
 </nav>
 
 <script>
-  // Controle de temas
-  const btnThemeToggle = document.getElementById('btnThemeToggle');
-  const rootEl = document.documentElement;
+(() => {
+  'use strict';
 
-  // Salvar tema no localStorage
-  function saveTheme(theme) {
-    localStorage.setItem('theme', theme);
-  }
+  // ---------- Variáveis globais ----------
+  let currentUser = null; // objeto { username, isAdmin, data:{bio,avatar,following[],followers[],posts[],chat{}} }
+  let allUsers = {}; // chave = username, valor = objeto data completo da conta
 
-  // Aplicar tema salvo ou padrão
-  function applyTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    if(savedTheme === 'dark') {
-      rootEl.setAttribute('data-theme', 'dark');
-      btnThemeToggle.textContent = 'Modo Claro';
-    } else {
-      rootEl.removeAttribute('data-theme');
-      btnThemeToggle.textContent = 'Modo Escuro';
-    }
-  }
-  applyTheme();
-
-  btnThemeToggle.addEventListener('click', () => {
-    if(rootEl.getAttribute('data-theme') === 'dark') {
-      rootEl.removeAttribute('data-theme');
-      saveTheme('light');
-      btnThemeToggle.textContent = 'Modo Escuro';
-    } else {
-      rootEl.setAttribute('data-theme', 'dark');
-      saveTheme('dark');
-      btnThemeToggle.textContent = 'Modo Claro';
-    }
-  });
-
-  // Sistema de navegação simples
-  const pages = document.querySelectorAll('section.page');
-  const navButtons = document.querySelectorAll('nav.bottom-nav button');
+  // Elementos
   const loginPage = document.getElementById('login');
-  let currentUser = null; // Objeto {username, isAdmin, avatar, bio, ...}
+  const feedPage = document.getElementById('feed');
+  const perfilPage = document.getElementById('perfil');
+  const chatPage = document.getElementById('chat');
 
-  function showPage(pageId) {
-    pages.forEach(p => p.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
+  const btnToggleTheme = document.getElementById('btnToggleTheme');
+  const btnLogout = document.getElementById('btnLogout');
 
-    navButtons.forEach(btn => btn.classList.remove('active'));
-    if(pageId !== 'login') {
-      const btn = [...navButtons].find(b => b.dataset.page === pageId);
-      if(btn) btn.classList.add('active');
-    }
-  }
-
-  navButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      if(!currentUser) return alert('Faça login primeiro!');
-      showPage(btn.dataset.page);
-    });
-  });
-
-  // LOGIN SIMPLES (sem backend)
-  const loginForm = document.getElementById('login-form');
+  const loginForm = document.getElementById('loginForm');
+  const usernameInput = document.getElementById('usernameInput');
+  const passwordInput = document.getElementById('passwordInput');
   const loginError = document.getElementById('login-error');
 
-  // Usuários fixos (incluindo admin)
-  const usersDB = [
-    { username: 'saintex', password: 'ffg..1.', isAdmin: true, avatar: 'https://i.pravatar.cc/100?u=saintex', bio: 'Administrador do sistema' },
-    // Você pode adicionar mais usuários aqui
-  ];
+  const navFeed = document.getElementById('navFeed');
+  const navPerfil = document.getElementById('navPerfil');
+  const navChat = document.getElementById('navChat');
 
-  function loadUserData(username) {
-    const dataKey = `userData_${username}`;
-    const savedData = localStorage.getItem(dataKey);
-    if(savedData) return JSON.parse(savedData);
-    // Se não tiver salvo, pega dados básicos do usersDB
-    const userInfo = usersDB.find(u => u.username === username);
-    return { avatar: userInfo.avatar, bio: userInfo.bio || '', likedPosts: [], commentsHistory: [], chatHistory: [] };
-  }
-
-  function saveUserData(username, data) {
-    localStorage.setItem(`userData_${username}`, JSON.stringify(data));
-  }
-
-  loginForm.addEventListener('submit', e => {
-    e.preventDefault();
-    const username = loginForm.username.value.trim();
-    const password = loginForm.password.value;
-
-    const user = usersDB.find(u => u.username === username && u.password === password);
-    if(!user) {
-      loginError.style.display = 'block';
-      return;
-    }
-    loginError.style.display = 'none';
-    currentUser = { username: user.username, isAdmin: user.isAdmin };
-    currentUser.data = loadUserData(currentUser.username);
-    setupAfterLogin();
-    showPage('feed');
-  });
-
-  // Após login, inicializa funcionalidades
-  function setupAfterLogin() {
-    // Exibe nome do usuário no header (pode customizar)
-    document.querySelector('header h1').textContent = `FALAAI - Olá, ${currentUser.username}${currentUser.isAdmin ? ' (Admin)' : ''}`;
-
-    // Carrega perfil (avatar e bio)
-    const avatarImg = document.getElementById('avatarImg');
-    const bioInput = document.getElementById('bioInput');
-    avatarImg.src = currentUser.data.avatar || 'https://i.pravatar.cc/100';
-    bioInput.value = currentUser.data.bio || '';
-
-    // Salva automaticamente bio ao digitar (debounce)
-    let bioTimer;
-    bioInput.addEventListener('input', () => {
-      clearTimeout(bioTimer);
-      bioTimer = setTimeout(() => {
-        currentUser.data.bio = bioInput.value;
-        saveUserData(currentUser.username, currentUser.data);
-        showSaveMsg();
-      }, 500);
-    });
-
-    // Avatar upload simples
-    const avatarInput = document.getElementById('avatarInput');
-    avatarInput.onchange = e => {
-      const file = e.target.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        avatarImg.src = reader.result;
-        currentUser.data.avatar = reader.result;
-        saveUserData(currentUser.username, currentUser.data);
-        showSaveMsg();
-      };
-      reader.readAsDataURL(file);
-    };
-
-    // Postagens
-    loadPosts();
-
-    // Chat
-    loadChat();
-  }
-
-  // Mensagem "Salvo"
-  function showSaveMsg() {
-    const msg = document.getElementById('saveMsg');
-    msg.style.display = 'block';
-    clearTimeout(msg._timer);
-    msg._timer = setTimeout(() => {
-      msg.style.display = 'none';
-    }, 1500);
-  }
-
-  // LOGOUT
-  const btnLogout = document.getElementById('btnLogout');
-  btnLogout.addEventListener('click', () => {
-    if(confirm('Deseja realmente sair?')) {
-      currentUser = null;
-      document.querySelector('header h1').textContent = 'FALAAI';
-      showPage('login');
-    }
-  });
-
-  // POSTAGENS (Feed)
   const postForm = document.getElementById('postForm');
   const postContent = document.getElementById('postContent');
   const postsContainer = document.getElementById('postsContainer');
 
-  // Carrega posts do localStorage (global para todos usuários)
-  function loadPosts() {
-    const savedPosts = localStorage.getItem('globalPosts');
-    const posts = savedPosts ? JSON.parse(savedPosts) : [];
-    postsContainer.innerHTML = '';
-    posts.forEach((post, idx) => {
-      const div = document.createElement('div');
-      div.className = 'post';
+  const usersList = document.getElementById('usersList');
 
-      // Texto da postagem
-      const h3 = document.createElement('h3');
-      h3.textContent = post.author + (post.author === currentUser.username ? ' (Você)' : '');
-      div.appendChild(h3);
+  const profileAvatar = document.getElementById('profileAvatar');
+  const avatarInput = document.getElementById('avatarInput');
+  const bioInput = document.getElementById('bioInput');
+  const profileUsername = document.getElementById('profileUsername');
+  const btnSaveProfile = document.getElementById('btnSaveProfile');
+  const saveMsg = document.getElementById('saveMsg');
 
-      const p = document.createElement('p');
-      p.textContent = post.content;
-      div.appendChild(p);
-
-      // Curtir botão
-      const likeBtn = document.createElement('span');
-      likeBtn.className = 'like-btn';
-      likeBtn.textContent = `❤️ ${post.likes.length}`;
-      if(post.likes.includes(currentUser.username)) likeBtn.classList.add('liked');
-      likeBtn.onclick = () => toggleLike(idx);
-      div.appendChild(likeBtn);
-
-      // Botão de apagar post (só admins ou autor)
-      if(currentUser.isAdmin || post.author === currentUser.username) {
-        const delBtn = document.createElement('button');
-        delBtn.textContent = 'Apagar';
-        delBtn.style.marginLeft = '1rem';
-        delBtn.onclick = () => deletePost(idx);
-        div.appendChild(delBtn);
-      }
-
-      postsContainer.appendChild(div);
-    });
-  }
-
-  function savePosts(posts) {
-    localStorage.setItem('globalPosts', JSON.stringify(posts));
-  }
-
-  // Criar nova postagem
-  postForm.addEventListener('submit', e => {
-    e.preventDefault();
-    const content = postContent.value.trim();
-    if(content === '') return alert('Digite algo para postar.');
-
-    const savedPosts = localStorage.getItem('globalPosts');
-    const posts = savedPosts ? JSON.parse(savedPosts) : [];
-
-    posts.unshift({ author: currentUser.username, content, likes: [] });
-    savePosts(posts);
-    postContent.value = '';
-    loadPosts();
-  });
-
-  // Curtir ou descurtir post
-  function toggleLike(postIdx) {
-    const savedPosts = localStorage.getItem('globalPosts');
-    if(!savedPosts) return;
-    const posts = JSON.parse(savedPosts);
-    const post = posts[postIdx];
-    if(post.likes.includes(currentUser.username)) {
-      post.likes = post.likes.filter(u => u !== currentUser.username);
-    } else {
-      post.likes.push(currentUser.username);
-    }
-    savePosts(posts);
-    loadPosts();
-  }
-
-  // Apagar post (só admins ou autor)
-  function deletePost(postIdx) {
-    if(!confirm('Tem certeza que deseja apagar esta postagem?')) return;
-    const savedPosts = localStorage.getItem('globalPosts');
-    if(!savedPosts) return;
-    const posts = JSON.parse(savedPosts);
-    const post = posts[postIdx];
-    if(currentUser.isAdmin || post.author === currentUser.username) {
-      posts.splice(postIdx, 1);
-      savePosts(posts);
-      loadPosts();
-    } else {
-      alert('Você não tem permissão para apagar esta postagem.');
-    }
-  }
-
-  // CHAT (DM)
-  const chatBox = document.getElementById('chatBox');
+  const chatMessages = document.getElementById('chatMessages');
   const chatInput = document.getElementById('chatInput');
   const sendChatBtn = document.getElementById('sendChatBtn');
 
-  // Carregar histórico do chat privado do usuário (localStorage)
-  function loadChat() {
-    const chatHistory = currentUser.data.chatHistory || [];
-    chatBox.innerHTML = '';
-    chatHistory.forEach(msg => {
-      const div = document.createElement('div');
-      div.textContent = `[${msg.time}] ${msg.sender}: ${msg.text}`;
-      chatBox.appendChild(div);
-    });
-    chatBox.scrollTop = chatBox.scrollHeight;
+  // ---------- Helpers ----------
+  function saveUsers() {
+    localStorage.setItem('falaaiUsers', JSON.stringify(allUsers));
   }
 
-  // Enviar mensagem no chat privado (armazena localmente)
+  function loadUsers() {
+    const usersStr = localStorage.getItem('falaaiUsers');
+    allUsers = usersStr ? JSON.parse(usersStr) : {};
+  }
+
+  function saveCurrentUser() {
+    if(currentUser) {
+      allUsers[currentUser.username] = currentUser;
+      saveUsers();
+    }
+  }
+
+  // ---------- Navegação ----------
+  function showPage(page) {
+    loginPage.classList.remove('active');
+    feedPage.classList.remove('active');
+    perfilPage.classList.remove('active');
+    chatPage.classList.remove('active');
+    page.classList.add('active');
+  }
+
+  function updateNavButtons(activeBtn) {
+    navFeed.classList.remove('active');
+    navPerfil.classList.remove('active');
+    navChat.classList.remove('active');
+    activeBtn.classList.add('active');
+  }
+
+  // ---------- Login ----------
+  function initAdmin() {
+    if(!allUsers['saintex']) {
+      allUsers['saintex'] = {
+        username: 'saintex',
+        password: 'ffg..1.',
+        isAdmin: true,
+        data: {
+          bio: 'Administrador da FALAAI',
+          avatar: '',
+          following: [],
+          followers: [],
+          posts: [],
+          chat: {}
+        }
+      };
+      saveUsers();
+    }
+  }
+
+  loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+
+    if(allUsers[username] && allUsers[username].password === password) {
+      currentUser = JSON.parse(JSON.stringify(allUsers[username]));
+      loginError.textContent = '';
+      showPage(feedPage);
+      updateNavButtons(navFeed);
+      btnLogout.style.display = 'inline-block';
+      loadFeed();
+      loadProfile();
+      loadUsersToFollow();
+      loadChat();
+    } else {
+      loginError.textContent = 'Usuário ou senha incorretos!';
+    }
+  });
+
+  btnLogout.addEventListener('click', () => {
+    currentUser = null;
+    showPage(loginPage);
+    updateNavButtons(null);
+    btnLogout.style.display = 'none';
+  });
+
+  // ---------- Feed ----------
+  function loadFeed() {
+    postsContainer.innerHTML = '';
+    let postsArr = [];
+
+    for(let user in allUsers) {
+      let userData = allUsers[user].data;
+      if(userData.posts && userData.posts.length > 0) {
+        userData.posts.forEach(post => {
+          postsArr.push({...post, author: user});
+        });
+      }
+    }
+
+    postsArr.sort((a,b) => b.timestamp - a.timestamp);
+
+    postsArr.forEach(post => {
+      const postEl = createPostElement(post);
+      postsContainer.appendChild(postEl);
+    });
+  }
+
+  function createPostElement(post) {
+    const div = document.createElement('div');
+    div.className = 'post';
+    div.dataset.id = post.id;
+
+    let date = new Date(post.timestamp);
+    let dateStr = date.toLocaleString();
+
+    div.innerHTML = `
+      <div class="post-header">
+        <span class="author">${post.author}</span>
+        ${allUsers[post.author].isAdmin ? '<span class="admin-badge">Admin</span>' : ''}
+        <span class="timestamp">${dateStr}</span>
+      </div>
+      <div class="post-content">${escapeHtml(post.content)}</div>
+      <div class="post-actions">
+        <span class="like-btn" title="Curtir">❤️ ${post.likes || 0}</span>
+        <button class="delete-btn" title="Excluir post" style="display:none;">Excluir</button>
+      </div>
+      <div class="comments-container"></div>
+      <form class="comment-form" style="margin-top:0.5rem;">
+        <input type="text" class="comment-input" placeholder="Comentar..." maxlength="200" required />
+        <button type="submit">Comentar</button>
+      </form>
+    `;
+
+    // Mostrar botão excluir se for dono do post ou admin
+    if(currentUser.username === post.author || currentUser.isAdmin) {
+      div.querySelector('.delete-btn').style.display = 'inline-block';
+    }
+
+    // Likes
+    const likeBtn = div.querySelector('.like-btn');
+    likeBtn.addEventListener('click', () => {
+      if(!post.likesUsers) post.likesUsers = [];
+      if(post.likesUsers.includes(currentUser.username)) {
+        // unlike
+        post.likes = (post.likes || 1) - 1;
+        post.likesUsers = post.likesUsers.filter(u => u !== currentUser.username);
+      } else {
+        post.likes = (post.likes || 0) + 1;
+        post.likesUsers.push(currentUser.username);
+      }
+      saveLike(post);
+      likeBtn.textContent = `❤️ ${post.likes || 0}`;
+    });
+
+    // Excluir post
+    const deleteBtn = div.querySelector('.delete-btn');
+    deleteBtn.addEventListener('click', () => {
+      if(confirm('Excluir este post?')) {
+        deletePost(post);
+      }
+    });
+
+    // Comentários
+    const commentsContainer = div.querySelector('.comments-container');
+    const commentForm = div.querySelector('.comment-form');
+    const commentInput = div.querySelector('.comment-input');
+
+    function renderComments() {
+      commentsContainer.innerHTML = '';
+      if(post.comments && post.comments.length > 0) {
+        post.comments.forEach(comment => {
+          const cDiv = document.createElement('div');
+          cDiv.className = 'comment';
+          let cDate = new Date(comment.timestamp);
+          let cDateStr = cDate.toLocaleString();
+          cDiv.innerHTML = `
+            <span class="comment-author">${comment.author}</span>
+            ${allUsers[comment.author].isAdmin ? '<span class="comment-admin-badge">Admin</span>' : ''}
+            <span class="comment-text">${escapeHtml(comment.text)}</span>
+            <span class="comment-timestamp">${cDateStr}</span>
+          `;
+          commentsContainer.appendChild(cDiv);
+        });
+      }
+    }
+    renderComments();
+
+    commentForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const commentText = commentInput.value.trim();
+      if(commentText.length === 0) return;
+      if(!post.comments) post.comments = [];
+      post.comments.push({
+        author: currentUser.username,
+        text: commentText,
+        timestamp: Date.now()
+      });
+      saveComments(post);
+      renderComments();
+      commentInput.value = '';
+    });
+
+    return div;
+  }
+
+  function saveLike(post) {
+    let userPosts = allUsers[post.author].data.posts;
+    let p = userPosts.find(p => p.id === post.id);
+    if(p) {
+      p.likes = post.likes;
+      p.likesUsers = post.likesUsers;
+      saveCurrentUser();
+      saveUsers();
+      loadFeed();
+    }
+  }
+
+  function saveComments(post) {
+    let userPosts = allUsers[post.author].data.posts;
+    let p = userPosts.find(p => p.id === post.id);
+    if(p) {
+      p.comments = post.comments;
+      saveCurrentUser();
+      saveUsers();
+      loadFeed();
+    }
+  }
+
+  function deletePost(post) {
+    let userPosts = allUsers[post.author].data.posts;
+    allUsers[post.author].data.posts = userPosts.filter(p => p.id !== post.id);
+    if(currentUser.username === post.author) currentUser.data.posts = allUsers[post.author].data.posts;
+    saveUsers();
+    loadFeed();
+  }
+
+  postForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const content = postContent.value.trim();
+    if(content.length === 0) return;
+    const newPost = {
+      id: 'post_' + Date.now(),
+      content,
+      timestamp: Date.now(),
+      likes: 0,
+      likesUsers: [],
+      comments: []
+    };
+    currentUser.data.posts.unshift(newPost);
+    saveCurrentUser();
+    saveUsers();
+    postContent.value = '';
+    loadFeed();
+  });
+
+  // ---------- Perfil ----------
+  function loadProfile() {
+    profileUsername.textContent = currentUser.username;
+    bioInput.value = currentUser.data.bio || '';
+    profileAvatar.src = currentUser.data.avatar || 'https://via.placeholder.com/100x100?text=Avatar';
+    saveMsg.style.display = 'none';
+  }
+
+  avatarInput.addEventListener('change', () => {
+    const file = avatarInput.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      currentUser.data.avatar = e.target.result;
+      profileAvatar.src = e.target.result;
+      saveCurrentUser();
+      saveUsers();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  btnSaveProfile.addEventListener('click', () => {
+    currentUser.data.bio = bioInput.value.trim();
+    saveCurrentUser();
+    saveUsers();
+    saveMsg.style.display = 'block';
+    setTimeout(() => saveMsg.style.display = 'none', 3000);
+  });
+
+  // ---------- Lista de usuários para seguir ----------
+  function loadUsersToFollow() {
+    usersList.innerHTML = '';
+    const usersToShow = Object.keys(allUsers).filter(u => u !== currentUser.username && !currentUser.data.following.includes(u));
+    usersToShow.forEach(u => {
+      const li = document.createElement('li');
+      li.textContent = u;
+      const btnFollow = document.createElement('button');
+      btnFollow.textContent = 'Seguir';
+      btnFollow.addEventListener('click', () => {
+        currentUser.data.following.push(u);
+        allUsers[u].data.followers.push(currentUser.username);
+        saveCurrentUser();
+        saveUsers();
+        loadUsersToFollow();
+        loadFeed();
+      });
+      li.appendChild(btnFollow);
+      usersList.appendChild(li);
+    });
+  }
+
+  // ---------- Chat privado (DM) ----------
+  function loadChat() {
+    chatMessages.innerHTML = '';
+    if(!currentUser.data.chat) currentUser.data.chat = {};
+    // Para simplicidade, mostraremos as mensagens entre o usuário e todos seus seguidores e seguidos
+    let chats = currentUser.data.chat || {};
+
+    // Carregar todas as mensagens trocadas, ordenadas por data
+    let allMessages = [];
+    for(let otherUser in chats) {
+      chats[otherUser].forEach(m => allMessages.push({...m, user: otherUser}));
+    }
+    allMessages.sort((a,b) => a.timestamp - b.timestamp);
+
+    allMessages.forEach(msg => {
+      const div = document.createElement('div');
+      div.textContent = `[${new Date(msg.timestamp).toLocaleTimeString()}] ${msg.from === currentUser.username ? 'Você' : msg.from}: ${msg.text}`;
+      chatMessages.appendChild(div);
+    });
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
   sendChatBtn.addEventListener('click', sendMessage);
-  chatInput.addEventListener('keydown', e => {
+  chatInput.addEventListener('keydown', (e) => {
     if(e.key === 'Enter') sendMessage();
   });
 
   function sendMessage() {
     const text = chatInput.value.trim();
-    if(text === '') return;
-    const now = new Date();
-    const time = now.toLocaleTimeString();
+    if(text.length === 0) return;
 
-    // Mensagem enviada pelo usuário atual
-    const msg = { sender: currentUser.username, text, time };
-    currentUser.data.chatHistory = currentUser.data.chatHistory || [];
-    currentUser.data.chatHistory.push(msg);
-    saveUserData(currentUser.username, currentUser.data);
+    const recipient = prompt('Para quem enviar mensagem? (digite o usuário)');
+    if(!recipient || !allUsers[recipient]) {
+      alert('Usuário inválido.');
+      return;
+    }
 
-    const div = document.createElement('div');
-    div.textContent = `[${time}] Você: ${text}`;
-    chatBox.appendChild(div);
-    chatBox.scrollTop = chatBox.scrollHeight;
+    if(!currentUser.data.chat[recipient]) currentUser.data.chat[recipient] = [];
+    if(!allUsers[recipient].data.chat[currentUser.username]) allUsers[recipient].data.chat[currentUser.username] = [];
+
+    const messageObj = {
+      from: currentUser.username,
+      to: recipient,
+      text,
+      timestamp: Date.now()
+    };
+    currentUser.data.chat[recipient].push(messageObj);
+    allUsers[recipient].data.chat[currentUser.username].push(messageObj);
+    saveCurrentUser();
+    saveUsers();
     chatInput.value = '';
+    loadChat();
   }
 
-  // Ao iniciar, mostra a tela de login
-  showPage('login');
+  // ---------- Util ----------
+  function escapeHtml(text) {
+    return text.replace(/[&<>"']/g, (m) => {
+      switch(m) {
+        case '&': return '&amp;';
+        case '<': return '&lt;';
+        case '>': return '&gt;';
+        case '"': return '&quot;';
+        case '\'': return '&#39;';
+        default: return m;
+      }
+    });
+  }
+
+  // ---------- Tema ----------
+  btnToggleTheme.addEventListener('click', () => {
+    document.body.classList.toggle('dark');
+  });
+
+  // ---------- Inicialização ----------
+  loadUsers();
+  initAdmin();
+
+  if(currentUser) {
+    showPage(feedPage);
+    updateNavButtons(navFeed);
+    btnLogout.style.display = 'inline-block';
+    loadFeed();
+    loadProfile();
+    loadUsersToFollow();
+    loadChat();
+  } else {
+    showPage(loginPage);
+    updateNavButtons(null);
+    btnLogout.style.display = 'none';
+  }
+
+  navFeed.addEventListener('click', () => {
+    showPage(feedPage);
+    updateNavButtons(navFeed);
+    loadFeed();
+  });
+
+  navPerfil.addEventListener('click', () => {
+    showPage(perfilPage);
+    updateNavButtons(navPerfil);
+    loadProfile();
+  });
+
+  navChat.addEventListener('click', () => {
+    showPage(chatPage);
+    updateNavButtons(navChat);
+    loadChat();
+  });
+
+})();
 </script>
+
 </body>
 </html>
