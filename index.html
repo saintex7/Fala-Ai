@@ -1,168 +1,530 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FALAAI - Rede Escolar</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fala Aí!</title>
+<style>
+  /* Reset básico */
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+  }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    transition: background-color 0.3s, color 0.3s;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+  :root {
+    --bg-light: #f0f2f5;
+    --text-light: #111;
+    --bg-dark: #121212;
+    --text-dark: #eee;
+    --primary: #1da1f2;
+    --card-bg-light: #fff;
+    --card-bg-dark: #222;
+    --border-light: #ddd;
+    --border-dark: #333;
+  }
+  body.light {
+    --bg: var(--bg-light);
+    --text: var(--text-light);
+    --card-bg: var(--card-bg-light);
+    --border: var(--border-light);
+  }
+  body.dark {
+    --bg: var(--bg-dark);
+    --text: var(--text-dark);
+    --card-bg: var(--card-bg-dark);
+    --border: var(--border-dark);
+  }
+  /* Sidebar */
+  #sidebar {
+    width: 220px;
+    background: var(--card-bg);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+  }
+  #sidebar h1 {
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    user-select: none;
+  }
+  #topics {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  #topics button {
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 0.6rem 0.5rem;
+    font-size: 1rem;
+    color: var(--text);
+    cursor: pointer;
+    border-radius: 4px;
+    margin-bottom: 0.25rem;
+    transition: background-color 0.2s;
+  }
+  #topics button:hover,
+  #topics button.active {
+    background-color: var(--primary);
+    color: white;
+  }
+  #profile-section {
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+  }
+  #profile-section input, #profile-section textarea {
+    width: 100%;
+    margin-top: 0.3rem;
+    padding: 0.3rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+  }
+  #profile-section label {
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    display: block;
+  }
+  #theme-toggle {
+    margin-top: 1rem;
+    cursor: pointer;
+    background: var(--primary);
+    border: none;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 4px;
+    width: 100%;
+    font-weight: 600;
+  }
 
-    body {
-      background-color: #121212;
-      color: #f1f1f1;
-    }
-
-    header {
-      background: #1f1f1f;
-      padding: 1rem;
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-
-    nav {
-      display: flex;
-      justify-content: space-around;
-      background: #2c2c2c;
-      padding: 0.5rem 0;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-    }
-
-    nav button {
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    .container {
-      padding: 1rem;
-      margin-bottom: 3rem;
-    }
-
-    .post {
-      background: #1e1e1e;
-      padding: 1rem;
-      border-radius: 10px;
-      margin-bottom: 1rem;
-    }
-
-    .theme-selector, .chat-box, .dm-box {
-      margin-top: 1rem;
-    }
-
-    textarea, input {
-      width: 100%;
+  /* Main area */
+  #main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    padding: 1rem;
+    overflow: hidden;
+  }
+  #feed, #chat-area {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+  }
+  #feed {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .post, .chat-message {
+    background: var(--card-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    color: var(--text);
+  }
+  .post .post-header, .chat-message .chat-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+  .avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+  }
+  .post-content, .chat-text {
+    font-size: 1rem;
+    white-space: pre-wrap;
+  }
+  .post-image {
+    max-width: 100%;
+    margin-top: 0.8rem;
+    border-radius: 6px;
+    object-fit: contain;
+  }
+  /* Post form */
+  #post-form {
+    background: var(--card-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  #post-form textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 0.5rem;
+    font-size: 1rem;
+    resize: vertical;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+  }
+  #post-form input[type="file"] {
+    padding: 0.3rem 0;
+  }
+  #post-form button {
+    align-self: flex-end;
+    padding: 0.5rem 1rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  #post-form button:hover {
+    background: #0d8ddb;
+  }
+  /* Chat area */
+  #chat-area {
+    display: none;
+    flex-direction: column;
+  }
+  #chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+  #chat-input-area {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  #chat-input {
+    flex-grow: 1;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 1rem;
+  }
+  #chat-send-btn {
+    background: var(--primary);
+    border: none;
+    color: white;
+    padding: 0 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  #chat-send-btn:hover {
+    background: #0d8ddb;
+  }
+  /* Responsive */
+  @media(max-width: 700px) {
+    #sidebar {
+      width: 60px;
       padding: 0.5rem;
-      margin-top: 0.5rem;
-      background: #333;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
     }
-
-    button.send {
-      margin-top: 0.5rem;
-      padding: 0.5rem 1rem;
-      background: #6200ea;
-      border: none;
-      color: #fff;
-      border-radius: 5px;
-      cursor: pointer;
+    #sidebar h1 {
+      display: none;
     }
-  </style>
+    #topics button {
+      font-size: 0;
+      padding: 0.5rem 0;
+    }
+    #topics button::before {
+      content: attr(data-icon);
+      font-size: 1.4rem;
+      color: var(--primary);
+    }
+    #profile-section {
+      display: none;
+    }
+  }
+</style>
 </head>
-<body>
-  <header>FALAAI - Jornal Escolar</header>
+<body class="light">
 
-  <div class="container" id="main">
-    <div class="post">
-      <strong>@saintex</strong>: Bem-vindo ao FALAAI!
-    </div>
-    <div class="theme-selector">
-      <label>Escolha um tema:</label>
-      <select id="themeSelect">
-        <option value="cultura">Cultura Pop</option>
-        <option value="games">Games</option>
-        <option value="escola">Vida Escolar</option>
-      </select>
-    </div>
-    <div class="chat-box">
-      <h3>Chat do Tema</h3>
-      <div id="chatArea"></div>
-      <textarea id="chatInput" placeholder="Digite sua mensagem..."></textarea>
-      <button class="send" onclick="enviarMensagemTema()">Enviar</button>
-    </div>
-    <div class="dm-box">
-      <h3>DM (Mensagem Privada)</h3>
-      <input id="dmUser" placeholder="Para quem? (@usuario)" />
-      <textarea id="dmInput" placeholder="Digite sua mensagem..."></textarea>
-      <button class="send" onclick="enviarDM()">Enviar</button>
+<div id="sidebar">
+  <h1>Fala Aí!</h1>
+  <div id="topics">
+    <!-- botões de tópicos aqui -->
+  </div>
+  <div id="profile-section">
+    <label for="profile-name">Nome:</label>
+    <input id="profile-name" type="text" placeholder="Seu nome" maxlength="20"/>
+    <label for="profile-avatar">Avatar (emoji):</label>
+    <input id="profile-avatar" type="text" placeholder="Ex: 😎" maxlength="2"/>
+    <label for="profile-bio">Bio:</label>
+    <textarea id="profile-bio" placeholder="Sobre você" maxlength="100" rows="2"></textarea>
+    <button id="theme-toggle">Mudar tema</button>
+  </div>
+</div>
+
+<div id="main">
+  <div id="feed-section">
+    <form id="post-form">
+      <textarea id="post-text" placeholder="O que você quer falar?"></textarea>
+      <input type="file" id="post-image-input" accept="image/*" />
+      <button type="submit">Publicar</button>
+    </form>
+    <div id="feed"></div>
+  </div>
+  <div id="chat-area">
+    <div id="chat-messages"></div>
+    <div id="chat-input-area">
+      <input type="text" id="chat-input" placeholder="Digite sua mensagem..." />
+      <button id="chat-send-btn">Enviar</button>
     </div>
   </div>
+</div>
 
-  <nav>
-    <button onclick="mostrarFeed()">Feed</button>
-    <button onclick="mostrarPerfil()">Perfil</button>
-    <button onclick="mostrarChats()">Temas</button>
-  </nav>
+<script>
+(() => {
+  const topics = [
+    { id: 'feed', name: 'Feed', icon: '🏠' },
+    { id: 'cultura', name: 'Cultura Pop', icon: '🎬' },
+    { id: 'esportes', name: 'Esportes', icon: '🏀' },
+    { id: 'opiniao', name: 'Opinião', icon: '🗣️' },
+    { id: 'tecnologia', name: 'Tecnologia', icon: '💻' },
+  ];
 
-  <script>
-    let user = localStorage.getItem("user") || prompt("Escolha um nome de usuário:");
-    localStorage.setItem("user", user);
+  const sidebarTopics = document.getElementById('topics');
+  const feedSection = document.getElementById('feed-section');
+  const chatArea = document.getElementById('chat-area');
+  const chatMessages = document.getElementById('chat-messages');
+  const chatInput = document.getElementById('chat-input');
+  const chatSendBtn = document.getElementById('chat-send-btn');
+  const postForm = document.getElementById('post-form');
+  const postText = document.getElementById('post-text');
+  const postImageInput = document.getElementById('post-image-input');
+  const feed = document.getElementById('feed');
+  const profileName = document.getElementById('profile-name');
+  const profileAvatar = document.getElementById('profile-avatar');
+  const profileBio = document.getElementById('profile-bio');
+  const themeToggle = document.getElementById('theme-toggle');
+  const body = document.body;
 
-    function enviarMensagemTema() {
-      let tema = document.getElementById("themeSelect").value;
-      let msg = document.getElementById("chatInput").value;
-      if (!msg) return;
-      let chats = JSON.parse(localStorage.getItem("chats_" + tema) || "[]");
-      chats.push({ user, msg });
-      localStorage.setItem("chats_" + tema, JSON.stringify(chats));
-      document.getElementById("chatInput").value = "";
-      renderChat(tema);
-    }
+  let currentTopic = 'feed';
+  let posts = JSON.parse(localStorage.getItem('posts')) || [];
+  let chats = JSON.parse(localStorage.getItem('chats')) || {};
+  let profile = JSON.parse(localStorage.getItem('profile')) || {
+    name: 'Visitante',
+    avatar: '👤',
+    bio: '',
+  };
+  let theme = localStorage.getItem('theme') || 'light';
 
-    function renderChat(tema) {
-      let chatArea = document.getElementById("chatArea");
-      let chats = JSON.parse(localStorage.getItem("chats_" + tema) || "[]");
-      chatArea.innerHTML = chats.map(c => `<p><strong>@${c.user}:</strong> ${c.msg}</p>`).join("");
-    }
+  // Aplica tema
+  function applyTheme(t) {
+    body.classList.remove('light', 'dark');
+    body.classList.add(t);
+    themeToggle.textContent = t === 'light' ? 'Modo Escuro' : 'Modo Claro';
+  }
+  applyTheme(theme);
 
-    document.getElementById("themeSelect").addEventListener("change", e => {
-      renderChat(e.target.value);
+  themeToggle.onclick = () => {
+    theme = theme === 'light' ? 'dark' : 'light';
+    localStorage.setItem('theme', theme);
+    applyTheme(theme);
+  };
+
+  // Salva perfil
+  function saveProfile() {
+    profile.name = profileName.value.trim() || 'Visitante';
+    profile.avatar = profileAvatar.value.trim() || '👤';
+    profile.bio = profileBio.value.trim() || '';
+    localStorage.setItem('profile', JSON.stringify(profile));
+    renderFeed();
+  }
+  profileName.value = profile.name;
+  profileAvatar.value = profile.avatar;
+  profileBio.value = profile.bio;
+  profileName.onchange = saveProfile;
+  profileAvatar.onchange = saveProfile;
+  profileBio.onchange = saveProfile;
+
+  // Cria botões dos tópicos
+  function renderTopics() {
+    sidebarTopics.innerHTML = '';
+    topics.forEach(t => {
+      const btn = document.createElement('button');
+      btn.textContent = t.name;
+      btn.dataset.id = t.id;
+      btn.dataset.icon = t.icon;
+      btn.classList.toggle('active', t.id === currentTopic);
+      btn.onclick = () => {
+        currentTopic = t.id;
+        renderTopics();
+        renderView();
+      };
+      sidebarTopics.appendChild(btn);
     });
-    renderChat(document.getElementById("themeSelect").value);
+  }
+  renderTopics();
 
-    function enviarDM() {
-      let para = document.getElementById("dmUser").value.replace("@", "");
-      let msg = document.getElementById("dmInput").value;
-      if (!msg || !para) return;
-      let key = `dm_${user}_to_${para}`;
-      let dms = JSON.parse(localStorage.getItem(key) || "[]");
-      dms.push({ msg });
-      localStorage.setItem(key, JSON.stringify(dms));
-      document.getElementById("dmInput").value = "";
+  // Renderiza posts no feed
+  function renderFeed() {
+    feed.innerHTML = '';
+    const filteredPosts = posts.filter(p => p.topic === 'feed');
+    filteredPosts.reverse().forEach(p => {
+      feed.appendChild(createPostElement(p));
+    });
+  }
+
+  // Cria post visual
+  function createPostElement(post) {
+    const div = document.createElement('div');
+    div.classList.add('post');
+    const header = document.createElement('div');
+    header.classList.add('post-header');
+
+    const avatar = document.createElement('div');
+    avatar.classList.add('avatar');
+    avatar.textContent = post.author.avatar || '👤';
+
+    const name = document.createElement('strong');
+    name.textContent = post.author.name || 'Anon';
+
+    header.appendChild(avatar);
+    header.appendChild(name);
+
+    const content = document.createElement('div');
+    content.classList.add('post-content');
+    content.textContent = post.content;
+
+    div.appendChild(header);
+    div.appendChild(content);
+
+    if (post.image) {
+      const img = document.createElement('img');
+      img.src = post.image;
+      img.alt = "Imagem do post";
+      img.classList.add('post-image');
+      div.appendChild(img);
     }
 
-    function mostrarFeed() {
-      alert("Feed geral em breve");
-    }
+    return div;
+  }
 
-    function mostrarPerfil() {
-      alert(`Perfil de @${user}`);
-    }
+  // Renderiza chat
+  function renderChat() {
+    chatMessages.innerHTML = '';
+    if (!chats[currentTopic]) chats[currentTopic] = [];
+    chats[currentTopic].forEach(msg => {
+      const div = document.createElement('div');
+      div.classList.add('chat-message');
 
-    function mostrarChats() {
-      renderChat(document.getElementById("themeSelect").value);
+      const header = document.createElement('div');
+      header.classList.add('chat-header');
+
+      const avatar = document.createElement('div');
+      avatar.classList.add('avatar');
+      avatar.textContent = msg.author.avatar || '👤';
+
+      const name = document.createElement('strong');
+      name.textContent = msg.author.name || 'Anon';
+
+      header.appendChild(avatar);
+      header.appendChild(name);
+
+      const text = document.createElement('div');
+      text.classList.add('chat-text');
+      text.textContent = msg.content;
+
+      div.appendChild(header);
+      div.appendChild(text);
+
+      chatMessages.appendChild(div);
+    });
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  // Renderiza view atual: feed ou chat
+  function renderView() {
+    if (currentTopic === 'feed') {
+      feedSection.style.display = 'block';
+      chatArea.style.display = 'none';
+      renderFeed();
+    } else {
+      feedSection.style.display = 'none';
+      chatArea.style.display = 'flex';
+      renderChat();
     }
-  </script>
+  }
+  renderView();
+
+  // Postar no feed
+  postForm.onsubmit = e => {
+    e.preventDefault();
+    const content = postText.value.trim();
+    if (!content && !postImageInput.files.length) return alert('Escreva algo ou escolha uma imagem!');
+    const newPost = {
+      id: Date.now(),
+      topic: 'feed',
+      content,
+      author: {...profile},
+      image: null,
+    };
+    if (postImageInput.files.length) {
+      const file = postImageInput.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        newPost.image = reader.result;
+        posts.push(newPost);
+        localStorage.setItem('posts', JSON.stringify(posts));
+        postText.value = '';
+        postImageInput.value = '';
+        renderFeed();
+      };
+      reader.readAsDataURL(file);
+    } else {
+      posts.push(newPost);
+      localStorage.setItem('posts', JSON.stringify(posts));
+      postText.value = '';
+      renderFeed();
+    }
+  };
+
+  // Enviar mensagem no chat
+  chatSendBtn.onclick = () => {
+    const msg = chatInput.value.trim();
+    if (!msg) return;
+    if (!chats[currentTopic]) chats[currentTopic] = [];
+    chats[currentTopic].push({
+      id: Date.now(),
+      content: msg,
+      author: {...profile},
+    });
+    localStorage.setItem('chats', JSON.stringify(chats));
+    chatInput.value = '';
+    renderChat();
+  };
+  chatInput.onkeydown = e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      chatSendBtn.click();
+    }
+  };
+
+})();
+</script>
 </body>
 </html>
