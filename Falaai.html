@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fala Aí! - Jornal Escolar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f4f8;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #1e90ff;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      background-color: #0f6abf;
+      flex-wrap: wrap;
+    }
+    nav a {
+      color: white;
+      padding: 15px;
+      text-decoration: none;
+    }
+    nav a:hover {
+      background-color: #09539d;
+    }
+    .container {
+      padding: 20px;
+    }
+    section {
+      background-color: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #1e90ff;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      margin-top: 10px;
+      margin-bottom: 5px;
+    }
+    input[type="text"], input[type="email"], input[type="password"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    input[type="submit"] {
+      margin-top: 20px;
+      background-color: #1e90ff;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    input[type="submit"]:hover {
+      background-color: #0f6abf;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Fala Aí!</h1>
+    <p>Jornal de Opinião da Galera</p>
+  </header>
+
+  <nav>
+    <a href="#opiniao">Opinião</a>
+    <a href="#cultura">Cultura Pop</a>
+    <a href="#estudante">Fala Estudante</a>
+    <a href="#debate">Debate da Semana</a>
+    <a href="#noticias">Notícias da Escola</a>
+    <a href="#cadastro">Cadastro</a>
+  </nav>
+
+  <div class="container">
+    <section id="opiniao">
+      <h2>🧠 Opinião</h2>
+      <p>Aqui a galera fala sério! Discussões sobre temas importantes como bullying, redes sociais e o mundo escolar.</p>
+    </section>
+
+    <section id="cultura">
+      <h2>🎬 Cultura Pop</h2>
+      <p>Críticas e comentários sobre filmes, séries, músicas e games que a gente ama!</p>
+    </section>
+
+    <section id="estudante">
+      <h2>🗣️ Fala Estudante</h2>
+      <p>Espaço livre pros alunos se expressarem. Textos, desabafos, histórias e o que tiver na mente!</p>
+    </section>
+
+    <section id="debate">
+      <h2>⚖️ Debate da Semana</h2>
+      <p>Celular na sala: liberdade ou distração? Veja opiniões contra e a favor, depois conta a sua!</p>
+    </section>
+
+    <section id="noticias">
+      <h2>📢 Notícias da Escola</h2>
+      <p>Fique por dentro dos eventos, novidades e projetos que estão rolando por aqui.</p>
+    </section>
+
+    <section id="cadastro">
+      <h2>📝 Cadastro</h2>
+      <p>Quer participar do jornal? Se cadastra aí!</p>
+      <form>
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha" required>
+
+        <input type="submit" value="Cadastrar">
+      </form>
+    </section>
+  </div>
+</body>
+</html>
