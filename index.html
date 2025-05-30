@@ -1,688 +1,200 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>FALAAI - Rede Social Escolar</title>
-  
-  /* Reset e estilo base */
-  * {
-    box-sizing: border-box;
-  }
-  body {
-    margin: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background: #f0f2f5;
-    color: #222;
-    transition: background 0.3s, color 0.3s;
-  }
-  body.dark {
-    background: #181a1b;
-    color: #eee;
-  }
-  header {
-    background: #4267B2;
-    color: white;
-    padding: 10px 15px;
-    font-weight: bold;
-    font-size: 1.3rem;
-    text-align: center;
-  }
-  main {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 10px;
-  }
-  nav.bottom-nav {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    height: 55px;
-    background: white;
-    border-top: 1px solid #ccc;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    z-index: 10;
-  }
-  body.dark nav.bottom-nav {
-    background: #222;
-    border-top-color: #444;
-  }
-  nav.bottom-nav button {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #555;
-    transition: color 0.3s;
-  }
-  nav.bottom-nav button.active,
-  nav.bottom-nav button:hover {
-    color: #4267B2;
-  }
-  body.dark nav.bottom-nav button {
-    color: #aaa;
-  }
-  body.dark nav.bottom-nav button.active,
-  body.dark nav.bottom-nav button:hover {
-    color: #59a6ff;
-  }
-  form {
-    margin-bottom: 15px;
-  }
-  input, textarea, select {
-    width: 100%;
-    padding: 8px 10px;
-    margin: 6px 0;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-    font-family: inherit;
-  }
-  body.dark input, body.dark textarea, body.dark select {
-    background: #2a2a2a;
-    border-color: #555;
-    color: #eee;
-  }
-  button.btn-primary {
-    background: #4267B2;
-    border: none;
-    padding: 10px 15px;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 600;
-  }
-  button.btn-primary:disabled {
-    background: #7f9cd6;
-    cursor: not-allowed;
-  }
-  .post {
-    background: white;
-    border-radius: 6px;
-    padding: 12px 15px;
-    margin-bottom: 15px;
-    box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
-  }
-  body.dark .post {
-    background: #222;
-  }
-  .post-header {
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-  .post-content {
-    white-space: pre-wrap;
-  }
-  .post-actions {
-    margin-top: 10px;
-    display: flex;
-    gap: 15px;
-    font-size: 0.9rem;
-    user-select: none;
-  }
-  .post-actions button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #4267B2;
-  }
-  .post-actions button.liked {
-    font-weight: 700;
-    color: #b22222;
-  }
-  .comments {
-    margin-top: 10px;
-    border-top: 1px solid #ccc;
-    padding-top: 8px;
-  }
-  body.dark .comments {
-    border-top-color: #444;
-  }
-  .comment {
-    margin-bottom: 8px;
-  }
-  .comment-author {
-    font-weight: 700;
-    margin-right: 5px;
-  }
-  #loginSection, #registerSection {
-    max-width: 400px;
-    margin: 30px auto;
-    padding: 15px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
-  }
-  body.dark #loginSection, body.dark #registerSection {
-    background: #222;
-  }
-  #profileSection {
-    padding: 10px;
-  }
-  #followList {
-    margin: 10px 0;
-  }
-  .user-card {
-    background: white;
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  body.dark .user-card {
-    background: #222;
-  }
-  #dmSection {
-    max-width: 600px;
-    margin: 0 auto 80px;
-    padding: 10px;
-    background: white;
-    border-radius: 8px;
-  }
-  body.dark #dmSection {
-    background: #222;
-  }
-  #dmList {
-    max-height: 200px;
-    overflow-y: auto;
-    border: 1px solid #ccc;
-    padding: 8px;
-    margin-bottom: 10px;
-  }
-  body.dark #dmList {
-    border-color: #444;
-  }
-  .dm-message {
-    margin-bottom: 8px;
-  }
-  .dm-sender {
-    font-weight: 700;
-    margin-right: 5px;
-  }
-  #toggleDarkMode {
-    position: fixed;
-    top: 10px; right: 10px;
-    background: #4267B2;
-    border: none;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    z-index: 20;
-  }
-  section {
-    display: none;
-  }
-  section.active {
-    display: block;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FALAAI - Rede Social Escolar</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <style>
+    body.dark-mode {
+      background-color: #121212;
+      color: white;
+    }
+    .nav-bottom {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      background: #fff;
+      border-top: 1px solid #ccc;
+    }
+    .dark-mode .nav-bottom {
+      background: #222;
+      border-color: #555;
+    }
+  </style>
 </head>
 <body>
+  <div class="container mt-4" id="app"></div>
+  <div class="nav-bottom">
+    <button onclick="navigate('feed')">Feed</button>
+    <button onclick="navigate('temas')">Temas</button>
+    <button onclick="navigate('perfil')">Perfil</button>
+    <button onclick="navigate('dms')">DMs</button>
+    <button onclick="toggleDarkMode()">🌙</button>
+  </div>
+  <script>
+    const app = document.getElementById('app');
+    const localData = JSON.parse(localStorage.getItem('falaai-data') || '{}');
+    let currentUser = localData.user || null;
+    const db = localData.db || { posts: [], users: [], dms: {}, likes: {}, comments: {} };
 
-<header>FALAAI - Rede Social Escolar</header>
-
-<button id="toggleDarkMode" title="Alternar modo escuro">Modo Escuro</button>
-
-<!-- Login -->
-<section id="loginSection" class="active">
-  <h2>Entrar</h2>
-  <form id="loginForm">
-    <input id="loginUsername" type="text" placeholder="Usuário" required autocomplete="off"/>
-    <input id="loginPassword" type="password" placeholder="Senha" required autocomplete="off"/>
-    <button type="submit" class="btn-primary">Entrar</button>
-  </form>
-  <p id="loginError" style="color:red;"></p>
-  <p>Não tem conta? <a href="#" id="showRegister">Cadastrar</a></p>
-</section>
-
-<!-- Cadastro -->
-<section id="registerSection">
-  <h2>Cadastrar</h2>
-  <form id="registerForm">
-    <input id="registerUsername" type="text" placeholder="Usuário" required minlength="3" autocomplete="off"/>
-    <input id="registerPassword" type="password" placeholder="Senha" required minlength="6" autocomplete="off"/>
-    <button type="submit" class="btn-primary">Cadastrar</button>
-  </form>
-  <p id="registerError" style="color:red;"></p>
-  <p>Já tem conta? <a href="#" id="showLogin">Entrar</a></p>
-</section>
-
-<!-- Conteúdo após login -->
-<main id="mainContent">
-
-  <!-- Feed -->
-  <section id="feedSection" class="active">
-    <h2>Feed</h2>
-    <form id="postForm">
-      <textarea id="postContent" placeholder="O que você quer compartilhar?" rows="3" required></textarea>
-      <button type="submit" class="btn-primary">Postar</button>
-    </form>
-    <div id="postsContainer"></div>
-  </section>
-
-  <!-- Perfil e Seguidores -->
-  <section id="profileSection">
-    <h2>Perfil</h2>
-    <p>Usuário: <span id="profileUsername"></span> <button id="logoutBtn" style="float:right;">Sair</button></p>
-    <h3>Seguindo</h3>
-    <div id="followList"></div>
-    <h3>Buscar usuário para seguir</h3>
-    <form id="followForm">
-      <input id="followUsername" placeholder="Nome do usuário" autocomplete="off" />
-      <button type="submit" class="btn-primary">Seguir</button>
-    </form>
-  </section>
-
-  <!-- Mensagens Diretas -->
-  <section id="dmSection">
-    <h2>Mensagens Diretas</h2>
-    <form id="dmSelectForm">
-      <input id="dmUser" placeholder="Enviar para (usuário)" autocomplete="off" required />
-      <button type="submit" class="btn-primary">Abrir conversa</button>
-    </form>
-    <div id="dmList"></div>
-    <form id="dmSendForm" style="display:none;">
-      <textarea id="dmMessage" rows="2" placeholder="Escreva sua mensagem" required></textarea>
-      <button type="submit" class="btn-primary">Enviar</button>
-    </form>
-  </section>
-
-</main>
-
-<nav class="bottom-nav">
-  <button id="navFeed" class="active" title="Feed">🏠</button>
-  <button id="navProfile" title="Perfil">👤</button>
-  <button id="navDM" title="Mensagens Diretas">💬</button>
-</nav>
-
-<script type="module">
-
-import { ref, push, onValue, set, get, child, update, remove } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
-
-const db = window.db;
-
-let currentUser = null; // objeto {username, isAdmin}
-let currentDMUser = null;
-
-const adminUser = "saintex";
-const adminPass = "ffg..1.";
-
-const sections = {
-  login: document.getElementById("loginSection"),
-  register: document.getElementById("registerSection"),
-  feed: document.getElementById("feedSection"),
-  profile: document.getElementById("profileSection"),
-  dm: document.getElementById("dmSection"),
-};
-
-const navButtons = {
-  feed: document.getElementById("navFeed"),
-  profile: document.getElementById("navProfile"),
-  dm: document.getElementById("navDM"),
-};
-
-const loginForm = document.getElementById("loginForm");
-const registerForm = document.getElementById("registerForm");
-const postForm = document.getElementById("postForm");
-const followForm = document.getElementById("followForm");
-const dmSelectForm = document.getElementById("dmSelectForm");
-const dmSendForm = document.getElementById("dmSendForm");
-const toggleDarkModeBtn = document.getElementById("toggleDarkMode");
-
-const postsContainer = document.getElementById("postsContainer");
-const profileUsernameSpan = document.getElementById("profileUsername");
-const followListDiv = document.getElementById("followList");
-const dmListDiv = document.getElementById("dmList");
-
-const loginError = document.getElementById("loginError");
-const registerError = document.getElementById("registerError");
-
-const postContent = document.getElementById("postContent");
-const followUsernameInput = document.getElementById("followUsername");
-
-const dmUserInput = document.getElementById("dmUser");
-const dmMessageInput = document.getElementById("dmMessage");
-
-const logoutBtn = document.getElementById("logoutBtn");
-
-function showSection(name) {
-  Object.keys(sections).forEach(sec => {
-    if (sec === name) {
-      sections[sec].classList.add("active");
-    } else {
-      sections[sec].classList.remove("active");
+    function saveDB() {
+      localStorage.setItem('falaai-data', JSON.stringify({ user: currentUser, db }));
     }
-  });
-  Object.keys(navButtons).forEach(nav => {
-    if (nav === name) {
-      navButtons[nav].classList.add("active");
-    } else {
-      navButtons[nav].classList.remove("active");
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
     }
-  });
-}
 
-// Dark mode toggle
-function toggleDarkMode() {
-  document.body.classList.toggle("dark");
-  if(document.body.classList.contains("dark")) {
-    toggleDarkModeBtn.textContent = "Modo Claro";
-  } else {
-    toggleDarkModeBtn.textContent = "Modo Escuro";
-  }
-}
-toggleDarkModeBtn.onclick = toggleDarkMode;
-
-// ---------- Usuários ----------
-
-// Checar se usuário existe (por username)
-async function userExists(username) {
-  const snap = await get(ref(db, "users/" + username));
-  return snap.exists();
-}
-
-// Criar usuário
-async function createUser(username, password, isAdmin = false) {
-  await set(ref(db, "users/" + username), {
-    password,
-    isAdmin,
-    following: {},
-  });
-}
-
-// Validar login
-async function validateLogin(username, password) {
-  if(username === adminUser && password === adminPass){
-    return {username: adminUser, isAdmin: true};
-  }
-  const snap = await get(ref(db, "users/" + username));
-  if (!snap.exists()) return null;
-  const userData = snap.val();
-  if(userData.password === password) {
-    return {username, isAdmin: userData.isAdmin || false};
-  }
-  return null;
-}
-
-// ---------- Login e Cadastro ----------
-
-document.getElementById("showRegister").onclick = e => {
-  e.preventDefault();
-  loginError.textContent = "";
-  registerError.textContent = "";
-  showSection("register");
-};
-
-document.getElementById("showLogin").onclick = e => {
-  e.preventDefault();
-  loginError.textContent = "";
-  registerError.textContent = "";
-  showSection("login");
-};
-
-loginForm.onsubmit = async e => {
-  e.preventDefault();
-  const username = document.getElementById("loginUsername").value.trim();
-  const password = document.getElementById("loginPassword").value.trim();
-  loginError.textContent = "Validando...";
-
-  const user = await validateLogin(username, password);
-  if(user) {
-    currentUser = user;
-    loginError.textContent = "";
-    loginForm.reset();
-    initializeAfterLogin();
-  } else {
-    loginError.textContent = "Usuário ou senha inválidos.";
-  }
-};
-
-registerForm.onsubmit = async e => {
-  e.preventDefault();
-  const username = document.getElementById("registerUsername").value.trim();
-  const password = document.getElementById("registerPassword").value.trim();
-
-  registerError.textContent = "Verificando...";
-  if(username.toLowerCase() === adminUser){
-    registerError.textContent = "Esse usuário é reservado.";
-    return;
-  }
-  if(await userExists(username)){
-    registerError.textContent = "Usuário já existe.";
-    return;
-  }
-  await createUser(username, password);
-  registerError.style.color = "green";
-  registerError.textContent = "Cadastro realizado! Volte para entrar.";
-  registerForm.reset();
-};
-
-// ---------- Feed / Posts ----------
-
-async function loadPosts(){
-  postsContainer.innerHTML = "Carregando posts...";
-  const postsRef = ref(db, "posts");
-  onValue(postsRef, snap => {
-    const data = snap.val() || {};
-    postsContainer.innerHTML = "";
-    // Ordenar do mais recente pro mais antigo
-    const postsArr = Object.entries(data).sort((a,b) => b[1].timestamp - a[1].timestamp);
-    if(postsArr.length === 0) {
-      postsContainer.innerHTML = "<p>Nenhum post ainda.</p>";
-      return;
+    function loginScreen() {
+      app.innerHTML = `
+        <h2>Login / Cadastro</h2>
+        <input class="form-control" placeholder="@usuario" id="user" />
+        <button class="btn btn-primary mt-2" onclick="login()">Entrar</button>
+      `;
     }
-    postsArr.forEach(([postId, post]) => {
-      const postEl = createPostElement(postId, post);
-      postsContainer.appendChild(postEl);
-    });
-  });
-}
 
-function createPostElement(postId, post) {
-  const el = document.createElement("div");
-  el.className = "post";
-  el.dataset.postId = postId;
-
-  const likedByMe = post.likes && post.likes[currentUser.username];
-
-  el.innerHTML = `
-    <div class="post-header">${escapeHTML(post.author)}</div>
-    <div class="post-content">${escapeHTML(post.content)}</div>
-    <div class="post-actions">
-      <button class="likeBtn ${likedByMe ? "liked" : ""}" title="Curtir">❤️ ${post.likes ? Object.keys(post.likes).length : 0}</button>
-      <button class="showCommentsBtn" title="Mostrar comentários">💬 ${post.comments ? Object.keys(post.comments).length : 0}</button>
-    </div>
-    <div class="comments" style="display:none;">
-      <div class="commentsList"></div>
-      <form class="commentForm">
-        <input type="text" placeholder="Comentar..." required autocomplete="off" />
-        <button type="submit" class="btn-primary">Enviar</button>
-      </form>
-    </div>
-  `;
-
-  const likeBtn = el.querySelector(".likeBtn");
-  const showCommentsBtn = el.querySelector(".showCommentsBtn");
-  const commentsDiv = el.querySelector(".comments");
-  const commentsList = el.querySelector(".commentsList");
-  const commentForm = el.querySelector(".commentForm");
-  const commentInput = commentForm.querySelector("input");
-
-  likeBtn.onclick = async () => {
-    const likeRef = ref(db, `posts/${postId}/likes/${currentUser.username}`);
-    if(likedByMe) {
-      await remove(likeRef);
-    } else {
-      await set(likeRef, true);
+    function login() {
+      const user = document.getElementById('user').value.trim();
+      if (!user) return alert('Digite o nome de usuário');
+      currentUser = user;
+      if (!db.users.includes(user)) db.users.push(user);
+      saveDB();
+      navigate('feed');
     }
-  };
 
-  showCommentsBtn.onclick = () => {
-    if(commentsDiv.style.display === "none") {
-      commentsDiv.style.display = "block";
-      loadComments(postId, commentsList);
-    } else {
-      commentsDiv.style.display = "none";
+    function navigate(page) {
+      if (!currentUser) return loginScreen();
+      switch (page) {
+        case 'feed':
+          return feedPage();
+        case 'temas':
+          return temasPage();
+        case 'perfil':
+          return perfilPage();
+        case 'dms':
+          return dmsPage();
+      }
     }
-  };
 
-  commentForm.onsubmit = async e => {
-    e.preventDefault();
-    const commentText = commentInput.value.trim();
-    if(commentText.length === 0) return;
-    const commentRef = push(ref(db, `posts/${postId}/comments`));
-    await set(commentRef, {
-      author: currentUser.username,
-      content: commentText,
-      timestamp: Date.now(),
-    });
-    commentInput.value = "";
-  };
+    function feedPage() {
+      let html = `
+        <h3>Feed</h3>
+        <textarea id="postText" class="form-control" placeholder="Compartilhe algo..."></textarea>
+        <button class="btn btn-success mt-2" onclick="postar()">Postar</button>
+        <div id="posts" class="mt-4">
+          ${[...db.posts].reverse().map((p, i) => `
+            <div class="card mt-2">
+              <div class="card-body">
+                <strong>@${p.user}</strong>: ${p.text}<br />
+                <button onclick="curtir(${i})">Curtir (${db.likes[i]?.length || 0})</button>
+                <button onclick="comentar(${i})">Comentar</button>
+                <div><small>Comentários: ${(db.comments[i] || []).join(', ')}</small></div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      app.innerHTML = html;
+    }
 
-  return el;
-}
+    function postar() {
+      const text = document.getElementById('postText').value.trim();
+      if (!text) return;
+      db.posts.push({ user: currentUser, text });
+      saveDB();
+      navigate('feed');
+    }
 
-function loadComments(postId, container){
-  const commentsRef = ref(db, `posts/${postId}/comments`);
-  onValue(commentsRef, snap => {
-    const data = snap.val() || {};
-    container.innerHTML = "";
-    // Ordenar do mais antigo para mais recente
-    const commentsArr = Object.entries(data).sort((a,b) => a[1].timestamp - b[1].timestamp);
-    commentsArr.forEach(([id, comment]) => {
-      const div = document.createElement("div");
-      div.className = "comment";
-      div.innerHTML = `<span class="comment-author">${escapeHTML(comment.author)}</span>: ${escapeHTML(comment.content)}`;
-      container.appendChild(div);
-    });
-  });
-}
+    function curtir(index) {
+      db.likes[index] = db.likes[index] || [];
+      if (!db.likes[index].includes(currentUser)) db.likes[index].push(currentUser);
+      else db.likes[index] = db.likes[index].filter(u => u !== currentUser);
+      saveDB();
+      navigate('feed');
+    }
 
-postForm.onsubmit = async e => {
-  e.preventDefault();
-  const content = postContent.value.trim();
-  if(content.length === 0) return;
-  const newPostRef = push(ref(db, "posts"));
-  await set(newPostRef, {
-    author: currentUser.username,
-    content,
-    timestamp: Date.now(),
-  });
-  postContent.value = "";
-};
+    function comentar(index) {
+      const comment = prompt('Comentário:');
+      if (!comment) return;
+      db.comments[index] = db.comments[index] || [];
+      db.comments[index].push(`@${currentUser}: ${comment}`);
+      saveDB();
+      navigate('feed');
+    }
 
-// ---------- Seguir / Deixar de seguir ----------
+    function temasPage() {
+      app.innerHTML = `
+        <h3>Temas</h3>
+        <button onclick="temaChat('Cultura Pop')">#Cultura Pop</button>
+        <button onclick="temaChat('Esportes')">#Esportes</button>
+        <button onclick="temaChat('Estudos')">#Estudos</button>
+        <div id="temaChat"></div>
+      `;
+    }
 
-async function loadFollowing(){
-  followListDiv.innerHTML = "Carregando...";
-  const userSnap = await get(ref(db, `users/${currentUser.username}`));
-  if(!userSnap.exists()) {
-    followListDiv.innerHTML = "Erro ao carregar.";
-    return;
-  }
-  const userData = userSnap.val();
-  const following = userData.following || {};
-  followListDiv.innerHTML = "";
+    function temaChat(tema) {
+      const chatKey = `tema-${tema}`;
+      db[chatKey] = db[chatKey] || [];
+      let html = `<h4>${tema}</h4>
+        <div>${db[chatKey].map(m => `<div>@${m.user}: ${m.msg}</div>`).join('')}</div>
+        <input id="temaMsg" class="form-control" placeholder="Mensagem..." />
+        <button onclick="enviarTemaMsg('${tema}')">Enviar</button>
+      `;
+      document.getElementById('temaChat').innerHTML = html;
+    }
 
-  if(Object.keys(following).length === 0) {
-    followListDiv.innerHTML = "<p>Você não está seguindo ninguém.</p>";
-    return;
-  }
+    function enviarTemaMsg(tema) {
+      const msg = document.getElementById('temaMsg').value.trim();
+      if (!msg) return;
+      db[`tema-${tema}`].push({ user: currentUser, msg });
+      saveDB();
+      temaChat(tema);
+    }
 
-  for(const username of Object.keys(following)){
-    const div = document.createElement("div");
-    div.className = "user-card";
-    div.textContent = username;
+    function perfilPage() {
+      app.innerHTML = `
+        <h3>Perfil: @${currentUser}</h3>
+        <p>Postagens: ${db.posts.filter(p => p.user === currentUser).length}</p>
+        <p>Seguidores: ${db.followers?.[currentUser]?.length || 0}</p>
+        <p>Seguindo: ${(db.following?.[currentUser] || []).length}</p>
+      `;
+    }
 
-    const btn = document.createElement("button");
-    btn.textContent = "Deixar de seguir";
-    btn.onclick = async () => {
-      await remove(ref(db, `users/${currentUser.username}/following/${username}`));
-      loadFollowing();
-    };
-    div.appendChild(btn);
+    function dmsPage() {
+      app.innerHTML = `
+        <h3>DMs</h3>
+        <input id="dmUser" class="form-control" placeholder="@usuario" />
+        <input id="dmMsg" class="form-control mt-1" placeholder="Mensagem..." />
+        <button onclick="enviarDM()" class="btn btn-primary mt-1">Enviar</button>
+        <div id="dmList" class="mt-3"></div>
+      `;
+      renderDMs();
+    }
 
-    followListDiv.appendChild(div);
-  }
-}
+    function enviarDM() {
+      const user = document.getElementById('dmUser').value.trim();
+      const msg = document.getElementById('dmMsg').value.trim();
+      if (!user || !msg) return;
+      db.dms[user] = db.dms[user] || [];
+      db.dms[user].push({ from: currentUser, text: msg });
+      saveDB();
+      renderDMs();
+    }
 
-followForm.onsubmit = async e => {
-  e.preventDefault();
-  const usernameToFollow = followUsernameInput.value.trim();
-  if(usernameToFollow.length === 0 || usernameToFollow === currentUser.username) return alert("Usuário inválido.");
+    function renderDMs() {
+      let html = '';
+      for (const [user, msgs] of Object.entries(db.dms)) {
+        html += `<h5>Com @${user}</h5>
+          ${msgs.map(m => `<div><strong>@${m.from}:</strong> ${m.text}</div>`).join('')}`;
+      }
+      document.getElementById('dmList').innerHTML = html;
+    }
 
-  if(!(await userExists(usernameToFollow))) return alert("Usuário não existe.");
-  // Atualiza lista de seguindo
-  await set(ref(db, `users/${currentUser.username}/following/${usernameToFollow}`), true);
-  followUsernameInput.value = "";
-  loadFollowing();
-};
-
-// ---------- Mensagens Diretas ----------
-
-let dmUnsub = null;
-
-dmSelectForm.onsubmit = async e => {
-  e.preventDefault();
-  const usernameToDM = dmUserInput.value.trim();
-  if(usernameToDM.length === 0 || usernameToDM === currentUser.username) return alert("Usuário inválido.");
-  if(!(await userExists(usernameToDM))) return alert("Usuário não existe.");
-  currentDMUser = usernameToDM;
-  dmSendForm.style.display = "block";
-  loadDMs();
-};
-
-async function loadDMs(){
-  if(dmUnsub) dmUnsub(); // remove listener antigo
-
-  const chatId = getChatId(currentUser.username, currentDMUser);
-  const chatRef = ref(db, `dms/${chatId}`);
-
-  dmListDiv.innerHTML = "Carregando mensagens...";
-
-  dmUnsub = onValue(chatRef, snap => {
-    const data = snap.val() || {};
-    dmListDiv.innerHTML = "";
-    const messagesArr = Object.entries(data).sort((a,b) => a[1].timestamp - b[1].timestamp);
-    messagesArr.forEach(([id, msg]) => {
-      const div = document.createElement("div");
-      div.className = "dm-message";
-      div.innerHTML = `<span class="dm-sender">${escapeHTML(msg.sender)}</span>: ${escapeHTML(msg.content)}`;
-      dmListDiv.appendChild(div);
-    });
-    dmListDiv.scrollTop = dmListDiv.scrollHeight;
-  });
-}
-
-dmSendForm.onsubmit = async e => {
-  e.preventDefault();
-  const message = dmMessageInput.value.trim();
-  if(message.length === 0) return;
-  const chatId = getChatId(currentUser.username, currentDMUser);
-  const chatRef = push(ref(db, `dms/${chatId}`));
-  await set(chatRef, {
-    sender: currentUser.username,
-    content: message,
-    timestamp: Date.now(),
-  });
-  dmMessageInput.value = "";
-};
-
-function getChatId(user1, user2) {
-  return [user1, user2].sort().join("_");
-}
-
-// ---------- Helpers ----------
-
-// Escapa HTML simples pra evitar XSS
-function escapeHTML(text) {
-  return text.replace(/[&<>"']/g, function (m) {
-    return {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39
+    if (currentUser) navigate('feed');
+    else loginScreen();
+  </script>
+</body>
+</html>
