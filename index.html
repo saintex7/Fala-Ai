@@ -1,637 +1,707 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>FALAAI - Rede Social Completa</title>
+<title>FALAAI - Rede Social Escolar</title>
+
+<!-- Firebase SDKs -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import { getDatabase, ref, push, onValue, set, get, child, update, remove } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+
+  window.firebaseApp = initializeApp({
+    apiKey: "SUA_API_KEY_AQUI",
+    authDomain: "SEU_AUTHDOMAIN.firebaseapp.com",
+    databaseURL: "SUA_DATABASE_URL",
+    projectId: "SEU_PROJECT_ID",
+    storageBucket: "SEU_STORAGE_BUCKET",
+    messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+    appId: "SEU_APP_ID"
+  });
+
+  window.db = getDatabase(window.firebaseApp);
+</script>
+
 <style>
-  /* RESET básico e fonte */
-  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
-  body { background:#f4f6f8; color:#222; min-height: 100vh; display: flex; flex-direction: column; }
-  header, nav, main { width: 100%; max-width: 900px; margin: auto; }
-  header { background: #3f51b5; color: white; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
-  header h1 { font-weight: 700; font-size: 1.5rem; }
-  header button { background: transparent; border: none; color: white; font-size: 1rem; cursor: pointer; }
-
-  /* Nav inferior */
-  nav { background: #fff; box-shadow: 0 -2px 6px rgba(0,0,0,0.1); position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); max-width: 900px; display: flex; justify-content: space-around; padding: 0.7rem 0; }
-  nav button { background: none; border: none; color: #555; font-size: 1.1rem; cursor: pointer; padding: 0.5rem 1rem; border-radius: 6px; transition: background-color 0.3s ease; }
-  nav button.active, nav button:hover { background: #3f51b5; color: white; }
-
-  main { padding-bottom: 60px; margin-top: 0.5rem; }
-
-  /* Páginas */
-  section.page { display: none; }
-  section.page.active { display: block; }
-
-  /* LOGIN */
-  #login { max-width: 350px; margin: 5rem auto 0; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 0 15px rgb(0 0 0 / 0.1); }
-  #login h2 { margin-bottom: 1rem; color: #3f51b5; font-weight: 700; text-align: center; }
-  #login form { display: flex; flex-direction: column; }
-  #login label { margin-top: 1rem; font-weight: 600; }
-  #login input { margin-top: 0.3rem; padding: 0.6rem; border-radius: 6px; border: 1px solid #ccc; font-size: 1rem; }
-  #login button { margin-top: 1.5rem; background: #3f51b5; color: white; border: none; padding: 0.8rem; font-weight: 700; border-radius: 6px; cursor: pointer; }
-  #login-error { color: red; margin-top: 1rem; font-weight: 700; display: none; text-align: center; }
-
-  /* FEED */
-  #feed h2 { margin-bottom: 1rem; color: #3f51b5; font-weight: 700; }
-  #feed form#postForm textarea { width: 100%; resize: vertical; padding: 0.8rem; border-radius: 10px; border: 1px solid #ccc; font-size: 1rem; }
-  #feed form#postForm button { margin-top: 0.5rem; background: #3f51b5; color: white; border: none; padding: 0.8rem 1rem; border-radius: 10px; cursor: pointer; font-weight: 700; }
-  #postsContainer { margin-top: 1rem; display: flex; flex-direction: column; gap: 1rem; }
-
-  /* POSTAGEM */
-  .post { background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgb(0 0 0 / 0.08); }
-  .post-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.6rem; }
-  .post-header img.avatar-sm { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
-  .post-header .author { font-weight: 700; color: #3f51b5; }
-  .post-header .admin-badge { background: #d33; color: white; font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 4px; margin-left: 6px; }
-  .post-content { white-space: pre-wrap; margin-bottom: 0.6rem; font-size: 1rem; line-height: 1.3; }
-  .post-actions { display: flex; gap: 1rem; font-size: 0.9rem; color: #555; align-items: center; }
-  .post-actions button, .post-actions span.like-btn { cursor: pointer; background: none; border: none; padding: 0; color: #555; display: flex; align-items: center; gap: 0.3rem; font-weight: 600; }
-  .post-actions span.like-btn.liked { color: #d33; }
-  .post-actions button.delete-btn { color: #d33; font-weight: 700; }
-  .comments-list { margin-top: 0.6rem; border-top: 1px solid #eee; padding-top: 0.5rem; max-height: 200px; overflow-y: auto; }
-  .comment { font-size: 0.9rem; margin-bottom: 0.3rem; }
-  .comment .comment-author { font-weight: 700; margin-right: 4px; }
-  .comment .comment-text { white-space: pre-wrap; }
-  .comment .comment-admin-badge { background: #d33; color: white; font-size: 0.6rem; padding: 0.1rem 0.3rem; border-radius: 3px; margin-left: 3px; }
-  .comment-form { margin-top: 0.4rem; display: flex; gap: 0.5rem; }
-  .comment-form input { flex: 1; padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid #ccc; font-size: 0.9rem; }
-  .comment-form button { background: #3f51b5; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-weight: 700; }
-
-  /* PERFIL */
-  #perfil h2 { color: #3f51b5; font-weight: 700; margin-bottom: 1rem; }
-  #perfil .profile-container { background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgb(0 0 0 / 0.08); max-width: 400px; margin: auto; }
-  #perfil img.avatar-large { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; display: block; margin: auto; margin-bottom: 1rem; cursor: pointer; }
-  #perfil input#avatarInput { display: none; }
-  #perfil textarea#bioInput { width: 100%; height: 100px; border-radius: 10px; border: 1px solid #ccc; padding: 0.8rem; font-size: 1rem; resize: vertical; }
-  #perfil .info-line { margin: 0.6rem 0; font-size: 1rem; text-align: center; color: #444; }
-  #saveMsg { text-align: center; font-size: 0.9rem; color: green; margin-top: 0.5rem; display: none; font-weight: 700; }
-
-  /* CHAT (DM) */
-  #chat h2 { margin-bottom: 1rem; color: #3f51b5; font-weight: 700; }
-  #chat .chat-container { background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgb(0 0 0 / 0.08); max-width: 600px; margin: auto; display: flex; flex-direction: column; height: 400px; }
-  #chat .chat-messages { flex-grow: 1; overflow-y: auto; padding: 0.5rem; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 0.6rem; font-size: 0.9rem; background: #f9f9f9; }
-  #chat .chat-messages div { margin-bottom: 0.5rem; }
-  #chat .chat-input-area { display: flex; gap: 0.5rem; }
-  #chat input#chatInput { flex-grow: 1; padding: 0.5rem 0.8rem; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem; }
-  #chat button#sendChatBtn { background: #3f51b5; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 700; }
-
-  /* LISTA DE USUÁRIOS PARA SEGUIR */
-  #feed #usersToFollow { margin-top: 1rem; background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgb(0 0 0 / 0.08); max-width: 400px; }
-  #feed #usersToFollow h3 { margin-bottom: 0.8rem; color: #3f51b5; font-weight: 700; }
-  #feed #usersToFollow ul { list-style: none; max-height: 200px; overflow-y: auto; }
-  #feed #usersToFollow li { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-  #feed #usersToFollow li button { background: #3f51b5; color: white; border: none; padding: 0.3rem 0.6rem; border-radius: 6px; font-weight: 700; cursor: pointer; }
-
-  /* DARK MODE */
-  body.dark { background: #222; color: #eee; }
-  body.dark header { background: #1a237e; }
-  body.dark nav { background: #111; box-shadow: 0 -2px 6px rgba(255,255,255,0.1); }
-  body.dark nav button { color: #bbb; }
-  body.dark nav button.active, body.dark nav button:hover { background: #3949ab; color: white; }
-  body.dark #login { background: #333; color: #eee; box-shadow: 0 0 20px rgb(255 255 255 / 0.15); }
-  body.dark input, body.dark textarea { background: #444; border-color: #555; color: #eee; }
-  body.dark .post, body.dark #perfil .profile-container, body.dark #feed #usersToFollow, body.dark #chat .chat-container { background: #333; box-shadow: 0 2px 8px rgb(255 255 255 / 0.1); }
-  body.dark .post-actions button, body.dark .post-actions span.like-btn, body.dark #feed #usersToFollow li button { color: #ccc; }
-  body.dark .post-actions button.delete-btn { color: #f55; }
-  body.dark .post-header .author { color: #8ab4f8; }
-  body.dark .post-header .admin-badge { background: #b22; }
-  body.dark .comment .comment-admin-badge { background: #b22; }
-
+  /* Reset e estilo base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f2f5;
+    color: #222;
+    transition: background 0.3s, color 0.3s;
+  }
+  body.dark {
+    background: #181a1b;
+    color: #eee;
+  }
+  header {
+    background: #4267B2;
+    color: white;
+    padding: 10px 15px;
+    font-weight: bold;
+    font-size: 1.3rem;
+    text-align: center;
+  }
+  main {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 10px;
+  }
+  nav.bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 55px;
+    background: white;
+    border-top: 1px solid #ccc;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 10;
+  }
+  body.dark nav.bottom-nav {
+    background: #222;
+    border-top-color: #444;
+  }
+  nav.bottom-nav button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #555;
+    transition: color 0.3s;
+  }
+  nav.bottom-nav button.active,
+  nav.bottom-nav button:hover {
+    color: #4267B2;
+  }
+  body.dark nav.bottom-nav button {
+    color: #aaa;
+  }
+  body.dark nav.bottom-nav button.active,
+  body.dark nav.bottom-nav button:hover {
+    color: #59a6ff;
+  }
+  form {
+    margin-bottom: 15px;
+  }
+  input, textarea, select {
+    width: 100%;
+    padding: 8px 10px;
+    margin: 6px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    font-family: inherit;
+  }
+  body.dark input, body.dark textarea, body.dark select {
+    background: #2a2a2a;
+    border-color: #555;
+    color: #eee;
+  }
+  button.btn-primary {
+    background: #4267B2;
+    border: none;
+    padding: 10px 15px;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  button.btn-primary:disabled {
+    background: #7f9cd6;
+    cursor: not-allowed;
+  }
+  .post {
+    background: white;
+    border-radius: 6px;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+  }
+  body.dark .post {
+    background: #222;
+  }
+  .post-header {
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .post-content {
+    white-space: pre-wrap;
+  }
+  .post-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 15px;
+    font-size: 0.9rem;
+    user-select: none;
+  }
+  .post-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #4267B2;
+  }
+  .post-actions button.liked {
+    font-weight: 700;
+    color: #b22222;
+  }
+  .comments {
+    margin-top: 10px;
+    border-top: 1px solid #ccc;
+    padding-top: 8px;
+  }
+  body.dark .comments {
+    border-top-color: #444;
+  }
+  .comment {
+    margin-bottom: 8px;
+  }
+  .comment-author {
+    font-weight: 700;
+    margin-right: 5px;
+  }
+  #loginSection, #registerSection {
+    max-width: 400px;
+    margin: 30px auto;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+  }
+  body.dark #loginSection, body.dark #registerSection {
+    background: #222;
+  }
+  #profileSection {
+    padding: 10px;
+  }
+  #followList {
+    margin: 10px 0;
+  }
+  .user-card {
+    background: white;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  body.dark .user-card {
+    background: #222;
+  }
+  #dmSection {
+    max-width: 600px;
+    margin: 0 auto 80px;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+  }
+  body.dark #dmSection {
+    background: #222;
+  }
+  #dmList {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 8px;
+    margin-bottom: 10px;
+  }
+  body.dark #dmList {
+    border-color: #444;
+  }
+  .dm-message {
+    margin-bottom: 8px;
+  }
+  .dm-sender {
+    font-weight: 700;
+    margin-right: 5px;
+  }
+  #toggleDarkMode {
+    position: fixed;
+    top: 10px; right: 10px;
+    background: #4267B2;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 20;
+  }
+  section {
+    display: none;
+  }
+  section.active {
+    display: block;
+  }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>FALAAI</h1>
-  <div>
-    <button id="btnToggleTheme" title="Alternar tema claro/escuro">🌓</button>
-    <button id="btnLogout" style="display:none;">Sair</button>
-  </div>
-</header>
+<header>FALAAI - Rede Social Escolar</header>
 
-<main>
+<button id="toggleDarkMode" title="Alternar modo escuro">Modo Escuro</button>
 
-<!-- LOGIN -->
-<section id="login" class="page active">
-  <h2>Entrar na FALAAI</h2>
+<!-- Login -->
+<section id="loginSection" class="active">
+  <h2>Entrar</h2>
   <form id="loginForm">
-    <label for="usernameInput">Usuário:</label>
-    <input type="text" id="usernameInput" autocomplete="username" required />
-    <label for="passwordInput">Senha:</label>
-    <input type="password" id="passwordInput" autocomplete="current-password" required />
-    <button type="submit">Entrar</button>
+    <input id="loginUsername" type="text" placeholder="Usuário" required autocomplete="off"/>
+    <input id="loginPassword" type="password" placeholder="Senha" required autocomplete="off"/>
+    <button type="submit" class="btn-primary">Entrar</button>
   </form>
-  <div id="login-error"></div>
+  <p id="loginError" style="color:red;"></p>
+  <p>Não tem conta? <a href="#" id="showRegister">Cadastrar</a></p>
 </section>
 
-<!-- FEED -->
-<section id="feed" class="page">
-  <h2>Feed de Posts</h2>
-  <form id="postForm">
-    <textarea id="postContent" placeholder="O que está rolando?" rows="3" maxlength="500" required></textarea>
-    <button type="submit">Publicar</button>
+<!-- Cadastro -->
+<section id="registerSection">
+  <h2>Cadastrar</h2>
+  <form id="registerForm">
+    <input id="registerUsername" type="text" placeholder="Usuário" required minlength="3" autocomplete="off"/>
+    <input id="registerPassword" type="password" placeholder="Senha" required minlength="6" autocomplete="off"/>
+    <button type="submit" class="btn-primary">Cadastrar</button>
   </form>
-
-  <div id="usersToFollow">
-    <h3>Usuários para seguir</h3>
-    <ul id="usersList"></ul>
-  </div>
-
-  <div id="postsContainer"></div>
+  <p id="registerError" style="color:red;"></p>
+  <p>Já tem conta? <a href="#" id="showLogin">Entrar</a></p>
 </section>
 
-<!-- PERFIL -->
-<section id="perfil" class="page">
-  <h2>Meu Perfil</h2>
-  <div class="profile-container">
-    <label for="avatarInput">
-      <img src="" alt="Avatar" id="profileAvatar" class="avatar-large" title="Clique para trocar o avatar" />
-    </label>
-    <input type="file" accept="image/*" id="avatarInput" />
-    <textarea id="bioInput" maxlength="250" placeholder="Escreva uma bio..."></textarea>
-    <div class="info-line" id="profileUsername"></div>
-    <button id="btnSaveProfile">Salvar perfil</button>
-    <div id="saveMsg">Perfil salvo com sucesso!</div>
-  </div>
-</section>
+<!-- Conteúdo após login -->
+<main id="mainContent">
 
-<!-- CHAT -->
-<section id="chat" class="page">
-  <h2>Chat Privado (DM)</h2>
-  <div class="chat-container">
-    <div class="chat-messages" id="chatMessages"></div>
-    <div class="chat-input-area">
-      <input type="text" id="chatInput" placeholder="Digite sua mensagem..." maxlength="300" />
-      <button id="sendChatBtn">Enviar</button>
-    </div>
-  </div>
-</section>
+  <!-- Feed -->
+  <section id="feedSection" class="active">
+    <h2>Feed</h2>
+    <form id="postForm">
+      <textarea id="postContent" placeholder="O que você quer compartilhar?" rows="3" required></textarea>
+      <button type="submit" class="btn-primary">Postar</button>
+    </form>
+    <div id="postsContainer"></div>
+  </section>
+
+  <!-- Perfil e Seguidores -->
+  <section id="profileSection">
+    <h2>Perfil</h2>
+    <p>Usuário: <span id="profileUsername"></span> <button id="logoutBtn" style="float:right;">Sair</button></p>
+    <h3>Seguindo</h3>
+    <div id="followList"></div>
+    <h3>Buscar usuário para seguir</h3>
+    <form id="followForm">
+      <input id="followUsername" placeholder="Nome do usuário" autocomplete="off" />
+      <button type="submit" class="btn-primary">Seguir</button>
+    </form>
+  </section>
+
+  <!-- Mensagens Diretas -->
+  <section id="dmSection">
+    <h2>Mensagens Diretas</h2>
+    <form id="dmSelectForm">
+      <input id="dmUser" placeholder="Enviar para (usuário)" autocomplete="off" required />
+      <button type="submit" class="btn-primary">Abrir conversa</button>
+    </form>
+    <div id="dmList"></div>
+    <form id="dmSendForm" style="display:none;">
+      <textarea id="dmMessage" rows="2" placeholder="Escreva sua mensagem" required></textarea>
+      <button type="submit" class="btn-primary">Enviar</button>
+    </form>
+  </section>
 
 </main>
 
-<nav>
-  <button id="navFeed" class="active">Feed</button>
-  <button id="navPerfil">Perfil</button>
-  <button id="navChat">Chat</button>
+<nav class="bottom-nav">
+  <button id="navFeed" class="active" title="Feed">🏠</button>
+  <button id="navProfile" title="Perfil">👤</button>
+  <button id="navDM" title="Mensagens Diretas">💬</button>
 </nav>
 
-<script>
-(() => {
-  'use strict';
+<script type="module">
 
-  // ---------- Variáveis globais ----------
-  let currentUser = null; // objeto { username, isAdmin, data:{bio,avatar,following[],followers[],posts[],chat{}} }
-  let allUsers = {}; // chave = username, valor = objeto data completo da conta
+import { ref, push, onValue, set, get, child, update, remove } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
 
-  // Elementos
-  const loginPage = document.getElementById('login');
-  const feedPage = document.getElementById('feed');
-  const perfilPage = document.getElementById('perfil');
-  const chatPage = document.getElementById('chat');
+const db = window.db;
 
-  const btnToggleTheme = document.getElementById('btnToggleTheme');
-  const btnLogout = document.getElementById('btnLogout');
+let currentUser = null; // objeto {username, isAdmin}
+let currentDMUser = null;
 
-  const loginForm = document.getElementById('loginForm');
-  const usernameInput = document.getElementById('usernameInput');
-  const passwordInput = document.getElementById('passwordInput');
-  const loginError = document.getElementById('login-error');
+const adminUser = "saintex";
+const adminPass = "ffg..1.";
 
-  const navFeed = document.getElementById('navFeed');
-  const navPerfil = document.getElementById('navPerfil');
-  const navChat = document.getElementById('navChat');
+const sections = {
+  login: document.getElementById("loginSection"),
+  register: document.getElementById("registerSection"),
+  feed: document.getElementById("feedSection"),
+  profile: document.getElementById("profileSection"),
+  dm: document.getElementById("dmSection"),
+};
 
-  const postForm = document.getElementById('postForm');
-  const postContent = document.getElementById('postContent');
-  const postsContainer = document.getElementById('postsContainer');
+const navButtons = {
+  feed: document.getElementById("navFeed"),
+  profile: document.getElementById("navProfile"),
+  dm: document.getElementById("navDM"),
+};
 
-  const usersList = document.getElementById('usersList');
+const loginForm = document.getElementById("loginForm");
+const registerForm = document.getElementById("registerForm");
+const postForm = document.getElementById("postForm");
+const followForm = document.getElementById("followForm");
+const dmSelectForm = document.getElementById("dmSelectForm");
+const dmSendForm = document.getElementById("dmSendForm");
+const toggleDarkModeBtn = document.getElementById("toggleDarkMode");
 
-  const profileAvatar = document.getElementById('profileAvatar');
-  const avatarInput = document.getElementById('avatarInput');
-  const bioInput = document.getElementById('bioInput');
-  const profileUsername = document.getElementById('profileUsername');
-  const btnSaveProfile = document.getElementById('btnSaveProfile');
-  const saveMsg = document.getElementById('saveMsg');
+const postsContainer = document.getElementById("postsContainer");
+const profileUsernameSpan = document.getElementById("profileUsername");
+const followListDiv = document.getElementById("followList");
+const dmListDiv = document.getElementById("dmList");
 
-  const chatMessages = document.getElementById('chatMessages');
-  const chatInput = document.getElementById('chatInput');
-  const sendChatBtn = document.getElementById('sendChatBtn');
+const loginError = document.getElementById("loginError");
+const registerError = document.getElementById("registerError");
 
-  // ---------- Helpers ----------
-  function saveUsers() {
-    localStorage.setItem('falaaiUsers', JSON.stringify(allUsers));
-  }
+const postContent = document.getElementById("postContent");
+const followUsernameInput = document.getElementById("followUsername");
 
-  function loadUsers() {
-    const usersStr = localStorage.getItem('falaaiUsers');
-    allUsers = usersStr ? JSON.parse(usersStr) : {};
-  }
+const dmUserInput = document.getElementById("dmUser");
+const dmMessageInput = document.getElementById("dmMessage");
 
-  function saveCurrentUser() {
-    if(currentUser) {
-      allUsers[currentUser.username] = currentUser;
-      saveUsers();
-    }
-  }
+const logoutBtn = document.getElementById("logoutBtn");
 
-  // ---------- Navegação ----------
-  function showPage(page) {
-    loginPage.classList.remove('active');
-    feedPage.classList.remove('active');
-    perfilPage.classList.remove('active');
-    chatPage.classList.remove('active');
-    page.classList.add('active');
-  }
-
-  function updateNavButtons(activeBtn) {
-    navFeed.classList.remove('active');
-    navPerfil.classList.remove('active');
-    navChat.classList.remove('active');
-    activeBtn.classList.add('active');
-  }
-
-  // ---------- Login ----------
-  function initAdmin() {
-    if(!allUsers['saintex']) {
-      allUsers['saintex'] = {
-        username: 'saintex',
-        password: 'ffg..1.',
-        isAdmin: true,
-        data: {
-          bio: 'Administrador da FALAAI',
-          avatar: '',
-          following: [],
-          followers: [],
-          posts: [],
-          chat: {}
-        }
-      };
-      saveUsers();
-    }
-  }
-
-  loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value;
-
-    if(allUsers[username] && allUsers[username].password === password) {
-      currentUser = JSON.parse(JSON.stringify(allUsers[username]));
-      loginError.textContent = '';
-      showPage(feedPage);
-      updateNavButtons(navFeed);
-      btnLogout.style.display = 'inline-block';
-      loadFeed();
-      loadProfile();
-      loadUsersToFollow();
-      loadChat();
+function showSection(name) {
+  Object.keys(sections).forEach(sec => {
+    if (sec === name) {
+      sections[sec].classList.add("active");
     } else {
-      loginError.textContent = 'Usuário ou senha incorretos!';
+      sections[sec].classList.remove("active");
     }
   });
-
-  btnLogout.addEventListener('click', () => {
-    currentUser = null;
-    showPage(loginPage);
-    updateNavButtons(null);
-    btnLogout.style.display = 'none';
+  Object.keys(navButtons).forEach(nav => {
+    if (nav === name) {
+      navButtons[nav].classList.add("active");
+    } else {
+      navButtons[nav].classList.remove("active");
+    }
   });
+}
 
-  // ---------- Feed ----------
-  function loadFeed() {
-    postsContainer.innerHTML = '';
-    let postsArr = [];
-
-    for(let user in allUsers) {
-      let userData = allUsers[user].data;
-      if(userData.posts && userData.posts.length > 0) {
-        userData.posts.forEach(post => {
-          postsArr.push({...post, author: user});
-        });
-      }
-    }
-
-    postsArr.sort((a,b) => b.timestamp - a.timestamp);
-
-    postsArr.forEach(post => {
-      const postEl = createPostElement(post);
-      postsContainer.appendChild(postEl);
-    });
+// Dark mode toggle
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+  if(document.body.classList.contains("dark")) {
+    toggleDarkModeBtn.textContent = "Modo Claro";
+  } else {
+    toggleDarkModeBtn.textContent = "Modo Escuro";
   }
+}
+toggleDarkModeBtn.onclick = toggleDarkMode;
 
-  function createPostElement(post) {
-    const div = document.createElement('div');
-    div.className = 'post';
-    div.dataset.id = post.id;
+// ---------- Usuários ----------
 
-    let date = new Date(post.timestamp);
-    let dateStr = date.toLocaleString();
+// Checar se usuário existe (por username)
+async function userExists(username) {
+  const snap = await get(ref(db, "users/" + username));
+  return snap.exists();
+}
 
-    div.innerHTML = `
-      <div class="post-header">
-        <span class="author">${post.author}</span>
-        ${allUsers[post.author].isAdmin ? '<span class="admin-badge">Admin</span>' : ''}
-        <span class="timestamp">${dateStr}</span>
-      </div>
-      <div class="post-content">${escapeHtml(post.content)}</div>
-      <div class="post-actions">
-        <span class="like-btn" title="Curtir">❤️ ${post.likes || 0}</span>
-        <button class="delete-btn" title="Excluir post" style="display:none;">Excluir</button>
-      </div>
-      <div class="comments-container"></div>
-      <form class="comment-form" style="margin-top:0.5rem;">
-        <input type="text" class="comment-input" placeholder="Comentar..." maxlength="200" required />
-        <button type="submit">Comentar</button>
-      </form>
-    `;
-
-    // Mostrar botão excluir se for dono do post ou admin
-    if(currentUser.username === post.author || currentUser.isAdmin) {
-      div.querySelector('.delete-btn').style.display = 'inline-block';
-    }
-
-    // Likes
-    const likeBtn = div.querySelector('.like-btn');
-    likeBtn.addEventListener('click', () => {
-      if(!post.likesUsers) post.likesUsers = [];
-      if(post.likesUsers.includes(currentUser.username)) {
-        // unlike
-        post.likes = (post.likes || 1) - 1;
-        post.likesUsers = post.likesUsers.filter(u => u !== currentUser.username);
-      } else {
-        post.likes = (post.likes || 0) + 1;
-        post.likesUsers.push(currentUser.username);
-      }
-      saveLike(post);
-      likeBtn.textContent = `❤️ ${post.likes || 0}`;
-    });
-
-    // Excluir post
-    const deleteBtn = div.querySelector('.delete-btn');
-    deleteBtn.addEventListener('click', () => {
-      if(confirm('Excluir este post?')) {
-        deletePost(post);
-      }
-    });
-
-    // Comentários
-    const commentsContainer = div.querySelector('.comments-container');
-    const commentForm = div.querySelector('.comment-form');
-    const commentInput = div.querySelector('.comment-input');
-
-    function renderComments() {
-      commentsContainer.innerHTML = '';
-      if(post.comments && post.comments.length > 0) {
-        post.comments.forEach(comment => {
-          const cDiv = document.createElement('div');
-          cDiv.className = 'comment';
-          let cDate = new Date(comment.timestamp);
-          let cDateStr = cDate.toLocaleString();
-          cDiv.innerHTML = `
-            <span class="comment-author">${comment.author}</span>
-            ${allUsers[comment.author].isAdmin ? '<span class="comment-admin-badge">Admin</span>' : ''}
-            <span class="comment-text">${escapeHtml(comment.text)}</span>
-            <span class="comment-timestamp">${cDateStr}</span>
-          `;
-          commentsContainer.appendChild(cDiv);
-        });
-      }
-    }
-    renderComments();
-
-    commentForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const commentText = commentInput.value.trim();
-      if(commentText.length === 0) return;
-      if(!post.comments) post.comments = [];
-      post.comments.push({
-        author: currentUser.username,
-        text: commentText,
-        timestamp: Date.now()
-      });
-      saveComments(post);
-      renderComments();
-      commentInput.value = '';
-    });
-
-    return div;
-  }
-
-  function saveLike(post) {
-    let userPosts = allUsers[post.author].data.posts;
-    let p = userPosts.find(p => p.id === post.id);
-    if(p) {
-      p.likes = post.likes;
-      p.likesUsers = post.likesUsers;
-      saveCurrentUser();
-      saveUsers();
-      loadFeed();
-    }
-  }
-
-  function saveComments(post) {
-    let userPosts = allUsers[post.author].data.posts;
-    let p = userPosts.find(p => p.id === post.id);
-    if(p) {
-      p.comments = post.comments;
-      saveCurrentUser();
-      saveUsers();
-      loadFeed();
-    }
-  }
-
-  function deletePost(post) {
-    let userPosts = allUsers[post.author].data.posts;
-    allUsers[post.author].data.posts = userPosts.filter(p => p.id !== post.id);
-    if(currentUser.username === post.author) currentUser.data.posts = allUsers[post.author].data.posts;
-    saveUsers();
-    loadFeed();
-  }
-
-  postForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const content = postContent.value.trim();
-    if(content.length === 0) return;
-    const newPost = {
-      id: 'post_' + Date.now(),
-      content,
-      timestamp: Date.now(),
-      likes: 0,
-      likesUsers: [],
-      comments: []
-    };
-    currentUser.data.posts.unshift(newPost);
-    saveCurrentUser();
-    saveUsers();
-    postContent.value = '';
-    loadFeed();
+// Criar usuário
+async function createUser(username, password, isAdmin = false) {
+  await set(ref(db, "users/" + username), {
+    password,
+    isAdmin,
+    following: {},
   });
+}
 
-  // ---------- Perfil ----------
-  function loadProfile() {
-    profileUsername.textContent = currentUser.username;
-    bioInput.value = currentUser.data.bio || '';
-    profileAvatar.src = currentUser.data.avatar || 'https://via.placeholder.com/100x100?text=Avatar';
-    saveMsg.style.display = 'none';
+// Validar login
+async function validateLogin(username, password) {
+  if(username === adminUser && password === adminPass){
+    return {username: adminUser, isAdmin: true};
   }
-
-  avatarInput.addEventListener('change', () => {
-    const file = avatarInput.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      currentUser.data.avatar = e.target.result;
-      profileAvatar.src = e.target.result;
-      saveCurrentUser();
-      saveUsers();
-    };
-    reader.readAsDataURL(file);
-  });
-
-  btnSaveProfile.addEventListener('click', () => {
-    currentUser.data.bio = bioInput.value.trim();
-    saveCurrentUser();
-    saveUsers();
-    saveMsg.style.display = 'block';
-    setTimeout(() => saveMsg.style.display = 'none', 3000);
-  });
-
-  // ---------- Lista de usuários para seguir ----------
-  function loadUsersToFollow() {
-    usersList.innerHTML = '';
-    const usersToShow = Object.keys(allUsers).filter(u => u !== currentUser.username && !currentUser.data.following.includes(u));
-    usersToShow.forEach(u => {
-      const li = document.createElement('li');
-      li.textContent = u;
-      const btnFollow = document.createElement('button');
-      btnFollow.textContent = 'Seguir';
-      btnFollow.addEventListener('click', () => {
-        currentUser.data.following.push(u);
-        allUsers[u].data.followers.push(currentUser.username);
-        saveCurrentUser();
-        saveUsers();
-        loadUsersToFollow();
-        loadFeed();
-      });
-      li.appendChild(btnFollow);
-      usersList.appendChild(li);
-    });
+  const snap = await get(ref(db, "users/" + username));
+  if (!snap.exists()) return null;
+  const userData = snap.val();
+  if(userData.password === password) {
+    return {username, isAdmin: userData.isAdmin || false};
   }
+  return null;
+}
 
-  // ---------- Chat privado (DM) ----------
-  function loadChat() {
-    chatMessages.innerHTML = '';
-    if(!currentUser.data.chat) currentUser.data.chat = {};
-    // Para simplicidade, mostraremos as mensagens entre o usuário e todos seus seguidores e seguidos
-    let chats = currentUser.data.chat || {};
+// ---------- Login e Cadastro ----------
 
-    // Carregar todas as mensagens trocadas, ordenadas por data
-    let allMessages = [];
-    for(let otherUser in chats) {
-      chats[otherUser].forEach(m => allMessages.push({...m, user: otherUser}));
-    }
-    allMessages.sort((a,b) => a.timestamp - b.timestamp);
+document.getElementById("showRegister").onclick = e => {
+  e.preventDefault();
+  loginError.textContent = "";
+  registerError.textContent = "";
+  showSection("register");
+};
 
-    allMessages.forEach(msg => {
-      const div = document.createElement('div');
-      div.textContent = `[${new Date(msg.timestamp).toLocaleTimeString()}] ${msg.from === currentUser.username ? 'Você' : msg.from}: ${msg.text}`;
-      chatMessages.appendChild(div);
-    });
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+document.getElementById("showLogin").onclick = e => {
+  e.preventDefault();
+  loginError.textContent = "";
+  registerError.textContent = "";
+  showSection("login");
+};
+
+loginForm.onsubmit = async e => {
+  e.preventDefault();
+  const username = document.getElementById("loginUsername").value.trim();
+  const password = document.getElementById("loginPassword").value.trim();
+  loginError.textContent = "Validando...";
+
+  const user = await validateLogin(username, password);
+  if(user) {
+    currentUser = user;
+    loginError.textContent = "";
+    loginForm.reset();
+    initializeAfterLogin();
+  } else {
+    loginError.textContent = "Usuário ou senha inválidos.";
   }
+};
 
-  sendChatBtn.addEventListener('click', sendMessage);
-  chatInput.addEventListener('keydown', (e) => {
-    if(e.key === 'Enter') sendMessage();
-  });
+registerForm.onsubmit = async e => {
+  e.preventDefault();
+  const username = document.getElementById("registerUsername").value.trim();
+  const password = document.getElementById("registerPassword").value.trim();
 
-  function sendMessage() {
-    const text = chatInput.value.trim();
-    if(text.length === 0) return;
+  registerError.textContent = "Verificando...";
+  if(username.toLowerCase() === adminUser){
+    registerError.textContent = "Esse usuário é reservado.";
+    return;
+  }
+  if(await userExists(username)){
+    registerError.textContent = "Usuário já existe.";
+    return;
+  }
+  await createUser(username, password);
+  registerError.style.color = "green";
+  registerError.textContent = "Cadastro realizado! Volte para entrar.";
+  registerForm.reset();
+};
 
-    const recipient = prompt('Para quem enviar mensagem? (digite o usuário)');
-    if(!recipient || !allUsers[recipient]) {
-      alert('Usuário inválido.');
+// ---------- Feed / Posts ----------
+
+async function loadPosts(){
+  postsContainer.innerHTML = "Carregando posts...";
+  const postsRef = ref(db, "posts");
+  onValue(postsRef, snap => {
+    const data = snap.val() || {};
+    postsContainer.innerHTML = "";
+    // Ordenar do mais recente pro mais antigo
+    const postsArr = Object.entries(data).sort((a,b) => b[1].timestamp - a[1].timestamp);
+    if(postsArr.length === 0) {
+      postsContainer.innerHTML = "<p>Nenhum post ainda.</p>";
       return;
     }
-
-    if(!currentUser.data.chat[recipient]) currentUser.data.chat[recipient] = [];
-    if(!allUsers[recipient].data.chat[currentUser.username]) allUsers[recipient].data.chat[currentUser.username] = [];
-
-    const messageObj = {
-      from: currentUser.username,
-      to: recipient,
-      text,
-      timestamp: Date.now()
-    };
-    currentUser.data.chat[recipient].push(messageObj);
-    allUsers[recipient].data.chat[currentUser.username].push(messageObj);
-    saveCurrentUser();
-    saveUsers();
-    chatInput.value = '';
-    loadChat();
-  }
-
-  // ---------- Util ----------
-  function escapeHtml(text) {
-    return text.replace(/[&<>"']/g, (m) => {
-      switch(m) {
-        case '&': return '&amp;';
-        case '<': return '&lt;';
-        case '>': return '&gt;';
-        case '"': return '&quot;';
-        case '\'': return '&#39;';
-        default: return m;
-      }
+    postsArr.forEach(([postId, post]) => {
+      const postEl = createPostElement(postId, post);
+      postsContainer.appendChild(postEl);
     });
+  });
+}
+
+function createPostElement(postId, post) {
+  const el = document.createElement("div");
+  el.className = "post";
+  el.dataset.postId = postId;
+
+  const likedByMe = post.likes && post.likes[currentUser.username];
+
+  el.innerHTML = `
+    <div class="post-header">${escapeHTML(post.author)}</div>
+    <div class="post-content">${escapeHTML(post.content)}</div>
+    <div class="post-actions">
+      <button class="likeBtn ${likedByMe ? "liked" : ""}" title="Curtir">❤️ ${post.likes ? Object.keys(post.likes).length : 0}</button>
+      <button class="showCommentsBtn" title="Mostrar comentários">💬 ${post.comments ? Object.keys(post.comments).length : 0}</button>
+    </div>
+    <div class="comments" style="display:none;">
+      <div class="commentsList"></div>
+      <form class="commentForm">
+        <input type="text" placeholder="Comentar..." required autocomplete="off" />
+        <button type="submit" class="btn-primary">Enviar</button>
+      </form>
+    </div>
+  `;
+
+  const likeBtn = el.querySelector(".likeBtn");
+  const showCommentsBtn = el.querySelector(".showCommentsBtn");
+  const commentsDiv = el.querySelector(".comments");
+  const commentsList = el.querySelector(".commentsList");
+  const commentForm = el.querySelector(".commentForm");
+  const commentInput = commentForm.querySelector("input");
+
+  likeBtn.onclick = async () => {
+    const likeRef = ref(db, `posts/${postId}/likes/${currentUser.username}`);
+    if(likedByMe) {
+      await remove(likeRef);
+    } else {
+      await set(likeRef, true);
+    }
+  };
+
+  showCommentsBtn.onclick = () => {
+    if(commentsDiv.style.display === "none") {
+      commentsDiv.style.display = "block";
+      loadComments(postId, commentsList);
+    } else {
+      commentsDiv.style.display = "none";
+    }
+  };
+
+  commentForm.onsubmit = async e => {
+    e.preventDefault();
+    const commentText = commentInput.value.trim();
+    if(commentText.length === 0) return;
+    const commentRef = push(ref(db, `posts/${postId}/comments`));
+    await set(commentRef, {
+      author: currentUser.username,
+      content: commentText,
+      timestamp: Date.now(),
+    });
+    commentInput.value = "";
+  };
+
+  return el;
+}
+
+function loadComments(postId, container){
+  const commentsRef = ref(db, `posts/${postId}/comments`);
+  onValue(commentsRef, snap => {
+    const data = snap.val() || {};
+    container.innerHTML = "";
+    // Ordenar do mais antigo para mais recente
+    const commentsArr = Object.entries(data).sort((a,b) => a[1].timestamp - b[1].timestamp);
+    commentsArr.forEach(([id, comment]) => {
+      const div = document.createElement("div");
+      div.className = "comment";
+      div.innerHTML = `<span class="comment-author">${escapeHTML(comment.author)}</span>: ${escapeHTML(comment.content)}`;
+      container.appendChild(div);
+    });
+  });
+}
+
+postForm.onsubmit = async e => {
+  e.preventDefault();
+  const content = postContent.value.trim();
+  if(content.length === 0) return;
+  const newPostRef = push(ref(db, "posts"));
+  await set(newPostRef, {
+    author: currentUser.username,
+    content,
+    timestamp: Date.now(),
+  });
+  postContent.value = "";
+};
+
+// ---------- Seguir / Deixar de seguir ----------
+
+async function loadFollowing(){
+  followListDiv.innerHTML = "Carregando...";
+  const userSnap = await get(ref(db, `users/${currentUser.username}`));
+  if(!userSnap.exists()) {
+    followListDiv.innerHTML = "Erro ao carregar.";
+    return;
+  }
+  const userData = userSnap.val();
+  const following = userData.following || {};
+  followListDiv.innerHTML = "";
+
+  if(Object.keys(following).length === 0) {
+    followListDiv.innerHTML = "<p>Você não está seguindo ninguém.</p>";
+    return;
   }
 
-  // ---------- Tema ----------
-  btnToggleTheme.addEventListener('click', () => {
-    document.body.classList.toggle('dark');
-  });
+  for(const username of Object.keys(following)){
+    const div = document.createElement("div");
+    div.className = "user-card";
+    div.textContent = username;
 
-  // ---------- Inicialização ----------
-  loadUsers();
-  initAdmin();
+    const btn = document.createElement("button");
+    btn.textContent = "Deixar de seguir";
+    btn.onclick = async () => {
+      await remove(ref(db, `users/${currentUser.username}/following/${username}`));
+      loadFollowing();
+    };
+    div.appendChild(btn);
 
-  if(currentUser) {
-    showPage(feedPage);
-    updateNavButtons(navFeed);
-    btnLogout.style.display = 'inline-block';
-    loadFeed();
-    loadProfile();
-    loadUsersToFollow();
-    loadChat();
-  } else {
-    showPage(loginPage);
-    updateNavButtons(null);
-    btnLogout.style.display = 'none';
+    followListDiv.appendChild(div);
   }
+}
 
-  navFeed.addEventListener('click', () => {
-    showPage(feedPage);
-    updateNavButtons(navFeed);
-    loadFeed();
+followForm.onsubmit = async e => {
+  e.preventDefault();
+  const usernameToFollow = followUsernameInput.value.trim();
+  if(usernameToFollow.length === 0 || usernameToFollow === currentUser.username) return alert("Usuário inválido.");
+
+  if(!(await userExists(usernameToFollow))) return alert("Usuário não existe.");
+  // Atualiza lista de seguindo
+  await set(ref(db, `users/${currentUser.username}/following/${usernameToFollow}`), true);
+  followUsernameInput.value = "";
+  loadFollowing();
+};
+
+// ---------- Mensagens Diretas ----------
+
+let dmUnsub = null;
+
+dmSelectForm.onsubmit = async e => {
+  e.preventDefault();
+  const usernameToDM = dmUserInput.value.trim();
+  if(usernameToDM.length === 0 || usernameToDM === currentUser.username) return alert("Usuário inválido.");
+  if(!(await userExists(usernameToDM))) return alert("Usuário não existe.");
+  currentDMUser = usernameToDM;
+  dmSendForm.style.display = "block";
+  loadDMs();
+};
+
+async function loadDMs(){
+  if(dmUnsub) dmUnsub(); // remove listener antigo
+
+  const chatId = getChatId(currentUser.username, currentDMUser);
+  const chatRef = ref(db, `dms/${chatId}`);
+
+  dmListDiv.innerHTML = "Carregando mensagens...";
+
+  dmUnsub = onValue(chatRef, snap => {
+    const data = snap.val() || {};
+    dmListDiv.innerHTML = "";
+    const messagesArr = Object.entries(data).sort((a,b) => a[1].timestamp - b[1].timestamp);
+    messagesArr.forEach(([id, msg]) => {
+      const div = document.createElement("div");
+      div.className = "dm-message";
+      div.innerHTML = `<span class="dm-sender">${escapeHTML(msg.sender)}</span>: ${escapeHTML(msg.content)}`;
+      dmListDiv.appendChild(div);
+    });
+    dmListDiv.scrollTop = dmListDiv.scrollHeight;
   });
+}
 
-  navPerfil.addEventListener('click', () => {
-    showPage(perfilPage);
-    updateNavButtons(navPerfil);
-    loadProfile();
+dmSendForm.onsubmit = async e => {
+  e.preventDefault();
+  const message = dmMessageInput.value.trim();
+  if(message.length === 0) return;
+  const chatId = getChatId(currentUser.username, currentDMUser);
+  const chatRef = push(ref(db, `dms/${chatId}`));
+  await set(chatRef, {
+    sender: currentUser.username,
+    content: message,
+    timestamp: Date.now(),
   });
+  dmMessageInput.value = "";
+};
 
-  navChat.addEventListener('click', () => {
-    showPage(chatPage);
-    updateNavButtons(navChat);
-    loadChat();
-  });
+function getChatId(user1, user2) {
+  return [user1, user2].sort().join("_");
+}
 
-})();
-</script>
+// ---------- Helpers ----------
 
-</body>
-</html>
+// Escapa HTML simples pra evitar XSS
+function escapeHTML(text) {
+  return text.replace(/[&<>"']/g, function (m) {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39
