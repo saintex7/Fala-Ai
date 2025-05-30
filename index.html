@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -54,10 +54,28 @@
       height: 40px;
       border-radius: 50%;
       object-fit: cover;
+      cursor: pointer;
     }
 
     .profile input[type="file"] {
       display: none;
+    }
+
+    .theme-toggle {
+      cursor: pointer;
+      padding: 0.4rem 0.8rem;
+      background: var(--primary);
+      color: white;
+      border-radius: 0.5rem;
+      border: none;
+    }
+
+    #userName {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 1rem 0;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
     }
 
     .card {
@@ -66,9 +84,12 @@
       margin-bottom: 1rem;
       border-radius: 0.75rem;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      opacity: 0;
-      transform: translateY(20px);
       animation: fadeIn 0.6s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .chat-box {
@@ -78,6 +99,7 @@
       max-height: 200px;
       overflow-y: auto;
       margin-top: 1rem;
+      padding-right: 5px;
     }
 
     .chat-message {
@@ -86,6 +108,12 @@
       padding: 0.5rem;
       border-radius: 0.5rem;
       max-width: 80%;
+      animation: slideIn 0.3s ease forwards;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
     }
 
     .chat-input {
@@ -110,38 +138,31 @@
       cursor: pointer;
     }
 
-    @keyframes fadeIn {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .theme-toggle {
-      cursor: pointer;
-      padding: 0.4rem 0.8rem;
-      background: var(--primary);
-      color: white;
-      border-radius: 0.5rem;
-      border: none;
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      color: var(--text-color);
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>FalaAí</h1>
+    <h1>FalaAí - Jornal Escolar</h1>
     <div class="profile">
       <label for="avatarInput">
-        <img id="avatar" src="https://placehold.co/40x40" alt="Avatar" title="Clique para trocar a foto">
+        <img id="avatar" src="https://placehold.co/40x40" alt="Avatar" title="Trocar foto de perfil">
       </label>
       <input type="file" id="avatarInput" accept="image/*">
       <button class="theme-toggle" onclick="toggleTheme()">Trocar Tema</button>
     </div>
   </header>
 
+  <input type="text" id="userName" placeholder="Digite seu nome para participar dos chats" />
+
   <section class="card">
     <h2>Cultura Pop</h2>
-    <p>Entre nesse chat e discuta tudo sobre filmes, séries, e música!</p>
+    <p>Filmes, séries, animes, músicas e tudo que bomba!</p>
     <div class="chat-box" id="chat-cultura"></div>
     <div class="chat-input">
       <input type="text" id="msg-cultura" placeholder="Digite sua mensagem...">
@@ -151,7 +172,7 @@
 
   <section class="card">
     <h2>Esportes</h2>
-    <p>Fale sobre os esportes da escola, campeonatos e mais.</p>
+    <p>Esportes da escola, campeonatos e mais.</p>
     <div class="chat-box" id="chat-esportes"></div>
     <div class="chat-input">
       <input type="text" id="msg-esportes" placeholder="Digite sua mensagem...">
@@ -161,7 +182,7 @@
 
   <section class="card">
     <h2>Atualidades</h2>
-    <p>Discuta notícias, acontecimentos importantes e o que está rolando no mundo.</p>
+    <p>Notícias da escola e do mundo.</p>
     <div class="chat-box" id="chat-atualidades"></div>
     <div class="chat-input">
       <input type="text" id="msg-atualidades" placeholder="Digite sua mensagem...">
@@ -169,16 +190,9 @@
     </div>
   </section>
 
-  <script>
-    // Nome do usuário
-    let username = localStorage.getItem("falaaiUser");
-    if (!username) {
-      username = prompt("Escolha um nome de usuário:");
-      if (username) localStorage.setItem("falaaiUser", username);
-      else username = "Anônimo";
-    }
+  <footer>© 2025 FalaAí - Projeto Escolar</footer>
 
-    // Tema
+  <script>
     function toggleTheme() {
       const current = document.documentElement.getAttribute("data-theme");
       const next = current === "dark" ? "light" : "dark";
@@ -190,10 +204,8 @@
       document.documentElement.setAttribute("data-theme", localStorage.getItem("theme"));
     }
 
-    // Avatar
     const avatarInput = document.getElementById("avatarInput");
     const avatarImg = document.getElementById("avatar");
-
     avatarInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
       if (file) {
@@ -201,27 +213,34 @@
         reader.onload = function (e) {
           avatarImg.src = e.target.result;
           localStorage.setItem("profilePic", e.target.result);
-        }
+        };
         reader.readAsDataURL(file);
       }
     });
 
     const savedAvatar = localStorage.getItem("profilePic");
-    if (savedAvatar) {
-      avatarImg.src = savedAvatar;
-    }
+    if (savedAvatar) avatarImg.src = savedAvatar;
 
-    // Chat
+    const userNameInput = document.getElementById("userName");
+    userNameInput.value = localStorage.getItem("userName") || "";
+    userNameInput.addEventListener("input", () => {
+      localStorage.setItem("userName", userNameInput.value);
+    });
+
     function enviarMsg(topico) {
       const input = document.getElementById(`msg-${topico}`);
       const chatBox = document.getElementById(`chat-${topico}`);
-      if (input.value.trim() !== '') {
+      const userName = userNameInput.value.trim();
+
+      if (input.value.trim() !== '' && userName !== '') {
         const msg = document.createElement('div');
         msg.className = 'chat-message';
-        msg.textContent = `@${username}: ${input.value}`;
+        msg.innerHTML = `<strong>@${userName}</strong>: ${input.value}`;
         chatBox.appendChild(msg);
         input.value = '';
         chatBox.scrollTop = chatBox.scrollHeight;
+      } else if (userName === '') {
+        alert("Digite seu nome antes de enviar a mensagem.");
       }
     }
   </script>
