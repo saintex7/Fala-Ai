@@ -1,248 +1,422 @@
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FalaAí - Jornal Escolar</title>
-  <style>
-    :root {
-      --bg-color: #f4f4f4;
-      --text-color: #333;
-      --card-bg: #fff;
-      --primary: #0077ff;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FalaAí Social - Rede Escolar</title>
+<style>
+  /* ===== VARIÁVEIS DE CORES ===== */
+  :root {
+    --primary: #1d9bf0;
+    --primary-dark: #1578c8;
+    --bg-light: #f5f8fa;
+    --bg-dark: #15202b;
+    --text-light: #14171a;
+    --text-dark: #e1e8ed;
+    --gray-light: #657786;
+    --gray-dark: #8899a6;
+    --white: #fff;
+    --error: #e0245e;
+  }
 
-    [data-theme="dark"] {
-      --bg-color: #1e1e1e;
-      --text-color: #eee;
-      --card-bg: #2b2b2b;
-    }
+  /* ===== MODO DARK ===== */
+  [data-theme="dark"] {
+    --bg-light: var(--bg-dark);
+    --text-light: var(--text-dark);
+    --gray-light: var(--gray-dark);
+    background: var(--bg-dark);
+    color: var(--text-dark);
+  }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      transition: all 0.3s ease;
-    }
+  /* ===== RESET ===== */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
 
-    body {
-      background: var(--bg-color);
-      color: var(--text-color);
-      font-family: Arial, sans-serif;
-      padding: 1rem;
-    }
+  body {
+    background: var(--bg-light);
+    color: var(--text-light);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
+  /* ===== SIDEBAR ===== */
+  aside {
+    width: 280px;
+    background: var(--white);
+    border-right: 1px solid #ccc;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-    h1 {
-      font-size: 1.5rem;
-    }
+  [data-theme="dark"] aside {
+    background: #192734;
+    border-color: #38444d;
+  }
 
-    .profile {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
+  aside img.avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+    cursor: pointer;
+  }
 
-    .profile img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-      cursor: pointer;
-    }
+  aside input[type="file"] {
+    display: none;
+  }
 
-    .profile input[type="file"] {
-      display: none;
-    }
+  aside h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
 
-    .theme-toggle {
-      cursor: pointer;
-      padding: 0.4rem 0.8rem;
-      background: var(--primary);
-      color: white;
-      border-radius: 0.5rem;
-      border: none;
-    }
+  aside button#toggleTheme {
+    margin-top: auto;
+    padding: 0.5rem 1rem;
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: 9999px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+  }
 
-    #userName {
-      width: 100%;
-      padding: 0.5rem;
-      margin: 1rem 0;
-      border: 1px solid #ccc;
-      border-radius: 0.5rem;
-    }
+  aside button#toggleTheme:hover {
+    background: var(--primary-dark);
+  }
 
-    .card {
-      background: var(--card-bg);
-      padding: 1rem;
-      margin-bottom: 1rem;
-      border-radius: 0.75rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      animation: fadeIn 0.6s ease forwards;
-    }
+  aside input#userName {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    width: 100%;
+    border-radius: 9999px;
+    border: 1px solid #ccc;
+    text-align: center;
+    font-size: 1rem;
+  }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+  [data-theme="dark"] aside input#userName {
+    background: #22303c;
+    color: var(--text-dark);
+    border-color: #38444d;
+  }
 
-    .chat-box {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      max-height: 200px;
-      overflow-y: auto;
-      margin-top: 1rem;
-      padding-right: 5px;
-    }
+  /* ===== MAIN ===== */
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-light);
+  }
 
-    .chat-message {
-      background: var(--primary);
-      color: #fff;
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      max-width: 80%;
-      animation: slideIn 0.3s ease forwards;
-    }
+  /* ===== FEED ===== */
+  #feed {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
 
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-10px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
+  /* ===== POST BOX ===== */
+  #postBox {
+    padding: 1rem 2rem;
+    border-bottom: 1px solid #ccc;
+    background: var(--white);
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
 
-    .chat-input {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
+  [data-theme="dark"] #postBox {
+    background: #192734;
+    border-color: #38444d;
+  }
 
-    .chat-input input {
-      flex: 1;
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      border: 1px solid #ccc;
-    }
+  #postBox textarea {
+    flex: 1;
+    resize: none;
+    height: 70px;
+    border-radius: 1rem;
+    border: 1px solid #ccc;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    font-family: inherit;
+  }
 
-    .chat-input button {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 0.5rem;
-      background: var(--primary);
-      color: #fff;
-      cursor: pointer;
-    }
+  [data-theme="dark"] #postBox textarea {
+    background: #22303c;
+    color: var(--text-dark);
+    border-color: #38444d;
+  }
 
-    footer {
-      text-align: center;
-      margin-top: 2rem;
-      font-size: 0.8rem;
-      color: var(--text-color);
-    }
-  </style>
+  #postBox button {
+    background: var(--primary);
+    border: none;
+    color: var(--white);
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  #postBox button:disabled {
+    background: #9ac7fc;
+    cursor: not-allowed;
+  }
+
+  #postBox button:hover:not(:disabled) {
+    background: var(--primary-dark);
+  }
+
+  /* ===== POST ===== */
+  .post {
+    background: var(--white);
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+    display: flex;
+    gap: 1rem;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+    transition: background-color 0.3s ease;
+  }
+
+  [data-theme="dark"] .post {
+    background: #192734;
+    box-shadow: none;
+  }
+
+  .post img.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .post-content {
+    flex: 1;
+  }
+
+  .post-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .post-header strong {
+    font-size: 1.1rem;
+  }
+
+  .post-header time {
+    font-size: 0.85rem;
+    color: var(--gray-light);
+  }
+
+  [data-theme="dark"] .post-header time {
+    color: var(--gray-dark);
+  }
+
+  .post-text {
+    white-space: pre-wrap;
+    font-size: 1rem;
+  }
+
+  /* ===== SCROLLBAR CUSTOM ===== */
+  #feed::-webkit-scrollbar {
+    width: 8px;
+  }
+  #feed::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+  }
+  #feed::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* ===== ALERT ===== */
+  #alert {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    background: var(--error);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 1rem;
+    font-weight: 700;
+    box-shadow: 0 0 10px var(--error);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+
+  #alert.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+</style>
 </head>
 <body>
-  <header>
-    <h1>FalaAí - Jornal Escolar</h1>
-    <div class="profile">
-      <label for="avatarInput">
-        <img id="avatar" src="https://placehold.co/40x40" alt="Avatar" title="Trocar foto de perfil">
-      </label>
-      <input type="file" id="avatarInput" accept="image/*">
-      <button class="theme-toggle" onclick="toggleTheme()">Trocar Tema</button>
-    </div>
-  </header>
 
-  <input type="text" id="userName" placeholder="Digite seu nome para participar dos chats" />
+<aside>
+  <label for="avatarInput">
+    <img src="https://placehold.co/120x120?text=Avatar" alt="Avatar" class="avatar" id="avatar" title="Clique para trocar foto" />
+  </label>
+  <input type="file" id="avatarInput" accept="image/*" />
+  <input type="text" id="userName" placeholder="Seu nome aqui..." maxlength="20" />
+  <button id="toggleTheme">Modo Escuro</button>
+</aside>
 
-  <section class="card">
-    <h2>Cultura Pop</h2>
-    <p>Filmes, séries, animes, músicas e tudo que bomba!</p>
-    <div class="chat-box" id="chat-cultura"></div>
-    <div class="chat-input">
-      <input type="text" id="msg-cultura" placeholder="Digite sua mensagem...">
-      <button onclick="enviarMsg('cultura')">Enviar</button>
-    </div>
+<main>
+  <section id="postBox">
+    <textarea id="postText" placeholder="Escreva algo para o pessoal..." maxlength="280" rows="3"></textarea>
+    <button id="btnPost" disabled>Publicar</button>
   </section>
 
-  <section class="card">
-    <h2>Esportes</h2>
-    <p>Esportes da escola, campeonatos e mais.</p>
-    <div class="chat-box" id="chat-esportes"></div>
-    <div class="chat-input">
-      <input type="text" id="msg-esportes" placeholder="Digite sua mensagem...">
-      <button onclick="enviarMsg('esportes')">Enviar</button>
-    </div>
+  <section id="feed">
+    <!-- Posts aparecem aqui -->
   </section>
+</main>
 
-  <section class="card">
-    <h2>Atualidades</h2>
-    <p>Notícias da escola e do mundo.</p>
-    <div class="chat-box" id="chat-atualidades"></div>
-    <div class="chat-input">
-      <input type="text" id="msg-atualidades" placeholder="Digite sua mensagem...">
-      <button onclick="enviarMsg('atualidades')">Enviar</button>
-    </div>
-  </section>
+<div id="alert"></div>
 
-  <footer>© 2025 FalaAí - Projeto Escolar</footer>
+<script>
+  // TROCA DE TEMA
+  const btnTheme = document.getElementById('toggleTheme');
+  const root = document.documentElement;
+  btnTheme.onclick = () => {
+    if(root.getAttribute('data-theme') === 'dark') {
+      root.setAttribute('data-theme', 'light');
+      btnTheme.textContent = 'Modo Escuro';
+      localStorage.setItem('theme', 'light');
+    } else {
+      root.setAttribute('data-theme', 'dark');
+      btnTheme.textContent = 'Modo Claro';
+      localStorage.setItem('theme', 'dark');
+    }
+  };
 
-  <script>
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute("data-theme");
-      const next = current === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-      localStorage.setItem("theme", next);
+  // SETAR TEMA SALVO
+  if(localStorage.getItem('theme')) {
+    const savedTheme = localStorage.getItem('theme');
+    root.setAttribute('data-theme', savedTheme);
+    btnTheme.textContent = savedTheme === 'dark' ? 'Modo Claro' : 'Modo Escuro';
+  }
+
+  // AVATAR
+  const avatarInput = document.getElementById('avatarInput');
+  const avatarImg = document.getElementById('avatar');
+  avatarInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      avatarImg.src = e.target.result;
+      localStorage.setItem('profilePic', e.target.result);
+    };
+    reader.readAsDataURL(file);
+  });
+  // carregar avatar salvo
+  const savedAvatar = localStorage.getItem('profilePic');
+  if(savedAvatar) avatarImg.src = savedAvatar;
+
+  // NOME
+  const userNameInput = document.getElementById('userName');
+  userNameInput.value = localStorage.getItem('userName') || '';
+  userNameInput.addEventListener('input', () => {
+    localStorage.setItem('userName', userNameInput.value.trim());
+    checarTexto();
+  });
+
+  // POSTAR
+  const postText = document.getElementById('postText');
+  const btnPost = document.getElementById('btnPost');
+  const feed = document.getElementById('feed');
+
+  function checarTexto() {
+    const txt = postText.value.trim();
+    const nome = userNameInput.value.trim();
+    btnPost.disabled = (txt.length === 0 || nome.length === 0);
+  }
+
+  postText.addEventListener('input', checarTexto);
+
+  btnPost.addEventListener('click', () => {
+    const texto = postText.value.trim();
+    const nome = userNameInput.value.trim();
+    if(!nome) {
+      mostrarAlerta('Digite seu nome antes de postar!');
+      return;
+    }
+    if(!texto) {
+      mostrarAlerta('Digite algo para postar!');
+      return;
     }
 
-    if (localStorage.getItem("theme")) {
-      document.documentElement.setAttribute("data-theme", localStorage.getItem("theme"));
-    }
+    postar(texto, nome);
+    postText.value = '';
+    btnPost.disabled = true;
+  });
 
-    const avatarInput = document.getElementById("avatarInput");
-    const avatarImg = document.getElementById("avatar");
-    avatarInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          avatarImg.src = e.target.result;
-          localStorage.setItem("profilePic", e.target.result);
-        };
-        reader.readAsDataURL(file);
-      }
+  function postar(texto, nome) {
+    const post = document.createElement('article');
+    post.classList.add('post');
+
+    // pegar avatar salvo ou placeholder
+    const avatarSrc = localStorage.getItem('profilePic') || 'https://placehold.co/50x50';
+
+    // hora atual formatada
+    const agora = new Date();
+    const horas = String(agora.getHours()).padStart(2, '0');
+    const minutos = String(agora.getMinutes()).padStart(2, '0');
+    const horaFormatada = `${horas}:${minutos}`;
+
+    post.innerHTML = `
+      <img src="${avatarSrc}" alt="Avatar" class="avatar" />
+      <div class="post-content">
+        <div class="post-header">
+          <strong>@${nome}</strong>
+          <time title="${agora.toLocaleString()}">${horaFormatada}</time>
+        </div>
+        <p class="post-text">${escapeHtml(texto)}</p>
+      </div>
+    `;
+
+    feed.prepend(post);
+    feed.scrollTop = 0;
+  }
+
+  // Escapa HTML para evitar injeção
+  function escapeHtml(text) {
+    return text.replace(/[&<>"']/g, function(m) {
+      return {
+        '&': "&amp;",
+        '<': "&lt;",
+        '>': "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[m];
     });
+  }
 
-    const savedAvatar = localStorage.getItem("profilePic");
-    if (savedAvatar) avatarImg.src = savedAvatar;
+  // ALERTA SIMPLES
+  const alertBox = document.getElementById('alert');
+  function mostrarAlerta(msg) {
+    alertBox.textContent = msg;
+    alertBox.classList.add('show');
+    setTimeout(() => alertBox.classList.remove('show'), 2500);
+  }
+</script>
 
-    const userNameInput = document.getElementById("userName");
-    userNameInput.value = localStorage.getItem("userName") || "";
-    userNameInput.addEventListener("input", () => {
-      localStorage.setItem("userName", userNameInput.value);
-    });
-
-    function enviarMsg(topico) {
-      const input = document.getElementById(`msg-${topico}`);
-      const chatBox = document.getElementById(`chat-${topico}`);
-      const userName = userNameInput.value.trim();
-
-      if (input.value.trim() !== '' && userName !== '') {
-        const msg = document.createElement('div');
-        msg.className = 'chat-message';
-        msg.innerHTML = `<strong>@${userName}</strong>: ${input.value}`;
-        chatBox.appendChild(msg);
-        input.value = '';
-        chatBox.scrollTop = chatBox.scrollHeight;
-      } else if (userName === '') {
-        alert("Digite seu nome antes de enviar a mensagem.");
-      }
-    }
-  </script>
 </body>
 </html>
