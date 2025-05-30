@@ -1,0 +1,21 @@
+body {
+  background-color: #121212;
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+}
+.upload-box, .chat-box {
+  background: #1e1e1e;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+}
+.msg {
+  background: #333;
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+.msg span {
+  font-weight: bold;
+  color: #0dcaf0;
+}
