@@ -3,1269 +3,718 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FALAAI - Jornal Escolar</title>
+  <title>FALAAI - Jornal Escolar Moderno</title>
   <style>
-    :root {
-      --color-primary: #0077ff;
-      --color-bg: #f9f9f9;
-      --color-text: #222;
-      --color-card: #fff;
-      --color-border: #ddd;
-      --color-muted: #666;
-      --color-like: #ff4b5c;
-    }
-    [data-theme="dark"] {
-      --color-bg: #121212;
-      --color-text: #eee;
-      --color-card: #222;
-      --color-border: #333;
-      --color-muted: #999;
-      --color-primary: #3399ff;
-    }
-
+    /* RESET */
     * {
       margin: 0; padding: 0; box-sizing: border-box;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    body {
-      background: var(--color-bg);
-      color: var(--color-text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0 1rem 3rem;
-    }
-    header {
-      width: 100%;
-      max-width: 900px;
-      margin: 1rem 0 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    header h1 {
-      color: var(--color-primary);
-      font-weight: 900;
-      font-size: 2rem;
-      cursor: default;
-      user-select: none;
-    }
-    button, input, textarea {
-      font-family: inherit;
-      font-size: 1rem;
-      border-radius: 6px;
-      outline: none;
-      border: 1px solid var(--color-border);
-      padding: 0.5rem 0.75rem;
-      transition: all 0.2s ease;
-      background: var(--color-card);
-      color: var(--color-text);
-    }
-    button {
-      cursor: pointer;
-      border: none;
-      background: var(--color-primary);
-      color: white;
-      font-weight: 600;
-      padding: 0.55rem 1rem;
-      user-select: none;
-    }
-    button:hover {
-      filter: brightness(1.1);
-    }
-    input:focus, textarea:focus {
-      border-color: var(--color-primary);
-      box-shadow: 0 0 5px var(--color-primary);
+      transition: background-color 0.3s, color 0.3s;
     }
 
-    .theme-toggle {
-      background: transparent;
-      color: var(--color-primary);
-      border: 2px solid var(--color-primary);
-      font-weight: 700;
-      padding: 0.25rem 0.5rem;
-      border-radius: 9999px;
-      user-select: none;
+    body, html {
+      height: 100%;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
-    .theme-toggle:hover {
-      background: var(--color-primary);
-      color: white;
+
+    :root {
+      --bg: #f5f5f7;
+      --text: #222;
+      --primary: #0077ff;
+      --card-bg: #fff;
+      --input-bg: #e5e5e5;
+      --border: #ddd;
+      --shadow: rgba(0,0,0,0.05);
+    }
+    [data-theme="dark"] {
+      --bg: #121212;
+      --text: #ddd;
+      --primary: #3399ff;
+      --card-bg: #1f1f1f;
+      --input-bg: #333;
+      --border: #444;
+      --shadow: rgba(0,0,0,0.6);
+    }
+
+    header {
+      padding: 1rem;
+      background: var(--card-bg);
+      box-shadow: 0 1px 6px var(--shadow);
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      user-select: none;
     }
 
     main {
-      width: 100%;
-      max-width: 900px;
-      display: flex;
-      gap: 2rem;
-      flex-wrap: wrap;
-      justify-content: center;
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
     }
 
-    /* Login / Cadastro */
-    #auth-container {
-      background: var(--color-card);
-      padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.05);
-      width: 320px;
+    /* MENU INFERIOR */
+    nav {
+      display: flex;
+      justify-content: space-around;
+      background: var(--card-bg);
+      box-shadow: 0 -1px 6px var(--shadow);
+      padding: 0.5rem 0;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      user-select: none;
+      z-index: 1000;
+    }
+    nav button {
+      background: none;
+      border: none;
+      font-size: 1rem;
+      color: var(--text);
       display: flex;
       flex-direction: column;
-      gap: 1rem;
-    }
-    #auth-container h2 {
-      margin-bottom: 1rem;
-      color: var(--color-primary);
-      text-align: center;
-      user-select: none;
-    }
-    #auth-container input {
-      width: 100%;
-    }
-    #auth-toggle {
-      margin-top: 0.25rem;
-      font-size: 0.9rem;
-      text-align: center;
-      color: var(--color-muted);
+      align-items: center;
       cursor: pointer;
-      user-select: none;
+      padding: 0.2rem 0.5rem;
+      gap: 0.2rem;
+      transition: color 0.3s;
     }
-    #auth-toggle:hover {
-      text-decoration: underline;
+    nav button.active, nav button:hover {
+      color: var(--primary);
+    }
+    nav button svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
     }
 
-    /* Feed */
-    #feed {
-      flex: 2 1 500px;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
+    /* FEED */
     .post {
-      background: var(--color-card);
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
-      box-shadow: 0 3px 10px rgb(0 0 0 / 0.05);
-      user-select: none;
-      position: relative;
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: 0 4px 8px var(--shadow);
+      margin-bottom: 1.2rem;
+      padding: 1rem;
       display: flex;
       flex-direction: column;
+      gap: 0.5rem;
+      animation: fadeInUp 0.4s ease forwards;
     }
     .post-header {
       display: flex;
       align-items: center;
-      gap: 1rem;
-      margin-bottom: 0.75rem;
+      gap: 0.75rem;
     }
     .post-header img {
-      width: 45px;
-      height: 45px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid var(--color-primary);
-      user-select: none;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.3s;
+    }
+    .post-header img:hover {
+      border-color: var(--primary);
     }
     .post-header .user-info {
-      display: flex;
-      flex-direction: column;
-      user-select: text;
-    }
-    .post-header .user-info strong {
-      font-size: 1.1rem;
-      color: var(--color-primary);
-    }
-    .post-header .user-info span {
-      font-size: 0.8rem;
-      color: var(--color-muted);
+      font-weight: 600;
+      color: var(--primary);
+      cursor: pointer;
     }
     .post-content {
       font-size: 1rem;
-      margin-bottom: 1rem;
-      white-space: pre-wrap;
+      line-height: 1.3;
+      color: var(--text);
     }
-    .post-footer {
+    .post-actions {
       display: flex;
-      align-items: center;
       gap: 1rem;
-      font-size: 0.9rem;
-      color: var(--color-muted);
-      user-select: none;
-    }
-    .post-footer button {
-      background: transparent;
-      color: var(--color-muted);
-      font-weight: 600;
-      display: flex;
       align-items: center;
-      gap: 0.25rem;
-      user-select: none;
     }
-    .post-footer button.liked {
-      color: var(--color-like);
-    }
-    .post-footer button svg {
-      width: 18px;
-      height: 18px;
-      fill: currentColor;
-      user-select: none;
-    }
-
-    /* Sidebar (temas e chat) */
-    #sidebar {
-      flex: 1 1 300px;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      max-height: 80vh;
-      overflow-y: auto;
-      user-select: none;
-    }
-    #sidebar h3 {
-      margin-bottom: 0.5rem;
-      color: var(--color-primary);
-      text-align: center;
-      font-weight: 700;
-    }
-
-    .topics {
-      background: var(--color-card);
-      padding: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgb(0 0 0 / 0.03);
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    .topic-btn {
-      background: var(--color-primary);
-      color: white;
+    .post-actions button {
+      background: none;
       border: none;
-      border-radius: 6px;
-      padding: 0.6rem 1rem;
-      font-weight: 600;
       cursor: pointer;
-      transition: background 0.3s ease;
-      user-select: none;
-    }
-    .topic-btn:hover {
-      background: #005fcc;
-    }
-
-    /* Chat container */
-    #chat-container {
-      background: var(--color-card);
-      flex-grow: 1;
-      border-radius: 12px;
-      padding: 1rem;
+      color: var(--text);
       display: flex;
-      flex-direction: column;
-      box-shadow: 0 0 12px rgb(0 0 0 / 0.05);
-    }
-    #chat-header {
-      font-weight: 700;
-      font-size: 1.2rem;
-      margin-bottom: 0.75rem;
-      color: var(--color-primary);
-      user-select: none;
-    }
-    #chat-messages {
-      flex-grow: 1;
-      overflow-y: auto;
-      padding-right: 0.5rem;
-      margin-bottom: 0.75rem;
-      border-top: 1px solid var(--color-border);
-      border-bottom: 1px solid var(--color-border);
-    }
-    .chat-message {
-      padding: 0.5rem 0.75rem;
-      margin-bottom: 0.4rem;
-      border-radius: 12px;
-      max-width: 80%;
-      word-break: break-word;
-      font-size: 0.95rem;
-      line-height: 1.2;
-      box-shadow: 0 1px 3px rgb(0 0 0 / 0.05);
-    }
-    .chat-message.user {
-      background: var(--color-primary);
-      color: white;
-      align-self: flex-end;
-      border-bottom-right-radius: 0;
-    }
-    .chat-message.other {
-      background: var(--color-border);
-      color: var(--color-text);
-      align-self: flex-start;
-      border-bottom-left-radius: 0;
-    }
-    .chat-message strong {
-      display: block;
-      font-weight: 700;
-      margin-bottom: 0.2rem;
-      user-select: text;
-    }
-
-    #chat-input-container {
-      display: flex;
-      gap: 0.5rem;
-    }
-    #chat-input {
-      flex-grow: 1;
-      padding: 0.5rem 0.75rem;
-      border-radius: 12px;
-      border: 1px solid var(--color-border);
+      align-items: center;
+      gap: 0.3rem;
       font-size: 1rem;
+      transition: color 0.3s;
     }
-    #chat-send-btn {
-      background: var(--color-primary);
-      color: white;
+    .post-actions button.liked {
+      color: var(--primary);
+    }
+    .post-actions button:hover {
+      color: var(--primary);
+    }
+    .post-comments {
+      margin-top: 0.5rem;
+      max-height: 150px;
+      overflow-y: auto;
+      background: var(--input-bg);
+      border-radius: 8px;
+      padding: 0.5rem;
+    }
+    .comment {
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+      color: var(--text);
+    }
+    .comment strong {
+      color: var(--primary);
+    }
+    .add-comment {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .add-comment input {
+      flex: 1;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      padding: 0.4rem 1rem;
+      background: var(--input-bg);
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+    .add-comment button {
       border: none;
-      border-radius: 12px;
+      border-radius: 20px;
+      background: var(--primary);
+      color: white;
+      padding: 0 1rem;
       font-weight: 700;
-      padding: 0.5rem 1rem;
       cursor: pointer;
-      user-select: none;
-      transition: background 0.3s ease;
+      transition: background-color 0.3s;
     }
-    #chat-send-btn:hover {
-      background: #005fcc;
+    .add-comment button:hover {
+      background-color: #005ecb;
     }
 
-    /* Profile customizations */
-    #profile-container {
-      background: var(--color-card);
-      border-radius: 12px;
-      padding: 1rem;
+    /* PERFIL */
+    .profile-page {
+      max-width: 400px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .profile-avatar {
       margin-bottom: 1rem;
-      box-shadow: 0 0 15px rgb(0 0 0 / 0.05);
-      user-select: none;
+      position: relative;
+      display: inline-block;
     }
-    #profile-container h3 {
-      color: var(--color-primary);
-      margin-bottom: 0.5rem;
-    }
-    #profile-container img {
-      width: 90px;
-      height: 90px;
+    .profile-avatar img {
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
-      border: 3px solid var(--color-primary);
       object-fit: cover;
-      margin-bottom: 1rem;
+      border: 4px solid var(--primary);
       cursor: pointer;
     }
-    #profile-container input[type="file"] {
+    .profile-avatar input[type="file"] {
       display: none;
     }
-    #profile-name, #profile-bio {
+    .profile-info {
+      margin-bottom: 1rem;
+    }
+    .profile-info input, .profile-info textarea {
       width: 100%;
-      margin-bottom: 0.5rem;
-      border: 1px solid var(--color-border);
-      border-radius: 6px;
       padding: 0.5rem;
+      margin-top: 0.3rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--input-bg);
+      color: var(--text);
       font-size: 1rem;
-      color: var(--color-text);
-      background: var(--color-card);
+      resize: none;
     }
-    #profile-bio {
-      min-height: 50px;
-      resize: vertical;
+    .profile-info label {
+      font-weight: 600;
+      color: var(--primary);
     }
-    #profile-save-btn {
-      background: var(--color-primary);
+    .save-profile-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.7rem 1.2rem;
+      border-radius: 30px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      width: 100%;
+      margin-top: 1rem;
+    }
+    .save-profile-btn:hover {
+      background-color: #005ecb;
+    }
+
+    /* PESQUISA */
+    .search-page {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .search-input {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border-radius: 30px;
+      border: 1px solid var(--border);
+      background: var(--input-bg);
+      color: var(--text);
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    .search-results {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .search-item {
+      padding: 0.5rem 1rem;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .search-item:hover {
+      background: var(--input-bg);
+    }
+
+    /* LOGIN/CADASTRO MODAL */
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1500;
+    }
+    .modal {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 380px;
+      box-shadow: 0 4px 20px var(--shadow);
+      position: relative;
+      animation: fadeInScale 0.3s ease forwards;
+    }
+    .modal h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: var(--primary);
+    }
+    .modal label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .modal input {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      margin-top: 0.3rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--input-bg);
+      color: var(--text);
+      font-size: 1rem;
+    }
+    .modal button {
+      margin-top: 1.5rem;
+      background: var(--primary);
       border: none;
       color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      user-select: none;
       font-weight: 700;
+      padding: 0.7rem;
+      border-radius: 30px;
+      cursor: pointer;
       width: 100%;
-      transition: background 0.3s ease;
+      transition: background-color 0.3s;
     }
-    #profile-save-btn:hover {
-      background: #005fcc;
+    .modal button:hover {
+      background-color: #005ecb;
+    }
+    .close-modal {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: var(--primary);
     }
 
-    /* Post creation */
-    #new-post-container {
-      background: var(--color-card);
-      border-radius: 12px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 0 15px rgb(0 0 0 / 0.05);
-    }
-    #new-post-container textarea {
-      width: 100%;
-      min-height: 60px;
-      resize: vertical;
-      font-size: 1rem;
+    /* DARK MODE TOGGLE */
+    .dark-mode-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      cursor: pointer;
+      background: var(--card-bg);
+      border-radius: 50%;
       padding: 0.5rem;
-      border-radius: 8px;
-      border: 1px solid var(--color-border);
-      margin-bottom: 0.5rem;
-      background: var(--color-card);
-      color: var(--color-text);
+      box-shadow: 0 2px 8px var(--shadow);
+      user-select: none;
+      z-index: 2000;
+    }
+    .dark-mode-toggle svg {
+      fill: var(--primary);
+      width: 28px;
+      height: 28px;
+      transition: transform 0.3s;
+    }
+    .dark-mode-toggle:hover svg {
+      transform: rotate(20deg);
     }
 
-    /* Scrollbar */
-    #chat-messages::-webkit-scrollbar,
-    #sidebar::-webkit-scrollbar {
-      width: 7px;
+    /* ANIMAÇÕES */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    #chat-messages::-webkit-scrollbar-thumb,
-    #sidebar::-webkit-scrollbar-thumb {
-      background-color: var(--color-primary);
-      border-radius: 5px;
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
-    #chat-messages::-webkit-scrollbar-track,
-    #sidebar::-webkit-scrollbar-track {
-      background-color: transparent;
+
+    /* RESPONSIVO */
+    @media (max-width: 600px) {
+      nav button span {
+        font-size: 0.7rem;
+      }
+      .profile-avatar img {
+        width: 90px;
+        height: 90px;
+      }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>FALAAI</h1>
-    <button id="theme-toggle" class="theme-toggle" aria-label="Alternar tema">Tema 🌙</button>
-  </header>
+  <header>FALAAI</header>
 
-  <main>
-    <!-- Área de autenticação -->
-    <section id="auth-container">
-      <h2 id="auth-title">Entrar</h2>
-      <input type="text" id="username-input" placeholder="Nome de usuário" autocomplete="username" />
-      <input type="password" id="password-input" placeholder="Senha" autocomplete="current-password" />
-      <button id="auth-btn">Entrar</button>
-      <div id="auth-toggle">Ainda não tem conta? <span id="switch-auth" style="color:var(--color-primary); cursor:pointer; user-select:none;">Cadastre-se</span></div>
-      <div id="auth-message" style="color:red; text-align:center; margin-top:0.5rem; min-height:18px;"></div>
+  <main id="app">
+
+    <!-- Páginas (visíveis só uma de cada vez) -->
+    <section id="feed-page" class="page">
+      <div id="feed-list"></div>
     </section>
 
-    <!-- Conteúdo depois do login -->
-    <section id="app-container" style="display:none; width: 100%; max-width: 900px;">
-      <!-- Perfil do usuário -->
-      <div id="profile-container">
-        <h3>Perfil</h3>
-        <label for="profile-pic-input">
-          <img id="profile-pic" src="https://i.pravatar.cc/90" alt="Foto do perfil" title="Clique para mudar foto" />
-        </label>
-        <input type="file" id="profile-pic-input" accept="image/*" />
-        <input type="text" id="profile-name" placeholder="Seu nome" />
-        <textarea id="profile-bio" placeholder="Sobre você (bio)"></textarea>
-        <button id="profile-save-btn">Salvar perfil</button>
+    <section id="profile-page" class="page" style="display:none;">
+      <div class="profile-page">
+        <div class="profile-avatar">
+          <label for="avatar-input">
+            <img id="profile-avatar-img" src="https://i.pravatar.cc/150?img=3" alt="Avatar" title="Clique para mudar"/>
+          </label>
+          <input type="file" id="avatar-input" accept="image/*" />
+        </div>
+        <div class="profile-info">
+          <label>Nome</label>
+          <input type="text" id="profile-name" placeholder="Seu nome" />
+          <label>Bio</label>
+          <textarea id="profile-bio" rows="3" placeholder="Fale sobre você"></textarea>
+          <button class="save-profile-btn" id="save-profile-btn">Salvar Perfil</button>
+        </div>
       </div>
-
-      <!-- Nova postagem -->
-      <div id="new-post-container">
-        <textarea id="new-post-text" placeholder="Escreva algo para o feed..."></textarea>
-        <button id="post-btn">Publicar</button>
-      </div>
-
-      <main style="display:flex; gap: 2rem; flex-wrap: wrap;">
-        <!-- Feed -->
-        <section id="feed" aria-label="Feed de publicações"></section>
-
-        <!-- Sidebar com temas e chat -->
-        <aside id="sidebar">
-          <div class="topics">
-            <h3>Temas</h3>
-            <button class="topic-btn" data-topic="geral">Geral</button>
-            <button class="topic-btn" data-topic="cultura-pop">Cultura Pop</button>
-            <button class="topic-btn" data-topic="esportes">Esportes</button>
-            <button class="topic-btn" data-topic="educacao">Educação</button>
-            <button class="topic-btn" data-topic="musica">Música</button>
-          </div>
-          <div id="chat-container">
-            <div id="chat-header">Chat - Geral</div>
-            <div id="chat-messages" tabindex="0" aria-live="polite" aria-atomic="false"></div>
-            <div id="chat-input-container">
-              <input type="text" id="chat-input" placeholder="Digite sua mensagem" aria-label="Campo para digitar mensagem" />
-              <button id="chat-send-btn" aria-label="Enviar mensagem">Enviar</button>
-            </div>
-          </div>
-        </aside>
-      </main>
     </section>
+
+    <section id="search-page" class="page" style="display:none;">
+      <div class="search-page">
+        <input type="text" class="search-input" placeholder="Pesquisar usuários..." id="search-input" />
+        <div class="search-results" id="search-results"></div>
+      </div>
+    </section>
+
   </main>
 
-<script>
-  // Dados simulados para teste, aqui vc pode trocar por API/DB real depois
-  let users = [
-    {username: 'user1', password: '123', name: 'User Um', bio: 'Eu curto jornal.', avatar: 'https://i.pravatar.cc/90?u=user1', following: [], likes: []},
-    {username: 'user2', password: '123', name: 'User Dois', bio: 'Adoro cultura pop!', avatar: 'https://i.pravatar.cc/90?u=user2', following: [], likes: []}
-  ];
-  let currentUser = null;
-  let posts = [
-    {id: 1, author: 'user1', content: 'Bem-vindo ao FALAAI! O jornal escolar mais daora.', likes: 2, likedBy: ['user2'], topic: 'geral', createdAt: Date.now()-60000},
-    {id: 2, author: 'user2', content: 'Alguém viu o último filme? Sensacional!', likes: 1, likedBy: ['user1'], topic: 'cultura-pop', createdAt: Date.now()-45000}
-  ];
-
-  let currentTopic = 'geral';
-  const feedEl = document.getElementById('feed');
-  const chatMessagesEl = document.getElementById('chat-messages');
-  const chatHeaderEl = document.getElementById('chat-header');
-
-  // --- Tema claro/escuro ---
-  const themeToggleBtn = document.getElementById('theme-toggle');
-  themeToggleBtn.addEventListener('click', () => {
-    if(document.documentElement.getAttribute('data-theme') === 'dark') {
-      document.documentElement.removeAttribute('data-theme');
-      themeToggleBtn.textContent = 'Tema 🌙';
-    } else {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      themeToggleBtn.textContent = 'Tema ☀️';
-    }
-  });
-
-  // --- Autenticação ---
-  const authContainer = document.getElementById('auth-container');
-  const appContainer = document.getElementById('app-container');
-  const authTitle = document.getElementById('auth-title');
-  const authBtn = document.getElementById('auth-btn');
-  const switchAuth = document.getElementById('switch-auth');
-  const authMessage = document.getElementById('auth-message');
-
-  let isLogin = true; // modo login ou cadastro
-
-  switchAuth.addEventListener('click', () => {
-    isLogin = !isLogin;
-    if(isLogin) {
-      authTitle.textContent = 'Entrar';
-      authBtn.textContent = 'Entrar';
-      switchAuth.parentElement.innerHTML = 'Ainda não tem conta? <span id="switch-auth" style="color:var(--color-primary); cursor:pointer;">Cadastre-se</span>';
-    } else {
-      authTitle.textContent = 'Cadastrar';
-      authBtn.textContent = 'Cadastrar';
-      switchAuth.parentElement.innerHTML = 'Já tem conta? <span id="switch-auth" style="color:var(--color-primary); cursor:pointer;">Entrar</span>';
-    }
-    authMessage.textContent = '';
-    attachSwitchAuthListener();
-  });
-
-  function attachSwitchAuthListener() {
-    document.getElementById('switch-auth').addEventListener('click', () => {
-      isLogin = !isLogin;
-      if(isLogin) {
-        authTitle.textContent = 'Entrar';
-        authBtn.textContent = 'Entrar';
-        switchAuth.parentElement.innerHTML = 'Ainda não tem conta? <span id="switch-auth" style="color:var(--color-primary); cursor:pointer;">Cadastre-se</span>';
-      } else {
-        authTitle.textContent = 'Cadastrar';
-        authBtn.textContent = 'Cadastrar';
-        switchAuth.parentElement.innerHTML = 'Já tem conta? <span id="switch-auth" style="color:var(--color-primary); cursor:pointer;">Entrar</span>';
-      }
-      authMessage.textContent = '';
-      attachSwitchAuthListener();
-    });
-  }
-  attachSwitchAuthListener();
-
-  authBtn.addEventListener('click', () => {
-    const username = document.getElementById('username-input').value.trim();
-    const password = document.getElementById('password-input').value.trim();
-    if(!username || !password) {
-      authMessage.textContent = 'Preencha todos os campos.';
-      return;
-    }
-
-    if(isLogin) {
-      // Login
-      const user = users.find(u => u.username === username && u.password === password);
-      if(user) {
-        currentUser = user;
-        loadApp();
-      } else {
-        authMessage.textContent = 'Usuário ou senha incorretos.';
-      }
-    } else {
-      // Cadastro
-      if(users.find(u => u.username === username)) {
-        authMessage.textContent = 'Usuário já existe.';
-        return;
-      }
-      const newUser = {
-        username,
-        password,
-        name: username,
-        bio: '',
-        avatar: `https://i.pravatar.cc/90?u=${username}`,
-        following: [],
-        likes: []
-      };
-      users.push(newUser);
-      currentUser = newUser;
-      loadApp();
-    }
-  });
-
-  // --- Carregar app após login ---
-  function loadApp() {
-    authContainer.style.display = 'none';
-    appContainer.style.display = 'block';
-    // Preenche dados perfil
-    document.getElementById('profile-pic').src = currentUser.avatar;
-    document.getElementById('profile-name').value = currentUser.name;
-    document.getElementById('profile-bio').value = currentUser.bio;
-    // Carrega feed e chat
-    renderFeed();
-    switchTopic('geral');
-  }
-
-  // --- Perfil ---
-  const profilePicInput = document.getElementById('profile-pic-input');
-  const profilePicImg = document.getElementById('profile-pic');
-  profilePicImg.addEventListener('click', () => profilePicInput.click());
-  profilePicInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if(file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        profilePicImg.src = reader.result;
-        currentUser.avatar = reader.result;
-      }
-      reader.readAsDataURL(file);
-    }
-  });
-  document.getElementById('profile-save-btn').addEventListener('click', () => {
-    const name = document.getElementById('profile-name').value.trim();
-    const bio = document.getElementById('profile-bio').value.trim();
-    if(name) {
-      currentUser.name = name;
-      currentUser.bio = bio;
-      alert('Perfil salvo!');
-      renderFeed(); // Atualiza nomes no feed
-    } else {
-      alert('Nome não pode ficar vazio.');
-    }
-  });
-
-  // --- Feed ---
-  function renderFeed() {
-    feedEl.innerHTML = '';
-    // Mostrar posts só do tópico atual
-    const filteredPosts = posts.filter(p => p.topic === currentTopic);
-    if(filteredPosts.length === 0) {
-      feedEl.innerHTML = '<p style="color:var(--color-muted); user-select:none;">Nenhuma publicação neste tema ainda.</p>';
-      return;
-    }
-    filteredPosts.sort((a,b) => b.createdAt - a.createdAt);
-    filteredPosts.forEach(post => {
-      const postEl = document.createElement('article');
-      postEl.className = 'post';
-      const author = users.find(u => u.username === post.author) || {name: post.author, avatar: 'https://i.pravatar.cc/90?u=default'};
-
-      postEl.innerHTML = `
-        <header>
-          <img src="${author.avatar}" alt="Avatar de ${author.name}" />
-          <div>
-            <strong>${author.name}</strong><br/>
-            <small>${new Date(post.createdAt).toLocaleString()}</small>
-          </div>
-        </header>
-        <p>${post.content}</p>
-        <footer>
-          <button class="like-btn" data-post-id="${post.id}" aria-label="Curtir publicação">${post.likes} ❤️</button>
-        </footer>
-      `;
-      feedEl.appendChild(postEl);
-    });
-
-    // Adicionar eventos de like
-    document.querySelectorAll('.like-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const postId = Number(btn.getAttribute('data-post-id'));
-        const post = posts.find(p => p.id === postId);
-        if(!post) return;
-        if(post.likedBy.includes(currentUser.username)) {
-          // Descurtir
-          post.likedBy = post.likedBy.filter(u => u !== currentUser.username);
-          post.likes--;
-        } else {
-          post.likedBy.push(currentUser.username);
-          post.likes++;
-        }
-        renderFeed();
-      });
-    });
-  }
-
-  // --- Nova postagem ---
-  document.getElementById('post-btn').addEventListener('click', () => {
-    const content = document.getElementById('new-post-text').value.trim();
-    if(!content) {
-      alert('Escreva algo para publicar.');
-      return;
-    }
-    const newPost = {
-      id: posts.length ? posts[posts.length-1].id + 1 : 1,
-      author: currentUser.username,
-      content,
-      likes: 0,
-      likedBy: [],
-      topic: currentTopic,
-      createdAt: Date.now()
-    };
-    posts.push(newPost);
-    document.getElementById('new-post-text').value = '';
-    renderFeed();
-  });
-
-  // --- Trocar tópico ---
-  document.querySelectorAll('.topic-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      switchTopic(btn.getAttribute('data-topic'));
-    });
-  });
-
-  function switchTopic(topic) {
-    currentTopic = topic;
-    chatHeaderEl.textContent = 'Chat - ' + capitalize(topic.replace('-', ' '));
-    renderFeed();
-    renderChatMessages();
-  }
-  function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
-
-  // --- Chat ---
-  let chatMessages = {
-    geral: [
-      {author: 'user1', text: 'E aí, pessoal! Bem-vindos ao chat geral.', createdAt: Date.now()-300000}
-    ],
-    'cultura-pop': [
-      {author: 'user2', text: 'Alguém viu a nova série? Tá top!', createdAt: Date.now()-240000}
-    ],
-    esportes: [],
-    educacao: [],
-    musica: []
-  };
-
-  function renderChatMessages() {
-    chatMessagesEl.innerHTML = '';
-    const messages = chatMessages[currentTopic] || [];
-    if(messages.length === 0) {
-      chatMessagesEl.innerHTML = '<p style="color:var(--color-muted); user-select:none;">Nenhuma mensagem ainda.</p>';
-      return;
-    }
-    messages.sort((a,b) => a.createdAt - b.createdAt);
-    messages.forEach(msg => {
-      const author = users.find(u => u.username === msg.author) || {name: msg.author, avatar: 'https://i.pravatar.cc/90?u=default'};
-      const msgEl = document.createElement('div');
-      msgEl.className = 'chat-message';
-      msgEl.innerHTML = `
-        <img src="${author.avatar}" alt="Avatar de ${author.name}" />
-        <div>
-          <strong>${author.name}</strong><br/>
-          <small>${new Date(msg.createdAt).toLocaleTimeString()}</small>
-          <p>${msg.text}</p>
-        </div>
-      `;
-      chatMessagesEl.appendChild(msgEl);
-    });
-    chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
-  }
-
-  document.getElementById('chat-send-btn').addEventListener('click', () => {
-    sendMessage();
-  });
-
-  document.getElementById('chat-input').addEventListener('keypress', (e) => {
-    if(e.key === 'Enter') {
-      e.preventDefault();
-      sendMessage();
-    }
-  });
-
-  function sendMessage() {
-    const text = document.getElementById('chat-input').value.trim();
-    if(!text) return;
-    chatMessages[currentTopic] = chatMessages[currentTopic] || [];
-    chatMessages[currentTopic].push({
-      author: currentUser.username,
-      text,
-      createdAt: Date.now()
-    });
-    document.getElementById('chat-input').value = '';
-    renderChatMessages();
-  }
-</script>
-</body>
-</html>
-Aqui está um código HTML+CSS+JS completo que cria um site de jornal escolar com:
-
-- Feed de posts separados por tópicos (Geral, Cultura Pop, Esportes, Educação, Música)
-- Cada post tem autor, avatar, conteúdo, data e botão de curtir (que contabiliza likes por usuário)
-- Área de chat para cada tópico, com mensagens e avatar do autor
-- Permite trocar tópico, postar no feed, enviar mensagens no chat
-- Visual moderno e responsivo básico, com cores e estilos organizados
-
-Copie e salve como um arquivo `.html` e abra no navegador para testar. É tudo local, não precisa de servidor.
-
-```html
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Jornal Escolar Interativo</title>
-<style>
-  :root {
-    --color-bg: #f4f6f8;
-    --color-primary: #0066cc;
-    --color-primary-dark: #004a99;
-    --color-text: #333;
-    --color-muted: #666;
-    --color-like: #e0245e;
-    --color-chat-bg: #fff;
-  }
-  body {
-    margin:0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background: var(--color-bg);
-    color: var(--color-text);
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-  header {
-    background: var(--color-primary);
-    color: white;
-    padding: 1rem;
-    text-align: center;
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
-  main {
-    flex: 1;
-    display: flex;
-    gap: 1rem;
-    padding: 1rem;
-    flex-wrap: wrap;
-  }
-  .sidebar, .feed, .chat {
-    background: white;
-    border-radius: 6px;
-    box-shadow: 0 1px 6px rgb(0 0 0 / 0.1);
-    padding: 1rem;
-  }
-  .sidebar {
-    flex: 0 0 200px;
-    min-height: 400px;
-  }
-  .sidebar h2 {
-    margin-top: 0;
-  }
-  .topic-btn {
-    display: block;
-    width: 100%;
-    background: var(--color-primary);
-    color: white;
-    border: none;
-    margin: 0.3rem 0;
-    padding: 0.5rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 600;
-    text-align: left;
-    transition: background-color 0.3s;
-  }
-  .topic-btn:hover, .topic-btn.active {
-    background: var(--color-primary-dark);
-  }
-  .feed {
-    flex: 2 1 600px;
-    max-height: 700px;
-    display: flex;
-    flex-direction: column;
-  }
-  .feed header {
-    font-weight: 700;
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
-    border-bottom: 2px solid var(--color-primary);
-    padding-bottom: 0.25rem;
-  }
-  #feed-posts {
-    overflow-y: auto;
-    flex: 1;
-  }
-  .post {
-    border-bottom: 1px solid #ddd;
-    padding: 0.75rem 0;
-    display: flex;
-    gap: 0.75rem;
-  }
-  .post header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-shrink: 0;
-    min-width: 48px;
-  }
-  .post header img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  .post > div {
-    flex: 1;
-  }
-  .post p {
-    margin: 0.25rem 0;
-  }
-  .post footer {
-    margin-top: 0.5rem;
-  }
-  .like-btn {
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    font-weight: 600;
-    color: var(--color-like);
-  }
-  .like-btn:hover {
-    text-decoration: underline;
-  }
-  .post small {
-    color: var(--color-muted);
-  }
-  .new-post {
-    margin-top: 1rem;
-  }
-  .new-post textarea {
-    width: 100%;
-    height: 70px;
-    resize: vertical;
-    padding: 0.5rem;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    font-family: inherit;
-  }
-  .new-post button {
-    margin-top: 0.5rem;
-    background: var(--color-primary);
-    border: none;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 600;
-  }
-  .new-post button:hover {
-    background: var(--color-primary-dark);
-  }
-  .chat {
-    flex: 1 1 300px;
-    max-height: 700px;
-    display: flex;
-    flex-direction: column;
-  }
-  .chat header {
-    font-weight: 700;
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
-    border-bottom: 2px solid var(--color-primary);
-    padding-bottom: 0.25rem;
-  }
-  #chat-messages {
-    flex: 1;
-    overflow-y: auto;
-    background: var(--color-chat-bg);
-    padding: 0.5rem;
-    border-radius: 4px;
-  }
-  .chat-message {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-  .chat-message img {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  .chat-message div {
-    background: #eef3fa;
-    padding: 0.5rem;
-    border-radius: 6px;
-    max-width: 80%;
-  }
-  .chat-message strong {
-    display: block;
-  }
-  .chat-message small {
-    color: var(--color-muted);
-  }
-  #chat-input {
-    width: 100%;
-    padding: 0.5rem;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    margin-top: 0.5rem;
-    font-family: inherit;
-  }
-  #chat-send-btn {
-    margin-top: 0.5rem;
-    background: var(--color-primary);
-    border: none;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 600;
-    width: 100%;
-  }
-  #chat-send-btn:hover {
-    background: var(--color-primary-dark);
-  }
-
-  @media (max-width: 900px) {
-    main {
-      flex-direction: column;
-    }
-    .sidebar, .feed, .chat {
-      flex: 1 1 auto;
-      max-height: none;
-    }
-  }
-</style>
-</head>
-<body>
-
-<header>Jornal Escolar Interativo</header>
-
-<main>
-  <nav class="sidebar" aria-label="Tópicos do jornal">
-    <h2>Tópicos</h2>
-    <button class="topic-btn active" data-topic="geral">Geral</button>
-    <button class="topic-btn" data-topic="cultura-pop">Cultura Pop</button>
-    <button class="topic-btn" data-topic="esportes">Esportes</button>
-    <button class="topic-btn" data-topic="educacao">Educação</button>
-    <button class="topic-btn" data-topic="musica">Música</button>
+  <nav>
+    <button id="nav-feed" class="active" aria-label="Feed">
+      <svg viewBox="0 0 24 24"><path d="M4 4h16v2H4zM4 9h16v2H4zM4 14h10v2H4z"/></svg>
+      <span>Feed</span>
+    </button>
+    <button id="nav-search" aria-label="Pesquisar">
+      <svg viewBox="0 0 24 24"><path d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 11-4.243 10.243A6 6 0 0110 4z"/></svg>
+      <span>Pesquisar</span>
+    </button>
+    <button id="nav-profile" aria-label="Perfil">
+      <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z"/></svg>
+      <span>Perfil</span>
+    </button>
   </nav>
 
-  <section class="feed" aria-label="Feed de publicações">
-    <header id="feed-header">Feed - Geral</header>
-    <div id="feed-posts" tabindex="0" aria-live="polite" aria-relevant="additions"></div>
-    <div class="new-post">
-      <textarea id="new-post-text" placeholder="Escreva algo para publicar..."></textarea>
-      <button id="post-btn">Publicar</button>
-    </div>
-  </section>
+  <div class="dark-mode-toggle" title="Alternar modo claro/escuro" aria-label="Toggle dark mode" role="button" tabindex="0">
+    <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 000 18 9 9 0 000-18zm0 16a7 7 0 010-14 7 7 0 010 14z"/></svg>
+  </div>
 
-  <section class="chat" aria-label="Chat do tópico">
-    <header id="chat-header">Chat - Geral</header>
-    <div id="chat-messages" tabindex="0" aria-live="polite" aria-relevant="additions"></div>
-    <textarea id="chat-input" placeholder="Escreva sua mensagem..."></textarea>
-    <button id="chat-send-btn">Enviar</button>
-  </section>
-</main>
+  <!-- Modal login/cadastro -->
+  <div id="modal-auth" class="modal-bg" style="display:none;">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <span class="close-modal" id="close-modal" aria-label="Fechar modal" tabindex="0">&times;</span>
+      <h2 id="modal-title">Entrar no FALAAI</h2>
+      <label for="input-username">Usuário</label>
+      <input type="text" id="input-username" autocomplete="username" />
+      <label for="input-password">Senha</label>
+      <input type="password" id="input-password" autocomplete="current-password" />
+      <button id="btn-login">Entrar</button>
+      <p style="margin-top:1rem; font-size:0.9rem; text-align:center;">
+        Não tem conta? <a href="#" id="show-register">Cadastre-se</a>
+      </p>
+    </div>
+  </div>
+
+  <div id="modal-register" class="modal-bg" style="display:none;">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-register-title">
+      <span class="close-modal" id="close-register" aria-label="Fechar modal" tabindex="0">&times;</span>
+      <h2 id="modal-register-title">Cadastre-se no FALAAI</h2>
+      <label for="register-username">Usuário</label>
+      <input type="text" id="register-username" />
+      <label for="register-password">Senha</label>
+      <input type="password" id="register-password" />
+      <button id="btn-register">Cadastrar</button>
+      <p style="margin-top:1rem; font-size:0.9rem; text-align:center;">
+        Já tem conta? <a href="#" id="show-login">Entrar</a>
+      </p>
+    </div>
+  </div>
 
 <script>
-  // Usuários simulados (para avatar e nome)
-  const users = [
-    {username: 'user1', name: 'Ana Silva', avatar: 'https://i.pravatar.cc/40?u=user1'},
-    {username: 'user2', name: 'Bruno Souza', avatar: 'https://i.pravatar.cc/40?u=user2'},
-    {username: 'user3', name: 'Carla Pereira', avatar: 'https://i.pravatar.cc/40?u=user3'},
-    {username: 'user4', name: 'Diego Costa', avatar: 'https://i.pravatar.cc/40?u=user4'}
-  ];
-  // Simulando usuário logado
-  const currentUser = users[0];
-
-  // Posts com tópicos e likes
-  let posts = [
+  // Estado global simples
+  let currentUser = null;
+  let users = JSON.parse(localStorage.getItem('users')) || {};
+  let posts = JSON.parse(localStorage.getItem('posts')) || [
     {
-      id: 1,
-      author: 'user1',
-      content: 'Sejam bem-vindos ao nosso jornal escolar!',
-      likes: 2,
-      likedBy: ['user2','user3'],
-      topic: 'geral',
-      createdAt: Date.now() - 1000*60*60*2
+      id: 'p1',
+      author: 'admin',
+      authorName: 'FALAAI Admin',
+      authorAvatar: 'https://i.pravatar.cc/150?img=12',
+      content: 'Bem-vindos ao FALAAI, seu jornal escolar moderno e interativo!',
+      likes: [],
+      comments: []
     },
     {
-      id: 2,
-      author: 'user2',
-      content: 'Alguém viu o último filme da Marvel? Sensacional!',
-      likes: 1,
-      likedBy: ['user1'],
-      topic: 'cultura-pop',
-      createdAt: Date.now() - 1000*60*30
+      id: 'p2',
+      author: 'user1',
+      authorName: 'Maria Silva',
+      authorAvatar: 'https://i.pravatar.cc/150?img=15',
+      content: 'Hoje tivemos uma aula incrível sobre astronomia! 🚀✨',
+      likes: ['admin'],
+      comments: [{user:'admin', text:'Que demais!'}]
     }
   ];
 
-  // Tópico atual
-  let currentTopic = 'geral';
+  // Utils
+  function saveAll() {
+    localStorage.setItem('users', JSON.stringify(users));
+    localStorage.setItem('posts', JSON.stringify(posts));
+  }
 
-  // Elementos DOM
-  const feedHeaderEl = document.getElementById('feed-header');
-  const feedPostsEl = document.getElementById('feed-posts');
-  const chatHeaderEl = document.getElementById('chat-header');
-  const chatMessagesEl = document.getElementById('chat-messages');
-
-  // Renderiza feed conforme tópico
   function renderFeed() {
-    feedHeaderEl.textContent = 'Feed - ' + capitalize(currentTopic.replace('-', ' '));
-    feedPostsEl.innerHTML = '';
-
-    // Filtrar posts do tópico atual
-    const filteredPosts = posts.filter(p => p.topic === currentTopic);
-    if(filteredPosts.length === 0) {
-      feedPostsEl.innerHTML = '<p style="color:var(--color-muted); user-select:none;">Nenhuma publicação ainda.</p>';
-      return;
-    }
-
-    filteredPosts.sort((a,b) => b.createdAt - a.createdAt);
-
-    filteredPosts.forEach(post => {
-      const author = users.find(u => u.username === post.author) || {name: post.author, avatar: 'https://i.pravatar.cc/40?u=default'};
+    const feedList = document.getElementById('feed-list');
+    feedList.innerHTML = '';
+    posts.slice().reverse().forEach(post => {
+      const liked = currentUser && post.likes.includes(currentUser);
       const postEl = document.createElement('article');
       postEl.className = 'post';
       postEl.innerHTML = `
-        <header>
-          <img src="${author.avatar}" alt="Avatar de ${author.name}" />
-          <div>
-            <strong>${author.name}</strong><br/>
-            <small>${new Date(post.createdAt).toLocaleString()}</small>
+        <div class="post-header">
+          <img src="${post.authorAvatar}" alt="${post.authorName}" title="${post.authorName}" />
+          <div class="user-info">${post.authorName}</div>
+        </div>
+        <div class="post-content">${post.content}</div>
+        <div class="post-actions">
+          <button class="like-btn ${liked ? 'liked' : ''}" aria-label="Curtir post">&#10084;</button>
+          <span>${post.likes.length}</span>
+        </div>
+        <div class="post-comments">
+          ${post.comments.map(c => `<div class="comment"><strong>${c.user}:</strong> ${c.text}</div>`).join('')}
+          ${currentUser ? `
+          <div class="add-comment">
+            <input type="text" placeholder="Comentar..." aria-label="Campo para comentar" />
+            <button>Enviar</button>
           </div>
-        </header>
-        <div>
-          <p>${post.content}</p>
-          <footer>
-            <button class="like-btn" data-post-id="${post.id}" aria-label="Curtir publicação">${post.likes} ❤️</button>
-          </footer>
+          ` : '<p style="font-style:italic; font-size:0.8rem; color:var(--primary);">Entre para comentar</p>'}
         </div>
       `;
-      feedPostsEl.appendChild(postEl);
-    });
 
-    // Eventos dos botões curtir
-    document.querySelectorAll('.like-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const postId = Number(btn.getAttribute('data-post-id'));
-        const post = posts.find(p => p.id === postId);
-        if(!post) return;
-        if(post.likedBy.includes(currentUser.username)) {
-          // Descurtir
-          post.likedBy = post.likedBy.filter(u => u !== currentUser.username);
-          post.likes--;
-        } else {
-          post.likedBy.push(currentUser.username);
-          post.likes++;
+      // Like btn
+      postEl.querySelector('.like-btn').onclick = () => {
+        if (!currentUser) {
+          alert('Entre para curtir!');
+          openModal('login');
+          return;
         }
+        if (post.likes.includes(currentUser)) {
+          post.likes = post.likes.filter(u => u !== currentUser);
+        } else {
+          post.likes.push(currentUser);
+        }
+        saveAll();
         renderFeed();
-      });
+      };
+
+      // Comment btn
+      if (currentUser) {
+        const commentInput = postEl.querySelector('.add-comment input');
+        const commentBtn = postEl.querySelector('.add-comment button');
+        commentBtn.onclick = () => {
+          const text = commentInput.value.trim();
+          if (!text) return alert('Escreva algo para comentar!');
+          post.comments.push({user: currentUser, text});
+          commentInput.value = '';
+          saveAll();
+          renderFeed();
+        };
+      }
+
+      feedList.appendChild(postEl);
     });
   }
 
-  // Publicar nova postagem
-  document.getElementById('post-btn').addEventListener('click', () => {
-    const content = document.getElementById('new-post-text').value.trim();
-    if(!content) {
-      alert('Escreva algo para publicar.');
-      return;
+  function openModal(mode) {
+    if(mode === 'login'){
+      document.getElementById('modal-auth').style.display = 'flex';
+      document.getElementById('modal-register').style.display = 'none';
+    } else if(mode === 'register'){
+      document.getElementById('modal-auth').style.display = 'none';
+      document.getElementById('modal-register').style.display = 'flex';
     }
-    const newPost = {
-      id: posts.length ? posts[posts.length-1].id + 1 : 1,
-      author: currentUser.username,
-      content,
-      likes: 0,
-      likedBy: [],
-      topic: currentTopic,
-      createdAt: Date.now()
-    };
-    posts.push(newPost);
-    document.getElementById('new-post-text').value = '';
-    renderFeed();
-  });
+  }
+  function closeModals() {
+    document.getElementById('modal-auth').style.display = 'none';
+    document.getElementById('modal-register').style.display = 'none';
+  }
 
-  // Trocar tópico ao clicar na sidebar
-  document.querySelectorAll('.topic-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      switchTopic(btn.getAttribute('data-topic'));
+  function showPage(pageId) {
+    document.querySelectorAll('main .page').forEach(p => {
+      p.style.display = p.id === pageId ? 'block' : 'none';
     });
+    document.querySelectorAll('nav button').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    document.getElementById('nav-' + pageId.split('-')[0]).classList.add('active');
+  }
+
+  // Perfil
+  function loadProfile() {
+    if (!currentUser) return;
+    const user = users[currentUser];
+    document.getElementById('profile-name').value = user.name || currentUser;
+    document.getElementById('profile-bio').value = user.bio || '';
+    document.getElementById('profile-avatar-img').src = user.avatar || `https://i.pravatar.cc/150?u=${currentUser}`;
+  }
+  function saveProfile() {
+    if (!currentUser) return alert('Entre para salvar perfil!');
+    users[currentUser] = users[currentUser] || {};
+    users[currentUser].name = document.getElementById('profile-name').value.trim() || currentUser;
+    users[currentUser].bio = document.getElementById('profile-bio').value.trim();
+    users[currentUser].avatar = document.getElementById('profile-avatar-img').src;
+    saveAll();
+    alert('Perfil salvo!');
+  }
+
+  // Avatar input change
+  document.getElementById('avatar-input').addEventListener('change', e => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = evt => {
+      document.getElementById('profile-avatar-img').src = evt.target.result;
+    };
+    reader.readAsDataURL(file);
   });
 
-  function switchTopic(topic) {
-    currentTopic = topic;
-    feedHeaderEl.textContent = 'Feed - ' + capitalize(topic.replace('-', ' '));
-    chatHeaderEl.textContent = 'Chat - ' + capitalize(topic.replace('-', ' '));
-    renderFeed();
-    renderChatMessages();
-  }
-  function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
-
-  // Chat: mensagens por tópico
-  let chatMessages = {
-    geral: [
-      {author: 'user1', text: 'E aí, pessoal! Bem-vindos ao chat geral.', createdAt: Date.now()-300000}
-    ],
-    'cultura-pop': [
-      {author: 'user2', text: 'Alguém viu a nova série? Tá top!', createdAt: Date.now()-240000}
-    ],
-    esportes: [],
-    educacao: [],
-    musica: []
+  // Dark mode toggle
+  const darkModeToggle = document.querySelector('.dark-mode-toggle');
+  darkModeToggle.onclick = () => {
+    document.body.classList.toggle('dark-mode');
   };
 
-  // Render chat
-  function renderChatMessages() {
-    chatMessagesEl.innerHTML = '';
-    const messages = chatMessages[currentTopic] || [];
-    if(messages.length === 0) {
-      chatMessagesEl.innerHTML = '<p style="color:var(--color-muted); user-select:none;">Nenhuma mensagem ainda.</p>';
+  // Navegação
+  document.getElementById('nav-feed').onclick = () => { showPage('feed-page'); renderFeed(); };
+  document.getElementById('nav-search').onclick = () => { showPage('search-page'); };
+  document.getElementById('nav-profile').onclick = () => {
+    if (!currentUser) {
+      openModal('login');
       return;
     }
-    messages.sort((a,b) => a.createdAt - b.createdAt);
-    messages.forEach(msg => {
-      const author = users.find(u => u.username === msg.author) || {name: msg.author, avatar: 'https://i.pravatar.cc/40?u=default'};
-      const msgEl = document.createElement('div');
-      msgEl.className = 'chat-message';
-      msgEl.innerHTML = `
-        <img src="${author.avatar}" alt="Avatar de ${author.name}" />
-        <div>
-          <strong>${author.name}</strong>
-          <small>${new Date(msg.createdAt).toLocaleTimeString()}</small>
-          <p>${msg.text}</p>
-        </div>
-      `;
-      chatMessagesEl.appendChild(msgEl);
-    });
-    chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
-  }
+    showPage('profile-page');
+    loadProfile();
+  };
 
-  // Enviar mensagem chat
-  document.getElementById('chat-send-btn').addEventListener('click', () => {
-    sendMessage();
-  });
-  document.getElementById('chat-input').addEventListener('keypress', (e) => {
-    if(e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
+  // Login / Registro
+  document.getElementById('btn-login').onclick = () => {
+    const username = document.getElementById('input-username').value.trim();
+    const password = document.getElementById('input-password').value;
+    if (!username || !password) return alert('Preencha todos os campos!');
+    if (!users[username] || users[username].password !== password) {
+      alert('Usuário ou senha incorretos!');
+      return;
     }
+    currentUser = username;
+    closeModals();
+    showPage('feed-page');
+    renderFeed();
+  };
+
+  document.getElementById('btn-register').onclick = () => {
+    const username = document.getElementById('register-username').value.trim();
+    const password = document.getElementById('register-password').value;
+    if (!username || !password) return alert('Preencha todos os campos!');
+    if (users[username]) return alert('Usuário já existe!');
+    users[username] = {password};
+    saveAll();
+    alert('Cadastro realizado com sucesso!');
+    closeModals();
+  };
+
+  document.getElementById('show-register').onclick = e => {
+    e.preventDefault();
+    openModal('register');
+  };
+  document.getElementById('show-login').onclick = e => {
+    e.preventDefault();
+    openModal('login');
+  };
+
+  document.getElementById('close-modal').onclick = closeModals;
+  document.getElementById('close-register').onclick = closeModals;
+
+  // Busca de usuários (simples)
+  document.getElementById('search-input').addEventListener('input', e => {
+    const query = e.target.value.toLowerCase();
+    const results = Object.entries(users)
+      .filter(([username, user]) => username.toLowerCase().includes(query) || (user.name && user.name.toLowerCase().includes(query)));
+    const container = document.getElementById('search-results');
+    container.innerHTML = results.length
+      ? results.map(([username, user]) => `
+        <div class="user-result">
+          <img src="${user.avatar || `https://i.pravatar.cc/150?u=${username}`}" alt="${username}" />
+          <div>
+            <strong>${user.name || username}</strong><br/>
+            <small>@${username}</small>
+          </div>
+        </div>
+      `).join('')
+      : '<p>Nenhum usuário encontrado.</p>';
   });
 
-  function sendMessage() {
-    const text = document.getElementById('chat-input').value.trim();
-    if(!text) return;
-    chatMessages[currentTopic] = chatMessages[currentTopic] || [];
-    chatMessages[currentTopic].push({
-      author: currentUser.username,
-      text,
-      createdAt: Date.now()
-    });
-    document.getElementById('chat-input').value = '';
-    renderChatMessages();
-  }
-
-  // Inicialização
+  // Inicializa feed
   renderFeed();
-  renderChatMessages();
-
 </script>
 
 </body>
