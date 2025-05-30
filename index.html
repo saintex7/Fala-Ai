@@ -1,1102 +1,385 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>FALAAI - Rede Social Escolar</title>
-<style>
-  /* Reset básico */
-  * {
-    margin: 0; padding: 0; box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FalaAI - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --background: #1e272e;
+            --card-bg: #2d3436;
+            --text: #f5f6fa;
+            --text-secondary: #dfe6e9;
+            --success: #00b894;
+            --danger: #d63031;
+            --warning: #fdcb6e;
+        }
 
-  body {
-    background: #121212;
-    color: #eee;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
 
-  #app {
-    width: 100%;
-    max-width: 900px;
-    background: #1e1e1e;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 0 20px #0f0;
-    display: flex;
-    flex-direction: column;
-    min-height: 600px;
-  }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+        }
 
-  header {
-    background: #272727;
-    padding: 12px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
 
-  header h1 {
-    font-weight: 700;
-    color: #0f0;
-    letter-spacing: 3px;
-  }
+        .logo h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            color: var(--primary);
+        }
 
-  nav button {
-    background: none;
-    border: none;
-    color: #0f0;
-    font-size: 1rem;
-    margin-left: 15px;
-    cursor: pointer;
-    transition: color 0.3s;
-    padding: 6px 10px;
-    border-radius: 6px;
-  }
+        .logo p {
+            margin-top: 0.5rem;
+            color: var(--text-secondary);
+        }
 
-  nav button:hover, nav button.active {
-    background: #0f0;
-    color: #121212;
-  }
+        .auth-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
 
-  main {
-    flex: 1;
-    background: #121212;
-    padding: 20px;
-    overflow-y: auto;
-  }
+        .tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+        }
 
-  /* Login e Cadastro */
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 0.75rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
 
-  #login-section, #register-section {
-    max-width: 400px;
-    margin: 60px auto;
-    background: #222;
-    padding: 30px 25px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px #0f0a;
-  }
+        .tab.active {
+            border-bottom: 2px solid var(--primary);
+            font-weight: bold;
+        }
 
-  #login-section h2, #register-section h2 {
-    margin-bottom: 20px;
-    color: #0f0;
-    text-align: center;
-  }
+        .tab-content {
+            display: none;
+        }
 
-  label {
-    display: block;
-    margin-top: 15px;
-    font-weight: 600;
-  }
+        .tab-content.active {
+            display: block;
+        }
 
-  input[type="text"], input[type="password"] {
-    width: 100%;
-    padding: 10px;
-    margin-top: 6px;
-    border: none;
-    border-radius: 6px;
-    background: #333;
-    color: #eee;
-    font-size: 1rem;
-  }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
 
-  button.submit-btn {
-    margin-top: 25px;
-    width: 100%;
-    padding: 12px;
-    background: #0f0;
-    border: none;
-    border-radius: 8px;
-    color: #121212;
-    font-weight: 700;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
 
-  button.submit-btn:hover {
-    background: #0c0;
-  }
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #3d3d3d;
+            border-radius: 5px;
+            background-color: #3d3d3d;
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
 
-  .link {
-    margin-top: 15px;
-    color: #0f0;
-    text-align: center;
-    cursor: pointer;
-    text-decoration: underline;
-    font-size: 0.9rem;
-  }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
+        }
 
-  /* Feed */
+        .btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--primary);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-  #feed-section .post {
-    background: #222;
-    border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 15px;
-  }
+        .btn:hover {
+            background-color: #5649d1;
+        }
 
-  #feed-section .post .post-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    font-weight: 700;
-    color: #0f0;
-  }
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: var(--text-secondary);
+        }
 
-  #feed-section .post .post-content {
-    margin-bottom: 10px;
-  }
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #3d3d3d;
+        }
 
-  #feed-section .post .post-actions button {
-    background: none;
-    border: none;
-    color: #0f0;
-    margin-right: 15px;
-    cursor: pointer;
-    font-weight: 600;
-  }
+        .divider::before {
+            margin-right: 1rem;
+        }
 
-  #feed-section .post .comments {
-    margin-top: 10px;
-    border-top: 1px solid #0f0a;
-    padding-top: 10px;
-  }
+        .divider::after {
+            margin-left: 1rem;
+        }
 
-  #feed-section .post .comments .comment {
-    margin-bottom: 8px;
-    font-size: 0.9rem;
-    color: #aaa;
-  }
+        .social-login {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
 
-  #feed-section .post .comments .comment strong {
-    color: #0f0;
-  }
+        .social-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #3d3d3d;
+            color: var(--text);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-  /* Perfil */
+        .social-btn:hover {
+            background-color: #4d4d4d;
+        }
 
-  #profile-section {
-    max-width: 600px;
-    margin: 0 auto;
-  }
+        .footer-text {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text-secondary);
+        }
 
-  #profile-section h2 {
-    margin-bottom: 20px;
-    color: #0f0;
-    text-align: center;
-  }
+        .footer-text a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
 
-  #profile-section .user-info {
-    background: #222;
-    padding: 20px;
-    border-radius: 12px;
-  }
+        .avatar-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1rem;
+            display: block;
+            background-color: #3d3d3d;
+        }
 
-  #profile-section .user-info p {
-    margin-bottom: 10px;
-  }
+        .avatar-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
 
-  #profile-section button.follow-btn {
-    background: #0f0;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 10px;
-    color: #121212;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background 0.3s;
-  }
+        .avatar-upload label {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-  #profile-section button.follow-btn:hover {
-    background: #0c0;
-  }
+        .avatar-upload label:hover {
+            background-color: #5649d1;
+        }
 
-  /* Chat */
+        .avatar-upload input {
+            display: none;
+        }
 
-  #chat-section {
-    max-width: 800px;
-    margin: 0 auto;
-  }
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
 
-  #chat-section h2 {
-    margin-bottom: 10px;
-    color: #0f0;
-  }
+        .remember-me input {
+            margin-right: 0.5rem;
+        }
 
-  #chat-topics {
-    margin-bottom: 10px;
-  }
-
-  #chat-topics select {
-    background: #222;
-    color: #eee;
-    border: none;
-    padding: 8px;
-    border-radius: 8px;
-    width: 100%;
-    max-width: 300px;
-    font-size: 1rem;
-  }
-
-  #chat-messages {
-    height: 250px;
-    background: #222;
-    border-radius: 10px;
-    padding: 15px;
-    overflow-y: auto;
-    margin-bottom: 10px;
-    color: #eee;
-  }
-
-  #chat-messages .message {
-    margin-bottom: 10px;
-  }
-
-  #chat-messages .message .author {
-    font-weight: 700;
-    color: #0f0;
-    margin-bottom: 3px;
-  }
-
-  #chat-input {
-    display: flex;
-    gap: 8px;
-  }
-
-  #chat-input textarea {
-    flex: 1;
-    padding: 10px;
-    border-radius: 10px;
-    border: none;
-    background: #222;
-    color: #eee;
-    resize: none;
-    height: 50px;
-    font-size: 1rem;
-  }
-
-  #chat-input button {
-    background: #0f0;
-    border: none;
-    padding: 0 20px;
-    border-radius: 10px;
-    color: #121212;
-    cursor: pointer;
-    font-weight: 700;
-    transition: background 0.3s;
-  }
-
-  #chat-input button:hover {
-    background: #0c0;
-  }
-
-  /* DMs */
-
-  #dm-section {
-    max-width: 800px;
-    margin: 0 auto;
-  }
-
-  #dm-section h2 {
-    color: #0f0;
-    margin-bottom: 10px;
-  }
-
-  #dm-users {
-    background: #222;
-    border-radius: 10px;
-    max-height: 150px;
-    overflow-y: auto;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
-
-  #dm-users .user-item {
-    padding: 10px;
-    border-radius: 8px;
-    background: #1a1a1a;
-    margin-bottom: 6px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  #dm-users .user-item:hover, #dm-users .user-item.active {
-    background: #0f0;
-    color: #121212;
-  }
-
-  #dm-messages {
-    background: #222;
-    border-radius: 10px;
-    height: 250px;
-    overflow-y: auto;
-    padding: 15px;
-    color: #eee;
-    margin-bottom: 10px;
-  }
-
-  #dm-messages .message {
-    margin-bottom: 10px;
-  }
-
-  #dm-messages .message .author {
-    font-weight: 700;
-    color: #0f0;
-    margin-bottom: 3px;
-  }
-
-  #dm-input {
-    display: flex;
-    gap: 8px;
-  }
-
-  #dm-input textarea {
-    flex: 1;
-    padding: 10px;
-    border-radius: 10px;
-    border: none;
-    background: #222;
-    color: #eee;
-    resize: none;
-    height: 50px;
-    font-size: 1rem;
-  }
-
-  #dm-input button {
-    background: #0f0;
-    border: none;
-    padding: 0 20px;
-    border-radius: 10px;
-    color: #121212;
-    cursor: pointer;
-    font-weight: 700;
-    transition: background 0.3s;
-  }
-
-  #dm-input button:hover {
-    background: #0c0;
-  }
-
-  /* Scrollbar Custom */
-
-  ::-webkit-scrollbar {
-    width: 10px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: #121212;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #0f0;
-    border-radius: 10px;
-  }
-
-</style>
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .auth-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-
-<div id="app">
-
-  <!-- Tela de Login -->
-  <section id="login-section" style="display: none;">
-    <h2>Entrar no FALAAI</h2>
-    <label for="login-username">Usuário</label>
-    <input type="text" id="login-username" autocomplete="username" />
-    <label for="login-password">Senha</label>
-    <input type="password" id="login-password" autocomplete="current-password" />
-    <button class="submit-btn" id="login-btn">Entrar</button>
-    <div class="link" id="go-register">Criar uma conta</div>
-  </section>
-
-  <!-- Tela de Cadastro -->
-  <section id="register-section" style="display: none;">
-    <h2>Criar conta no FALAAI</h2>
-    <label for="register-username">Usuário</label>
-    <input type="text" id="register-username" autocomplete="username" />
-    <label for="register-password">Senha</label>
-    <input type="password" id="register-password" autocomplete="new-password" />
-    <label for="register-name">Nome completo</label>
-    <input type="text" id="register-name" />
-    <button class="submit-btn" id="register-btn">Cadastrar</button>
-    <div class="link" id="go-login">Já tem conta? Entrar</div>
-  </section>
-
-  <!-- Área principal -->
-  <header style="display: none;">
-    <h1>FALAAI</h1>
-    <nav>
-      <button id="nav-feed" class="active" title="Feed">Feed</button>
-      <button id="nav-profile" title="Perfil">Perfil</button>
-      <button id="nav-chat" title="Chat Temas">Chat</button>
-      <button id="nav-dm" title="Mensagens Privadas">Mensagens</button>
-      <button id="logout-btn" title="Sair">Sair</button>
-    </nav>
-  </header>
-
-  <main>
-    <!-- Feed -->
-    <section id="feed-section" style="display: none;">
-      <h2>Feed de Posts</h2>
-      <div id="posts-container"></div>
-      <textarea id="new-post-text" rows="3" placeholder="Escreva algo para postar..."></textarea>
-      <button id="post-btn" style="margin-top: 10px; background: #0f0; color: #121212; border: none; border-radius: 8px; padding: 10px 15px; font-weight: 700; cursor: pointer;">Postar</button>
-    </section>
-
-    <!-- Perfil -->
-    <section id="profile-section" style="display: none;">
-      <h2>Perfil de <span id="profile-name"></span></h2>
-      <div class="user-info">
-        <p><strong>Usuário:</strong> <span id="profile-username"></span></p>
-        <p><strong>Nome:</strong> <span id="profile-fullname"></span></p>
-        <p><strong>Seguidores:</strong> <span id="profile-followers"></span></p>
-        <p><strong>Seguindo:</strong> <span id="profile-following"></span></p>
-        <button id="follow-btn" class="follow-btn"></button>
-      </div>
-    </section>
-
-    <!-- Chat Temas -->
-    <section id="chat-section" style="display: none;">
-      <h2>Chat por Temas</h2>
-      <select id="chat-topics"></select>
-      <div id="chat-messages"></div>
-      <div id="chat-input">
-        <textarea id="chat-message-input" rows="2" placeholder="Digite sua mensagem"></textarea>
-        <button id="chat-send-btn">Enviar</button>
-      </div>
-    </section>
-
-    <!-- Mensagens Privadas -->
-    <section id="dm-section" style="display: none;">
-      <h2>Mensagens Privadas</h2>
-      <div id="dm-users"></div>
-      <div id="dm-messages"></div>
-      <div id="dm-input">
-        <textarea id="dm-message-input" rows="2" placeholder="Digite sua mensagem"></textarea>
-        <button id="dm-send-btn">Enviar</button>
-      </div>
-    </section>
-  </main>
-
-</div>
-
-<script>
-  // --- Dados e estrutura básicos ---
-  const STORAGE_USERS = 'falai_users';
-  const STORAGE_SESSION = 'falai_loggedUser';
-
-  // Usuários salvos no localStorage
-  let users = JSON.parse(localStorage.getItem(STORAGE_USERS) || '[]');
-
-  // Usuário atualmente logado
-  let loggedUser = null;
-
-  // Chat por temas pré-definidos
-  const chatTopics = ['cultura pop', 'esportes', 'tecnologia', 'música', 'games'];
-
-  // Estado chat e DM
-  let currentChatTopic = chatTopics[0];
-  let currentDMUser = null;
-
-  // Função para salvar usuários
-  function saveUsers() {
-    localStorage.setItem(STORAGE_USERS, JSON.stringify(users));
-  }
-
-  // Função para salvar sessão
-  function saveSession() {
-    if (loggedUser) {
-      sessionStorage.setItem(STORAGE_SESSION, JSON.stringify({username: loggedUser.username}));
-    } else {
-      sessionStorage.removeItem(STORAGE_SESSION);
-    }
-  }
-
-  // Função para escapar HTML (simples)
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  // --- DOM Elements ---
-
-  // Sections
-  const loginSection = document.getElementById('login-section');
-  const registerSection = document.getElementById('register-section');
-  const header = document.querySelector('header');
-  const feedSection = document.getElementById('feed-section');
-  const profileSection = document.getElementById('profile-section');
-  const chatSection = document.getElementById('chat-section');
-  const dmSection = document.getElementById('dm-section');
-
-  // Login inputs/buttons
-  const loginUsernameInput = document.getElementById('login-username');
-  const loginPasswordInput = document.getElementById('login-password');
-  const loginBtn = document.getElementById('login-btn');
-  const goRegisterLink = document.getElementById('go-register');
-
-  // Register inputs/buttons
-  const registerUsernameInput = document.getElementById('register-username');
-  const registerPasswordInput = document.getElementById('register-password');
-  const registerNameInput = document.getElementById('register-name');
-  const registerBtn = document.getElementById('register-btn');
-  const goLoginLink = document.getElementById('go-login');
-
-  // Nav buttons
-  const navFeedBtn = document.getElementById('nav-feed');
-  const navProfileBtn = document.getElementById('nav-profile');
-  const navChatBtn = document.getElementById('nav-chat');
-  const navDMBtn = document.getElementById('nav-dm');
-  const logoutBtn = document.getElementById('logout-btn');
-
-  // Feed elements
-  const postsContainer = document.getElementById('posts-container');
-  const newPostText = document.getElementById('new-post-text');
-  const postBtn = document.getElementById('post-btn');
-
-  // Profile elements
-  const profileNameSpan = document.getElementById('profile-name');
-  const profileUsernameSpan = document.getElementById('profile-username');
-  const profileFullnameSpan = document.getElementById('profile-fullname');
-  const profileFollowersSpan = document.getElementById('profile-followers');
-  const profileFollowingSpan = document.getElementById('profile-following');
-  const followBtn = document.getElementById('follow-btn');
-
-  // Chat elements
-  const chatTopicsSelect = document.getElementById('chat-topics');
-  const chatMessagesDiv = document.getElementById
-        <button id="chat-send-btn">Enviar</button>
-      </div>
-    </section>
-
-    <!-- Mensagens Privadas (DMs) -->
-    <section id="dm-section" style="display: none;">
-      <h2>Mensagens Privadas</h2>
-      <div id="dm-users"></div>
-      <div id="dm-messages"></div>
-      <div id="dm-input">
-        <textarea id="dm-message-input" rows="2" placeholder="Digite sua mensagem"></textarea>
-        <button id="dm-send-btn">Enviar</button>
-      </div>
-    </section>
-  </main>
-</div>
-
-<script>
-  // Dados salvos localmente
-  const STORAGE_USERS = "falaii_users";
-  const STORAGE_POSTS = "falaii_posts";
-  const STORAGE_FOLLOW = "falaii_follow";
-  const STORAGE_CHAT = "falaii_chat"; // temas => msgs
-  const STORAGE_DM = "falaii_dm"; // mensagens privadas
-
-  // Estado atual
-  let currentUser = null; // username logado
-  let users = JSON.parse(localStorage.getItem(STORAGE_USERS)) || {};
-  let posts = JSON.parse(localStorage.getItem(STORAGE_POSTS)) || [];
-  let follow = JSON.parse(localStorage.getItem(STORAGE_FOLLOW)) || {}; // { user: {seguindo:[], seguidores:[]} }
-  let chat = JSON.parse(localStorage.getItem(STORAGE_CHAT)) || {}; // { tema1: [{user, msg, time}, ...], tema2: [...] }
-  let dm = JSON.parse(localStorage.getItem(STORAGE_DM)) || {}; // { user1_user2: [{from,to,msg,time}, ...] }
-
-  // Temas de chat fixos
-  const chatTopicsList = ["Cultura Pop", "Esportes", "Música", "Estudos", "Off-topic"];
-
-  // Contas pré-definidas para teste, cria admin caso não exista
-  if (!users["saintex"]) {
-    users["saintex"] = { password: "ffg..1.", name: "Admin Saintex" };
-    localStorage.setItem(STORAGE_USERS, JSON.stringify(users));
-  }
-
-  // Inicializa interface mostrando login
-  function showLogin() {
-    document.querySelector("#login-section").style.display = "block";
-    document.querySelector("#register-section").style.display = "none";
-    document.querySelector("header").style.display = "none";
-    hideMainSections();
-  }
-
-  function showRegister() {
-    document.querySelector("#login-section").style.display = "none";
-    document.querySelector("#register-section").style.display = "block";
-    document.querySelector("header").style.display = "none";
-    hideMainSections();
-  }
-
-  function showApp() {
-    document.querySelector("#login-section").style.display = "none";
-    document.querySelector("#register-section").style.display = "none";
-    document.querySelector("header").style.display = "flex";
-  }
-
-  function hideMainSections() {
-    document.querySelector("#feed-section").style.display = "none";
-    document.querySelector("#profile-section").style.display = "none";
-    document.querySelector("#chat-section").style.display = "none";
-    document.querySelector("#dm-section").style.display = "none";
-  }
-
-  // Trocar abas
-  function activateNav(buttonId) {
-    document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
-    document.getElementById(buttonId).classList.add("active");
-  }
-
-  // Atualiza dados de seguir/seguidores
-  function updateFollowData() {
-    if (!follow[currentUser]) {
-      follow[currentUser] = { seguindo: [], seguidores: [] };
-    }
-  }
-
-  // Exibe perfil
-  function renderProfile(username = currentUser) {
-    updateFollowData();
-    let user = users[username];
-    if (!user) return;
-    document.getElementById("profile-name").textContent = user.name;
-    document.getElementById("profile-username").textContent = username;
-    document.getElementById("profile-fullname").textContent = user.name;
-    let seguidores = follow[username]?.seguidores?.length || 0;
-    let seguindo = follow[username]?.seguindo?.length || 0;
-    document.getElementById("profile-followers").textContent = seguidores;
-    document.getElementById("profile-following").textContent = seguindo;
-
-    // Botão seguir
-    let btn = document.getElementById("follow-btn");
-    if (username === currentUser) {
-      btn.style.display = "none";
-    } else {
-      btn.style.display = "inline-block";
-      if (follow[currentUser].seguindo.includes(username)) {
-        btn.textContent = "Deixar de seguir";
-      } else {
-        btn.textContent = "Seguir";
-      }
-    }
-  }
-
-  // Renderiza posts no feed
-  function renderPosts() {
-    const container = document.getElementById("posts-container");
-    container.innerHTML = "";
-    posts.slice().reverse().forEach((post, i) => {
-      let div = document.createElement("div");
-      div.className = "post";
-      let liked = post.likes && post.likes.includes(currentUser);
-      div.innerHTML = `
-        <div class="post-header">${post.user} <span style="font-weight:400; color:#0a0;"> - ${new Date(post.time).toLocaleString()}</span></div>
-        <div class="post-content">${escapeHtml(post.text)}</div>
-        <div class="post-actions">
-          <button class="like-btn" data-index="${i}">${liked ? "Descurtir" : "Curtir"} (${post.likes ? post.likes.length : 0})</button>
-          <button class="comment-toggle" data-index="${i}">Comentários (${post.comments ? post.comments.length : 0})</button>
+    <div class="container">
+        <div class="logo">
+            <h1>FalaAI</h1>
+            <p>Conecte-se com sua comunidade escolar</p>
         </div>
-        <div class="comments" style="display:none;"></div>
-      `;
-      container.appendChild(div);
+        
+        <div class="auth-card">
+            <div class="tabs">
+                <div class="tab active" data-tab="login">Login</div>
+                <div class="tab" data-tab="register">Cadastro</div>
+            </div>
+            
+            <div class="tab-content active" id="login">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginUsername">Usuário</label>
+                        <input type="text" id="loginUsername" class="form-control" placeholder="@seuusuario" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loginPassword">Senha</label>
+                        <input type="password" id="loginPassword" class="form-control" placeholder="Sua senha" required>
+                    </div>
+                    
+                    <div class="remember-me">
+                        <input type="checkbox" id="rememberMe">
+                        <label for="rememberMe">Manter-me conectado</label>
+                    </div>
+                    
+                    <button type="submit" class="btn">Entrar</button>
+                    
+                    <div class="divider">ou</div>
+                    
+                    <div class="social-login">
+                        <button type="button" class="social-btn">
+                            <i class="fab fa-google"></i>
+                        </button>
+                        <button type="button" class="social-btn">
+                            <i class="fab fa-microsoft"></i>
+                        </button>
+                        <button type="button" class="social-btn">
+                            <i class="fab fa-apple"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="tab-content" id="register">
+                <form id="registerForm">
+                    <div class="avatar-upload">
+                        <img id="avatarPreview" class="avatar-preview" src="https://via.placeholder.com/80" alt="Preview da foto">
+                        <label for="avatarInput">Escolher foto</label>
+                        <input type="file" id="avatarInput" accept="image/*">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerName">Nome completo</label>
+                        <input type="text" id="registerName" class="form-control" placeholder="Seu nome" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerUsername">Usuário</label>
+                        <input type="text" id="registerUsername" class="form-control" placeholder="@seuusuario" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerPassword">Senha</label>
+                        <input type="password" id="registerPassword" class="form-control" placeholder="Crie uma senha" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerConfirmPassword">Confirmar senha</label>
+                        <input type="password" id="registerConfirmPassword" class="form-control" placeholder="Confirme sua senha" required>
+                    </div>
+                    
+                    <button type="submit" class="btn">Criar conta</button>
+                    
+                    <p class="footer-text">
+                        Já tem uma conta? <a href="#" class="switch-tab" data-tab="login">Faça login</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
 
-      const commentsDiv = div.querySelector(".comments");
-      if (post.comments && post.comments.length) {
-        post.comments.forEach(cmt => {
-          const cmtDiv = document.createElement("div");
-          cmtDiv.className = "comment";
-          cmtDiv.innerHTML = `<strong>${cmt.user}</strong>: ${escapeHtml(cmt.text)}`;
-          commentsDiv.appendChild(cmtDiv);
+    <script src="auth.js"></script>
+    <script>
+        // Alternar entre abas de login e cadastro
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
+                // Remover classe active de todas as abas e conteúdos
+                document.querySelectorAll('.tab, .tab-content').forEach(element => {
+                    element.classList.remove('active');
+                });
+                
+                // Adicionar classe active à aba e conteúdo clicados
+                tab.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
         });
-      }
-
-      // Toggle comments
-      div.querySelector(".comment-toggle").onclick = e => {
-        if (commentsDiv.style.display === "none") {
-          commentsDiv.style.display = "block";
-          // Adicionar input pra comentar
-          if (!div.querySelector(".comment-input")) {
-            const input = document.createElement("textarea");
-            input.className = "comment-input";
-            input.rows = 2;
-            input.placeholder = "Comente algo...";
-            input.style.width = "100%";
-            input.style.marginTop = "8px";
-            div.appendChild(input);
-            const btn = document.createElement("button");
-            btn.textContent = "Enviar comentário";
-            btn.style.background = "#0f0";
-            btn.style.color = "#121212";
-            btn.style.border = "none";
-            btn.style.borderRadius = "6px";
-            btn.style.padding = "6px 12px";
-            btn.style.marginTop = "6px";
-            btn.style.cursor = "pointer";
-            div.appendChild(btn);
-            btn.onclick = () => {
-              let text = input.value.trim();
-              if (text) {
-                post.comments = post.comments || [];
-                post.comments.push({ user: currentUser, text });
-                savePosts();
-                renderPosts();
-              }
-            };
-          }
-        } else {
-          commentsDiv.style.display = "none";
-          // Remove input e botão
-          const input = div.querySelector(".comment-input");
-          if (input) input.remove();
-          const btn = div.querySelector("button:last-child");
-          if (btn && btn.textContent === "Enviar comentário") btn.remove();
-        }
-      };
-
-      // Like botão
-      div.querySelector(".like-btn").onclick = e => {
-        if (!post.likes) post.likes = [];
-        if (post.likes.includes(currentUser)) {
-          post.likes = post.likes.filter(u => u !== currentUser);
-        } else {
-          post.likes.push(currentUser);
-        }
-        savePosts();
-        renderPosts();
-      };
-    });
-  }
-
-  // Salvar posts no localStorage
-  function savePosts() {
-    localStorage.setItem(STORAGE_POSTS, JSON.stringify(posts));
-  }
-
-  // Escapar HTML para evitar XSS básico
-  function escapeHtml(text) {
-    return text.replace(/[&<>"']/g, function(m) {
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
-    });
-  }
-
-  // Renderizar temas do chat
-  function renderChatTopics() {
-    const select = document.getElementById("chat-topics");
-    select.innerHTML = "";
-    chatTopicsList.forEach(topic => {
-      const option = document.createElement("option");
-      option.value = topic;
-      option.textContent = topic;
-      select.appendChild(option);
-    });
-  }
-
-  // Renderizar mensagens do chat do tema selecionado
-  function renderChatMessages(topic) {
-    const container = document.getElementById("chat-messages");
-    container.innerHTML = "";
-        if (!chat[topic]) chat[topic] = [];
-    chat[topic].forEach(msg => {
-      const div = document.createElement("div");
-      div.className = "chat-message";
-      div.innerHTML = `<strong>${msg.user}</strong>: ${escapeHtml(msg.msg)} <span style="font-size: 0.7em; color: #555;">(${new Date(msg.time).toLocaleTimeString()})</span>`;
-      container.appendChild(div);
-    });
-    container.scrollTop = container.scrollHeight;
-  }
-
-  // Enviar mensagem no chat
-  document.getElementById("chat-send-btn").onclick = () => {
-    const topic = document.getElementById("chat-topics").value;
-    const input = document.getElementById("chat-message-input");
-    const text = input.value.trim();
-    if (text) {
-      if (!chat[topic]) chat[topic] = [];
-      chat[topic].push({ user: currentUser, msg: text, time: Date.now() });
-      localStorage.setItem(STORAGE_CHAT, JSON.stringify(chat));
-      input.value = "";
-      renderChatMessages(topic);
-    }
-  };
-
-  // Atualizar chat ao mudar tema
-  document.getElementById("chat-topics").onchange = (e) => {
-    renderChatMessages(e.target.value);
-  };
-
-  // --- Mensagens Privadas (DM) ---
-
-  // Gera chave para conversar entre 2 usuários (ordem alfabética pra evitar duplicatas)
-  function dmKey(user1, user2) {
-    return [user1, user2].sort().join("_");
-  }
-
-  // Renderiza lista de usuários para DM (exclui o usuário logado)
-  function renderDMUsers() {
-    const container = document.getElementById("dm-users");
-    container.innerHTML = "<strong>Usuários:</strong><br>";
-    Object.keys(users).forEach(user => {
-      if (user !== currentUser) {
-        const btn = document.createElement("button");
-        btn.textContent = user;
-        btn.style.margin = "3px";
-        btn.onclick = () => openDM(user);
-        container.appendChild(btn);
-      }
-    });
-  }
-
-  let currentDMUser = null;
-
-  // Abre conversa com usuário
-  function openDM(user) {
-    currentDMUser = user;
-    document.getElementById("dm-messages").innerHTML = "";
-    renderDMMessages();
-  }
-
-  // Renderiza mensagens da DM atual
-  function renderDMMessages() {
-    const container = document.getElementById("dm-messages");
-    container.innerHTML = "";
-    if (!currentDMUser) {
-      container.textContent = "Selecione um usuário para conversar.";
-      return;
-    }
-    const key = dmKey(currentUser, currentDMUser);
-    if (!dm[key]) dm[key] = [];
-    dm[key].forEach(m => {
-      const div = document.createElement("div");
-      div.style.marginBottom = "5px";
-      div.innerHTML = `<strong>${m.from === currentUser ? "Você" : m.from}</strong>: ${escapeHtml(m.msg)} <span style="font-size: 0.7em; color: #555;">(${new Date(m.time).toLocaleTimeString()})</span>`;
-      container.appendChild(div);
-    });
-    container.scrollTop = container.scrollHeight;
-  }
-
-  // Enviar DM
-  document.getElementById("dm-send-btn").onclick = () => {
-    const input = document.getElementById("dm-message-input");
-    const text = input.value.trim();
-    if (text && currentDMUser) {
-      const key = dmKey(currentUser, currentDMUser);
-      if (!dm[key]) dm[key] = [];
-      dm[key].push({ from: currentUser, to: currentDMUser, msg: text, time: Date.now() });
-      localStorage.setItem(STORAGE_DM, JSON.stringify(dm));
-      input.value = "";
-      renderDMMessages();
-    }
-  };
-
-  // --- Navegação ---
-  document.getElementById("nav-feed").onclick = () => {
-    activateNav("nav-feed");
-    hideMainSections();
-    document.getElementById("feed-section").style.display = "block";
-    renderPosts();
-  };
-
-  document.getElementById("nav-profile").onclick = () => {
-    activateNav("nav-profile");
-    hideMainSections();
-    document.getElementById("profile-section").style.display = "block";
-    renderProfile();
-  };
-
-  document.getElementById("nav-chat").onclick = () => {
-    activateNav("nav-chat");
-    hideMainSections();
-    document.getElementById("chat-section").style.display = "block";
-    renderChatTopics();
-    renderChatMessages(document.getElementById("chat-topics").value);
-  };
-
-  document.getElementById("nav-dm").onclick = () => {
-    activateNav("nav-dm");
-    hideMainSections();
-    document.getElementById("dm-section").style.display = "block";
-    renderDMUsers();
-  };
-
-  document.getElementById("logout-btn").onclick = () => {
-    currentUser = null;
-    showLogin();
-  };
-
-  // --- Login e Registro ---
-
-  document.getElementById("login-btn").onclick = () => {
-    const user = document.getElementById("login-user").value.trim();
-    const pass = document.getElementById("login-pass").value;
-    if (users[user] && users[user].password === pass) {
-      currentUser = user;
-      showApp();
-      document.getElementById("login-user").value = "";
-      document.getElementById("login-pass").value = "";
-      activateNav("nav-feed");
-      hideMainSections();
-      document.getElementById("feed-section").style.display = "block";
-      renderPosts();
-    } else {
-      alert("Usuário ou senha incorretos.");
-    }
-  };
-
-  document.getElementById("show-register").onclick = () => {
-    showRegister();
-  };
-
-  document.getElementById("register-btn").onclick = () => {
-    const user = document.getElementById("register-user").value.trim();
-    const pass = document.getElementById("register-pass").value;
-    const name = document.getElementById("register-name").value.trim() || user;
-    if (!user || !pass) {
-      alert("Preencha todos os campos.");
-      return;
-    }
-    if (users[user]) {
-      alert("Usuário já existe.");
-      return;
-    }
-    users[user] = { password: pass, name };
-    localStorage.setItem(STORAGE_USERS, JSON.stringify(users));
-    alert("Usuário registrado com sucesso! Faça login.");
-    showLogin();
-  };
-
-  document.getElementById("show-login").onclick = () => {
-    showLogin();
-  };
-
-  // Botão seguir/deixar de seguir
-  document.getElementById("follow-btn").onclick = () => {
-    const perfilUser = document.getElementById("profile-username").textContent;
-    updateFollowData();
-    updateFollowData(perfilUser);
-    if (follow[currentUser].seguindo.includes(perfilUser)) {
-      follow[currentUser].seguindo = follow[currentUser].seguindo.filter(u => u !== perfilUser);
-      follow[perfilUser].seguidores = follow[perfilUser].seguidores.filter(u => u !== currentUser);
-    } else {
-      follow[currentUser].seguindo.push(perfilUser);
-      follow[perfilUser].seguidores.push(currentUser);
-    }
-    localStorage.setItem(STORAGE_FOLLOW, JSON.stringify(follow));
-    renderProfile(perfilUser);
-  };
-
-  // Inicializa app
-  showLogin();
-
-</script>
-
-<style>
-  /* Básico para deixar visual melhor */
-  body {
-    font-family: Arial, sans-serif;
-    background: #222;
-    color: #eee;
-    margin: 0;
-    padding: 0;
-  }
-  #app {
-    max-width: 900px;
-    margin: auto;
-    padding: 20px;
-    background: #121212;
-    border-radius: 10px;
-  }
-  header {
-    display: none;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    align-items: center;
-  }
-  nav button {
-    background: none;
-    border: none;
-    color: #eee;
-    padding: 10px 15px;
-    cursor: pointer;
-    font-size: 1em;
-  }
-  nav button.active, nav button:hover {
-    background: #0f0;
-    color: #121212;
-    border-radius: 6px;
-  }
-  main section {
-    margin-top: 10px;
-  }
-  button {
-    cursor: pointer;
-  }
-  textarea, input[type=text], input[type=password] {
-    width: 100%;
-    padding: 8px;
-    margin: 5px 0 10px 0;
-    border-radius: 6px;
-    border: none;
-    box-sizing: border-box;
-    font-size: 1em;
-  }
-  .post {
-    background: #333;
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-  }
-  .post-header {
-    font-weight: bold;
-    margin-bottom: 6px;
-  }
-  .post-actions button {
-    margin-right: 10px;
-    background: #0a0;
-    color: #121212;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 6px;
-  }
-  .comments {
-    margin-top: 10px;
-    background: #444;
-    padding: 6px;
-    border-radius: 6px;
-  }
-  .comment {
-    padding: 4px 0;
-  }
-  #chat-messages, #dm-messages {
-    height: 250px;
-    overflow-y: auto;
-    background: #333;
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-  }
-  #chat-input, #dm-input {
-    display: flex;
-    gap: 10px;
-  }
-  #chat-input textarea, #dm-input textarea {
-    flex-grow: 1;
-  }
-  #chat-input button, #dm-input button {
-    background: #0a0;
-    color: #121212;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-  }
-  #dm-users button {
-    background: #555;
-    color: #eee;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-  }
-  #dm-users button:hover {
-    background: #0a0;
-    color: #121212;
-  }
-</style>
+        
+        // Alternar entre abas via links
+        document.querySelectorAll('.switch-tab').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tabId = link.getAttribute('data-tab');
+                
+                // Remover classe active de todas as abas e conteúdos
+                document.querySelectorAll('.tab, .tab-content').forEach(element => {
+                    element.classList.remove('active');
+                });
+                
+                // Adicionar classe active à aba e conteúdo alvo
+                document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Preview da foto de perfil
+        const avatarInput = document.getElementById('avatarInput');
+        const avatarPreview = document.getElementById('avatarPreview');
+        
+        avatarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    avatarPreview.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>
