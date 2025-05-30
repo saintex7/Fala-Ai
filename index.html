@@ -1,293 +1,161 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SaintJornal</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jornal Escolar</title>
   <style>
+    :root {
+      --bg-color: #f4f4f4;
+      --text-color: #333;
+      --card-bg: #fff;
+      --primary: #0077ff;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #1e1e1e;
+      --text-color: #eee;
+      --card-bg: #2b2b2b;
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
+      transition: all 0.3s ease;
     }
+
     body {
-      background-color: #121212;
-      color: #f1f1f1;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-family: Arial, sans-serif;
+      padding: 1rem;
     }
+
     header {
-      background-color: #1f1f1f;
-      padding: 1rem;
-      text-align: center;
-      font-size: 1.8rem;
-      font-weight: bold;
-    }
-    main {
-      flex: 1;
       display: flex;
-    }
-    aside {
-      width: 250px;
-      background: #1a1a1a;
-      padding: 1rem;
-      border-right: 1px solid #333;
-    }
-    section {
-      flex: 1;
-      padding: 1rem;
-      overflow-y: auto;
-    }
-    .profile-section label, .profile-section input {
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-    .post, .chat-message {
-      background: #222;
-      padding: 1rem;
-      border-radius: 10px;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 1rem;
     }
-    .post img, .avatar img {
-      max-width: 100%;
-      border-radius: 10px;
-      margin-top: 0.5rem;
+
+    h1 {
+      font-size: 1.5rem;
     }
-    .avatar img {
-      width: 40px;
-      height: 40px;
-      object-fit: cover;
-      border-radius: 50%;
-    }
-    .post-header, .chat-header {
+
+    .profile {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      margin-bottom: 0.5rem;
     }
+
+    .profile img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .profile input[type="file"] {
+      display: none;
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeIn 0.6s ease forwards;
+    }
+
+    .card:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .card:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     .theme-toggle {
-      position: absolute;
-      top: 10px;
-      right: 10px;
+      cursor: pointer;
+      padding: 0.4rem 0.8rem;
+      background: var(--primary);
+      color: white;
+      border-radius: 0.5rem;
+      border: none;
     }
   </style>
 </head>
 <body>
   <header>
-    SaintJornal
-    <button class="theme-toggle" onclick="toggleTheme()">Alternar Tema</button>
+    <h1>Jornal Escolar</h1>
+    <div class="profile">
+      <label for="avatarInput">
+        <img id="avatar" src="https://placehold.co/40x40" alt="Avatar" title="Clique para trocar a foto">
+      </label>
+      <input type="file" id="avatarInput" accept="image/*">
+      <button class="theme-toggle" onclick="toggleTheme()">Trocar Tema</button>
+    </div>
   </header>
-  <main>
-    <aside>
-      <h3>Perfil</h3>
-      <div class="profile-section">
-        <label for="profileName">Nome:</label>
-        <input type="text" id="profileName" />
-        <label for="profileAvatarInput">Foto do Perfil:</label>
-        <input type="file" id="profileAvatarInput" accept="image/*" />
-        <label for="profileBio">Bio:</label>
-        <input type="text" id="profileBio" />
-      </div>
-      <h3>Tópicos</h3>
-      <ul>
-        <li><button onclick="selectTopic('cultura')">Cultura Pop</button></li>
-        <li><button onclick="selectTopic('esportes')">Esportes</button></li>
-        <li><button onclick="selectTopic('opinioes')">Opiniões</button></li>
-      </ul>
-    </aside>
-    <section>
-      <form id="postForm">
-        <textarea id="postText" rows="3" placeholder="Escreva algo..."></textarea>
-        <input type="file" id="postImageInput" accept="image/*" />
-        <button type="submit">Postar</button>
-      </form>
-      <div id="feed"></div>
-      <div id="chatArea">
-        <h3>Chat</h3>
-        <div id="chatMessages" style="max-height: 200px; overflow-y: auto;"></div>
-        <input type="text" id="chatInput" placeholder="Digite sua mensagem..." />
-        <button id="chatSendBtn">Enviar</button>
-      </div>
-    </section>
-  </main>
+
+  <section class="card">
+    <h2>Cultura Pop</h2>
+    <p>Entre nesse chat e discuta tudo sobre filmes, séries, e música!</p>
+  </section>
+
+  <section class="card">
+    <h2>Esportes</h2>
+    <p>Fale sobre os esportes da escola, campeonatos e mais.</p>
+  </section>
+
+  <section class="card">
+    <h2>Atualidades</h2>
+    <p>Discuta notícias, acontecimentos importantes e o que está rolando no mundo.</p>
+  </section>
 
   <script>
-    const profile = JSON.parse(localStorage.getItem('profile')) || {
-      name: 'Visitante',
-      avatarImg: '',
-      bio: '',
-    };
+    // Tema claro/escuro salvo
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("theme", next);
+    }
 
-    const posts = JSON.parse(localStorage.getItem('posts')) || [];
-    const chats = JSON.parse(localStorage.getItem('chats')) || {};
-    let currentTopic = 'cultura';
+    if (localStorage.getItem("theme")) {
+      document.documentElement.setAttribute("data-theme", localStorage.getItem("theme"));
+    }
 
-    const profileName = document.getElementById('profileName');
-    const profileBio = document.getElementById('profileBio');
-    const profileAvatarInput = document.getElementById('profileAvatarInput');
-    const postForm = document.getElementById('postForm');
-    const postText = document.getElementById('postText');
-    const postImageInput = document.getElementById('postImageInput');
-    const feed = document.getElementById('feed');
-    const chatMessages = document.getElementById('chatMessages');
-    const chatInput = document.getElementById('chatInput');
-    const chatSendBtn = document.getElementById('chatSendBtn');
+    // Avatar personalizado
+    const avatarInput = document.getElementById("avatarInput");
+    const avatarImg = document.getElementById("avatar");
 
-    profileName.value = profile.name;
-    profileBio.value = profile.bio;
-
-    profileName.oninput = saveProfile;
-    profileBio.oninput = saveProfile;
-    profileAvatarInput.onchange = e => {
+    avatarInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        profile.avatarImg = reader.result;
-        saveProfile();
-      };
-      reader.readAsDataURL(file);
-    };
-
-    function saveProfile() {
-      profile.name = profileName.value.trim();
-      profile.bio = profileBio.value.trim();
-      localStorage.setItem('profile', JSON.stringify(profile));
-      renderAll();
-    }
-
-    function createAvatarElement(avatarImg) {
-      const div = document.createElement('div');
-      div.classList.add('avatar');
-      if (avatarImg) {
-        const img = document.createElement('img');
-        img.src = avatarImg;
-        div.appendChild(img);
-      } else {
-        div.textContent = '👤';
-      }
-      return div;
-    }
-
-    function createPostElement(post) {
-      const div = document.createElement('div');
-      div.classList.add('post');
-
-      const header = document.createElement('div');
-      header.classList.add('post-header');
-      header.appendChild(createAvatarElement(post.author.avatarImg));
-      const name = document.createElement('strong');
-      name.textContent = post.author.name;
-      header.appendChild(name);
-
-      div.appendChild(header);
-      const content = document.createElement('div');
-      content.textContent = post.content;
-      div.appendChild(content);
-
-      if (post.image) {
-        const img = document.createElement('img');
-        img.src = post.image;
-        div.appendChild(img);
-      }
-
-      return div;
-    }
-
-    function renderFeed() {
-      feed.innerHTML = '';
-      posts.filter(p => p.topic === currentTopic).forEach(p => {
-        feed.appendChild(createPostElement(p));
-      });
-    }
-
-    function renderChat() {
-      chatMessages.innerHTML = '';
-      const topicChats = chats[currentTopic] || [];
-      topicChats.forEach(msg => {
-        const div = document.createElement('div');
-        div.classList.add('chat-message');
-
-        const header = document.createElement('div');
-        header.classList.add('chat-header');
-        header.appendChild(createAvatarElement(msg.author.avatarImg));
-        const name = document.createElement('strong');
-        name.textContent = msg.author.name;
-        header.appendChild(name);
-
-        const text = document.createElement('div');
-        text.textContent = msg.content;
-        div.appendChild(header);
-        div.appendChild(text);
-
-        chatMessages.appendChild(div);
-      });
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    postForm.onsubmit = e => {
-      e.preventDefault();
-      const content = postText.value.trim();
-      if (!content) return;
-      const post = {
-        author: { name: profile.name, avatarImg: profile.avatarImg },
-        content,
-        topic: currentTopic,
-        image: null,
-      };
-      const file = postImageInput.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = () => {
-          post.image = reader.result;
-          posts.push(post);
-          localStorage.setItem('posts', JSON.stringify(posts));
-          postText.value = '';
-          renderFeed();
-        };
+        reader.onload = function (e) {
+          avatarImg.src = e.target.result;
+          localStorage.setItem("profilePic", e.target.result);
+        }
         reader.readAsDataURL(file);
-      } else {
-        posts.push(post);
-        localStorage.setItem('posts', JSON.stringify(posts));
-        postText.value = '';
-        renderFeed();
       }
-    };
+    });
 
-    chatSendBtn.onclick = () => {
-      const msg = chatInput.value.trim();
-      if (!msg) return;
-      if (!chats[currentTopic]) chats[currentTopic] = [];
-      chats[currentTopic].push({ author: { name: profile.name, avatarImg: profile.avatarImg }, content: msg });
-      localStorage.setItem('chats', JSON.stringify(chats));
-      chatInput.value = '';
-      renderChat();
-    };
-
-    function selectTopic(topic) {
-      currentTopic = topic;
-      renderAll();
+    const savedAvatar = localStorage.getItem("profilePic");
+    if (savedAvatar) {
+      avatarImg.src = savedAvatar;
     }
-
-    function renderAll() {
-      renderFeed();
-      renderChat();
-    }
-
-    function toggleTheme() {
-      const dark = document.body.style.backgroundColor === 'rgb(18, 18, 18)';
-      if (dark) {
-        document.body.style.backgroundColor = '#fff';
-        document.body.style.color = '#000';
-      } else {
-        document.body.style.backgroundColor = '#121212';
-        document.body.style.color = '#f1f1f1';
-      }
-    }
-
-    renderAll();
   </script>
 </body>
 </html>
