@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jornal Escolar</title>
+  <title>Jornal Escolar - Social</title>
   <style>
     :root {
       --bg-color: #f4f4f4;
@@ -71,12 +71,43 @@
       animation: fadeIn 0.6s ease forwards;
     }
 
-    .card:nth-child(2) {
-      animation-delay: 0.2s;
+    .chat-box {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 1rem;
     }
 
-    .card:nth-child(3) {
-      animation-delay: 0.4s;
+    .chat-message {
+      background: var(--primary);
+      color: #fff;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      max-width: 80%;
+    }
+
+    .chat-input {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid #ccc;
+    }
+
+    .chat-input button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 0.5rem;
+      background: var(--primary);
+      color: #fff;
+      cursor: pointer;
     }
 
     @keyframes fadeIn {
@@ -111,20 +142,35 @@
   <section class="card">
     <h2>Cultura Pop</h2>
     <p>Entre nesse chat e discuta tudo sobre filmes, séries, e música!</p>
+    <div class="chat-box" id="chat-cultura"></div>
+    <div class="chat-input">
+      <input type="text" id="msg-cultura" placeholder="Digite sua mensagem...">
+      <button onclick="enviarMsg('cultura')">Enviar</button>
+    </div>
   </section>
 
   <section class="card">
     <h2>Esportes</h2>
     <p>Fale sobre os esportes da escola, campeonatos e mais.</p>
+    <div class="chat-box" id="chat-esportes"></div>
+    <div class="chat-input">
+      <input type="text" id="msg-esportes" placeholder="Digite sua mensagem...">
+      <button onclick="enviarMsg('esportes')">Enviar</button>
+    </div>
   </section>
 
   <section class="card">
     <h2>Atualidades</h2>
     <p>Discuta notícias, acontecimentos importantes e o que está rolando no mundo.</p>
+    <div class="chat-box" id="chat-atualidades"></div>
+    <div class="chat-input">
+      <input type="text" id="msg-atualidades" placeholder="Digite sua mensagem...">
+      <button onclick="enviarMsg('atualidades')">Enviar</button>
+    </div>
   </section>
 
   <script>
-    // Tema claro/escuro salvo
+    // Tema
     function toggleTheme() {
       const current = document.documentElement.getAttribute("data-theme");
       const next = current === "dark" ? "light" : "dark";
@@ -136,7 +182,7 @@
       document.documentElement.setAttribute("data-theme", localStorage.getItem("theme"));
     }
 
-    // Avatar personalizado
+    // Avatar
     const avatarInput = document.getElementById("avatarInput");
     const avatarImg = document.getElementById("avatar");
 
@@ -155,6 +201,20 @@
     const savedAvatar = localStorage.getItem("profilePic");
     if (savedAvatar) {
       avatarImg.src = savedAvatar;
+    }
+
+    // Chat
+    function enviarMsg(topico) {
+      const input = document.getElementById(`msg-${topico}`);
+      const chatBox = document.getElementById(`chat-${topico}`);
+      if (input.value.trim() !== '') {
+        const msg = document.createElement('div');
+        msg.className = 'chat-message';
+        msg.textContent = input.value;
+        chatBox.appendChild(msg);
+        input.value = '';
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
     }
   </script>
 </body>
