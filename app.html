@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FalaAI - Rede Social Escolar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-mode">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>FalaAI</h1>
+                <button id="themeToggle" class="icon-btn">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-tab="feed">
+                    <i class="fas fa-home"></i>
+                    <span>Feed</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="explore">
+                    <i class="fas fa-hashtag"></i>
+                    <span>Explorar</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="chats">
+                    <i class="fas fa-comments"></i>
+                    <span>Chats</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="messages">
+                    <i class="fas fa-envelope"></i>
+                    <span>Mensagens</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="profile">
+                    <i class="fas fa-user"></i>
+                    <span>Perfil</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Configurações</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="btn btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sair</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <h2 id="currentTabTitle">Feed</h2>
+                <div class="header-actions">
+                    <button id="newPostBtn" class="icon-btn">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button id="notificationsBtn" class="icon-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </button>
+                    <div class="user-avatar small" id="headerAvatar">
+                        <img src="https://via.placeholder.com/40" alt="User">
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Tab Content -->
+            <div class="tab-content active" id="feed">
+                <!-- Posts will be loaded here dynamically -->
+            </div>
+            
+            <div class="tab-content" id="explore">
+                <div class="explore-container">
+                    <h3>Tópicos em destaque</h3>
+                    <div class="topics-grid">
+                        <!-- Topics will be loaded here dynamically -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="chats">
+                <div class="chats-container">
+                    <div class="chat-topics">
+                        <h3>Canais de Chat</h3>
+                        <ul class="topic-list">
+                            <!-- Chat topics will be loaded here dynamically -->
+                        </ul>
+                    </div>
+                    <div class="chat-window">
+                        <div class="chat-header">
+                            <h4 id="currentChatTopic">Selecione um tópico</h4>
+                        </div>
+                        <div class="chat-messages" id="chatMessages">
+                            <p class="empty-chat">Selecione um tópico para começar a conversar</p>
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" id="chatMessageInput" placeholder="Digite sua mensagem..." disabled>
+                            <button id="sendChatMessage" class="icon-btn" disabled>
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="messages">
+                <div class="messages-container">
+                    <div class="conversations-list">
+                        <h3>Conversas</h3>
+                        <div class="search-box">
+                            <input type="text" placeholder="Pesquisar conversas...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <ul id="conversationsList">
+                            <!-- Conversations will be loaded here dynamically -->
+                        </ul>
+                    </div>
+                    <div class="conversation-view">
+                        <div class="conversation-header">
+                            <div id="conversationInfo">
+                                <p class="empty-conversation">Selecione uma conversa</p>
+                            </div>
+                        </div>
+                        <div class="conversation-messages" id="conversationMessages">
+                            <p class="empty-conversation">Selecione uma conversa para ver as mensagens</p>
+                        </div>
+                        <div class="conversation-input">
+                            <input type="text" id="dmInput" placeholder="Digite sua mensagem..." disabled>
+                            <button id="sendDm" class="icon-btn" disabled>
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="profile">
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <img id="profileAvatarImg" src="https://via.placeholder.com/100" alt="Profile">
+                        </div>
+                        <div class="profile-info">
+                            <h3 id="profileName">Nome do Usuário</h3>
+                            <p id="profileUsername">@usuario</p>
+                            <div class="profile-stats">
+                                <div class="stat">
+                                    <span class="count" id="postCount">0</span>
+                                    <span class="label">Postagens</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="count" id="followerCount">0</span>
+                                    <span class="label">Seguidores</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="count" id="followingCount">0</span>
+                                    <span class="label">Seguindo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-bio">
+                        <p id="profileBio">Biografia do usuário...</p>
+                    </div>
+                    
+                    <div class="profile-actions">
+                        <button id="editProfileBtn" class="btn btn-outline">Editar Perfil</button>
+                        <button id="followBtn" class="btn btn-primary" style="display: none;">Seguir</button>
+                    </div>
+                    
+                    <div class="profile-tabs">
+                        <button class="profile-tab active" data-tab="profile-posts">Postagens</button>
+                        <button class="profile-tab" data-tab="profile-likes">Curtidas</button>
+                        <button class="profile-tab" data-tab="profile-comments">Comentários</button>
+                    </div>
+                    
+                    <div class="profile-content">
+                        <div class="profile-tab-content active" id="profile-posts">
+                            <!-- User posts will be loaded here dynamically -->
+                        </div>
+                        <div class="profile-tab-content" id="profile-likes">
+                            <!-- Liked posts will be loaded here dynamically -->
+                        </div>
+                        <div class="profile-tab-content" id="profile-comments">
+                            <!-- User comments will be loaded here dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="settings">
+                <div class="settings-container">
+                    <h3>Configurações</h3>
+                    
+                    <div class="settings-section">
+                        <h4>Conta</h4>
+                        <div class="settings-item">
+                            <div class="settings-info">
+                                <h5>Informações Pessoais</h5>
+                                <p>Atualize seu nome e outras informações</p>
+                            </div>
+                            <button class="btn btn-outline" id="editPersonalInfoBtn">Editar</button>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-info">
+                                <h5>Segurança</h5>
+                                <p>Altere sua senha e configurações de segurança</p>
+                            </div>
+                            <button class="btn btn-outline" id="securitySettingsBtn">Editar</button>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h4>Privacidade</h4>
+                        <div class="settings-item">
+                            <div class="settings-info">
+                                <h5>Perfil Público</h5>
+                                <p>Tornar seu perfil visível para todos</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="publicProfileToggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-info">
+                                <h5>Histórico de Atividades</h5>
+                                <p>Mostrar minhas curtidas e comentários</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="activityHistoryToggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h4>Administração</h4>
+                        <div class="settings-item">
+                            <div class="settings-info">
+                                <h5>Gerenciar Usuários</h5>
+                                <p>Visualizar e gerenciar todos os usuários</p>
+                            </div>
+                            <button class="btn btn-outline" id="manageUsersBtn" style="display: none;">Acessar</button>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-info">
+                                <h5>Moderação de Conteúdo</h5>
+                                <p>Remover postagens e comentários</p>
+                            </div>
+                            <button class="btn btn-outline" id="moderateContentBtn" style="display: none;">Acessar</button>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section danger-zone">
+                        <h4>Zona de Perigo</h4>
+                        <div class="settings-item">
+                            <div class="settings-info">
+                                <h5>Excluir Conta</h5>
+                                <p>Excluir permanentemente sua conta e todos os dados</p>
+                            </div>
+                            <button class="btn btn-danger" id="deleteAccountBtn">Excluir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modals -->
+    <div class="modal" id="newPostModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Criar Nova Postagem</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="newPostForm">
+                    <div class="form-group">
+                        <textarea id="postContent" placeholder="O que você está pensando?" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="postImage" class="file-upload-label">
+                            <i class="fas fa-image"></i> Adicionar Imagem
+                        </label>
+                        <input type="file" id="postImage" accept="image/*">
+                        <div id="imagePreviewContainer" style="display: none;">
+                            <img id="imagePreview" src="#" alt="Preview da imagem">
+                            <button type="button" id="removeImageBtn" class="btn btn-danger btn-sm">Remover</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Publicar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="editProfileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Perfil</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm">
+                    <div class="avatar-upload">
+                        <img id="editAvatarPreview" class="avatar-preview" src="https://via.placeholder.com/100" alt="Preview da foto">
+                        <label for="editAvatarInput">Alterar foto</label>
+                        <input type="file" id="editAvatarInput" accept="image/*">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editName">Nome</label>
+                        <input type="text" id="editName" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editUsername">Usuário</label>
+                        <input type="text" id="editUsername" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editBio">Biografia</label>
+                        <textarea id="editBio" class="form-control" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="adminModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="adminModalTitle">Administração</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body" id="adminModalBody">
+                <!-- Admin content will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="confirmModal">
+        <div class="modal-content small">
+            <div class="modal-header">
+                <h3 id="confirmModalTitle">Confirmar Ação</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmModalMessage">Tem certeza que deseja realizar esta ação?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="confirmCancelBtn">Cancelar</button>
+                <button class="btn btn-danger" id="confirmActionBtn">Confirmar</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="storage.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
