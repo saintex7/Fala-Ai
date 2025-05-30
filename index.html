@@ -1,422 +1,359 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="light">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>FalaAí Social - Rede Escolar</title>
+<title>Jornal Escolar - Rede Social</title>
 <style>
-  /* ===== VARIÁVEIS DE CORES ===== */
   :root {
-    --primary: #1d9bf0;
-    --primary-dark: #1578c8;
-    --bg-light: #f5f8fa;
-    --bg-dark: #15202b;
-    --text-light: #14171a;
-    --text-dark: #e1e8ed;
-    --gray-light: #657786;
-    --gray-dark: #8899a6;
-    --white: #fff;
-    --error: #e0245e;
+    --primary: #0077ff;
+    --bg-light: #f5f8ff;
+    --bg-dark: #121212;
+    --text-light: #333;
+    --text-dark: #eee;
+    --card-light: #fff;
+    --card-dark: #1e1e1e;
   }
-
-  /* ===== MODO DARK ===== */
   [data-theme="dark"] {
     --bg-light: var(--bg-dark);
     --text-light: var(--text-dark);
-    --gray-light: var(--gray-dark);
-    background: var(--bg-dark);
-    color: var(--text-dark);
+    --card-light: var(--card-dark);
   }
-
-  /* ===== RESET ===== */
   * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
-
   body {
     background: var(--bg-light);
     color: var(--text-light);
+    min-height: 100vh;
     display: flex;
-    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  #app {
+    width: 100%;
+    max-width: 900px;
+    background: var(--card-light);
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
     overflow: hidden;
   }
 
-  /* ===== SIDEBAR ===== */
-  aside {
-    width: 280px;
-    background: var(--white);
-    border-right: 1px solid #ccc;
-    padding: 2rem 1.5rem;
+  /* Login & Cadastro */
+  #login-page, #feed-page, #profile-page {
+    display: none;
+    padding: 2rem;
+  }
+  #login-page.active, #feed-page.active, #profile-page.active {
+    display: block;
+  }
+  h2 {
+    margin-bottom: 1.5rem;
+    color: var(--primary);
+  }
+  form {
     display: flex;
     flex-direction: column;
+    gap: 1rem;
+  }
+  input[type="text"], input[type="password"] {
+    padding: 0.8rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+  }
+  button {
+    padding: 0.8rem;
+    border: none;
+    border-radius: 6px;
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  button:hover {
+    background: #005ecc;
+  }
+  .link-button {
+    background: none;
+    color: var(--primary);
+    text-align: center;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 0.9rem;
+  }
+  .error {
+    color: red;
+    font-size: 0.9rem;
+  }
+
+  /* Feed */
+  #feed-header {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-  }
-
-  [data-theme="dark"] aside {
-    background: #192734;
-    border-color: #38444d;
-  }
-
-  aside img.avatar {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
     margin-bottom: 1rem;
+  }
+  #feed-header h2 {
+    margin: 0;
+  }
+  #theme-toggle-btn {
+    background: none;
+    border: 2px solid var(--primary);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    color: var(--primary);
     cursor: pointer;
   }
-
-  aside input[type="file"] {
-    display: none;
+  #logout-btn {
+    background: none;
+    border: 2px solid #ff4444;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    color: #ff4444;
+    cursor: pointer;
+    margin-left: 1rem;
   }
-
-  aside h2 {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
+  #feed-menu {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
   }
-
-  aside button#toggleTheme {
-    margin-top: auto;
-    padding: 0.5rem 1rem;
-    background: var(--primary);
-    color: var(--white);
-    border: none;
-    border-radius: 9999px;
+  .feed-menu-btn {
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    border: 2px solid var(--primary);
+    background: none;
+    color: var(--primary);
     cursor: pointer;
     font-weight: 600;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s;
   }
-
-  aside button#toggleTheme:hover {
-    background: var(--primary-dark);
-  }
-
-  aside input#userName {
-    margin-top: 1rem;
-    padding: 0.5rem;
-    width: 100%;
-    border-radius: 9999px;
-    border: 1px solid #ccc;
-    text-align: center;
-    font-size: 1rem;
-  }
-
-  [data-theme="dark"] aside input#userName {
-    background: #22303c;
-    color: var(--text-dark);
-    border-color: #38444d;
-  }
-
-  /* ===== MAIN ===== */
-  main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    background: var(--bg-light);
-  }
-
-  /* ===== FEED ===== */
-  #feed {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1rem 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  /* ===== POST BOX ===== */
-  #postBox {
-    padding: 1rem 2rem;
-    border-bottom: 1px solid #ccc;
-    background: var(--white);
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-  }
-
-  [data-theme="dark"] #postBox {
-    background: #192734;
-    border-color: #38444d;
-  }
-
-  #postBox textarea {
-    flex: 1;
-    resize: none;
-    height: 70px;
-    border-radius: 1rem;
-    border: 1px solid #ccc;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    font-family: inherit;
-  }
-
-  [data-theme="dark"] #postBox textarea {
-    background: #22303c;
-    color: var(--text-dark);
-    border-color: #38444d;
-  }
-
-  #postBox button {
+  .feed-menu-btn.active, .feed-menu-btn:hover {
     background: var(--primary);
-    border: none;
-    color: var(--white);
-    font-weight: 700;
-    padding: 0.75rem 1.5rem;
-    border-radius: 9999px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    color: white;
   }
-
-  #postBox button:disabled {
-    background: #9ac7fc;
-    cursor: not-allowed;
+  #new-post-form {
+    margin-bottom: 1.5rem;
   }
-
-  #postBox button:hover:not(:disabled) {
-    background: var(--primary-dark);
+  #new-post-form textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 60px;
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    margin-bottom: 0.6rem;
   }
-
-  /* ===== POST ===== */
+  #new-post-form select {
+    margin-bottom: 0.6rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+  }
   .post {
-    background: var(--white);
-    border-radius: 1rem;
-    padding: 1rem 1.5rem;
+    background: var(--card-light);
+    border: 1px solid #ddd;
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    position: relative;
+  }
+  .post .author {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--primary);
+    cursor: pointer;
+  }
+  .post .theme-tag {
+    background: var(--primary);
+    color: white;
+    padding: 0.15rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    display: inline-block;
+    margin-bottom: 0.6rem;
+  }
+  .post .content {
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+    white-space: pre-wrap;
+  }
+  .post .actions {
     display: flex;
     gap: 1rem;
-    box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
-    transition: background-color 0.3s ease;
+  }
+  .post button.like-btn, .post button.follow-btn {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .post button.liked {
+    color: #e0245e;
   }
 
-  [data-theme="dark"] .post {
-    background: #192734;
-    box-shadow: none;
+  /* Perfil */
+  #profile-page {
+    padding: 2rem;
   }
-
-  .post img.avatar {
-    width: 50px;
-    height: 50px;
+  #profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  #profile-header img {
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     object-fit: cover;
+    border: 3px solid var(--primary);
+  }
+  #profile-header h2 {
+    font-size: 1.6rem;
+    color: var(--primary);
+  }
+  #followers-list, #following-list {
+    margin-top: 1rem;
+  }
+  #followers-list h3, #following-list h3 {
+    margin-bottom: 0.6rem;
+    color: var(--primary);
+  }
+  ul.follow-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  ul.follow-list li {
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid #ccc;
   }
 
-  .post-content {
-    flex: 1;
+  /* Chat */
+  #chat-section {
+    border-top: 1px solid #ccc;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
   }
-
-  .post-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+  #chat-messages {
+    max-height: 180px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 0.8rem;
+    border-radius: 12px;
+    margin-bottom: 0.6rem;
+    background: var(--card-light);
+  }
+  .chat-message {
+    padding: 0.4rem 0.6rem;
+    border-radius: 12px;
     margin-bottom: 0.3rem;
+    max-width: 70%;
+    word-wrap: break-word;
   }
-
-  .post-header strong {
-    font-size: 1.1rem;
-  }
-
-  .post-header time {
-    font-size: 0.85rem;
-    color: var(--gray-light);
-  }
-
-  [data-theme="dark"] .post-header time {
-    color: var(--gray-dark);
-  }
-
-  .post-text {
-    white-space: pre-wrap;
-    font-size: 1rem;
-  }
-
-  /* ===== SCROLLBAR CUSTOM ===== */
-  #feed::-webkit-scrollbar {
-    width: 8px;
-  }
-  #feed::-webkit-scrollbar-thumb {
+  .chat-message.you {
     background: var(--primary);
-    border-radius: 4px;
-  }
-  #feed::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  /* ===== ALERT ===== */
-  #alert {
-    position: fixed;
-    bottom: 1rem;
-    right: 1rem;
-    background: var(--error);
     color: white;
-    padding: 1rem 1.5rem;
-    border-radius: 1rem;
-    font-weight: 700;
-    box-shadow: 0 0 10px var(--error);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
+    align-self: flex-end;
+  }
+  .chat-message.other {
+    background: #ddd;
+    color: #333;
+    align-self: flex-start;
+  }
+  #chat-form {
+    display: flex;
+    gap: 0.5rem;
+  }
+  #chat-form input {
+    flex: 1;
+    padding: 0.6rem;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+  }
+  #chat-form button {
+    padding: 0.6rem 1rem;
+    border: none;
+    background: var(--primary);
+    color: white;
+    border-radius: 12px;
+    cursor: pointer;
   }
 
-  #alert.show {
-    opacity: 1;
-    pointer-events: auto;
+  /* Responsivo */
+  @media (max-width: 600px) {
+    #app {
+      width: 100%;
+      border-radius: 0;
+      box-shadow: none;
+    }
   }
 </style>
 </head>
-<body>
+<body data-theme="light">
 
-<aside>
-  <label for="avatarInput">
-    <img src="https://placehold.co/120x120?text=Avatar" alt="Avatar" class="avatar" id="avatar" title="Clique para trocar foto" />
-  </label>
-  <input type="file" id="avatarInput" accept="image/*" />
-  <input type="text" id="userName" placeholder="Seu nome aqui..." maxlength="20" />
-  <button id="toggleTheme">Modo Escuro</button>
-</aside>
+<div id="app">
 
-<main>
-  <section id="postBox">
-    <textarea id="postText" placeholder="Escreva algo para o pessoal..." maxlength="280" rows="3"></textarea>
-    <button id="btnPost" disabled>Publicar</button>
+  <!-- LOGIN -->
+  <section id="login-page" class="active">
+    <h2>Entrar no Jornal Escolar</h2>
+    <form id="login-form">
+      <input type="text" id="login-username" placeholder="Usuário" required />
+      <input type="password" id="login-password" placeholder="Senha" required />
+      <button type="submit">Entrar</button>
+    </form>
+    <button class="link-button" id="show-register-btn">Não tem conta? Cadastre-se</button>
+    <div class="error" id="login-error"></div>
   </section>
 
-  <section id="feed">
-    <!-- Posts aparecem aqui -->
+  <!-- CADASTRO -->
+  <section id="register-page" style="display:none; padding:2rem;">
+    <h2>Cadastrar nova conta</h2>
+    <form id="register-form">
+      <input type="text" id="reg-username" placeholder="Usuário" required />
+      <input type="password" id="reg-password" placeholder="Senha" required />
+      <button type="submit">Cadastrar</button>
+    </form>
+    <button class="link-button" id="show-login-btn">Já tem conta? Entrar</button>
+    <div class="error" id="register-error"></div>
   </section>
-</main>
 
-<div id="alert"></div>
-
-<script>
-  // TROCA DE TEMA
-  const btnTheme = document.getElementById('toggleTheme');
-  const root = document.documentElement;
-  btnTheme.onclick = () => {
-    if(root.getAttribute('data-theme') === 'dark') {
-      root.setAttribute('data-theme', 'light');
-      btnTheme.textContent = 'Modo Escuro';
-      localStorage.setItem('theme', 'light');
-    } else {
-      root.setAttribute('data-theme', 'dark');
-      btnTheme.textContent = 'Modo Claro';
-      localStorage.setItem('theme', 'dark');
-    }
-  };
-
-  // SETAR TEMA SALVO
-  if(localStorage.getItem('theme')) {
-    const savedTheme = localStorage.getItem('theme');
-    root.setAttribute('data-theme', savedTheme);
-    btnTheme.textContent = savedTheme === 'dark' ? 'Modo Claro' : 'Modo Escuro';
-  }
-
-  // AVATAR
-  const avatarInput = document.getElementById('avatarInput');
-  const avatarImg = document.getElementById('avatar');
-  avatarInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      avatarImg.src = e.target.result;
-      localStorage.setItem('profilePic', e.target.result);
-    };
-    reader.readAsDataURL(file);
-  });
-  // carregar avatar salvo
-  const savedAvatar = localStorage.getItem('profilePic');
-  if(savedAvatar) avatarImg.src = savedAvatar;
-
-  // NOME
-  const userNameInput = document.getElementById('userName');
-  userNameInput.value = localStorage.getItem('userName') || '';
-  userNameInput.addEventListener('input', () => {
-    localStorage.setItem('userName', userNameInput.value.trim());
-    checarTexto();
-  });
-
-  // POSTAR
-  const postText = document.getElementById('postText');
-  const btnPost = document.getElementById('btnPost');
-  const feed = document.getElementById('feed');
-
-  function checarTexto() {
-    const txt = postText.value.trim();
-    const nome = userNameInput.value.trim();
-    btnPost.disabled = (txt.length === 0 || nome.length === 0);
-  }
-
-  postText.addEventListener('input', checarTexto);
-
-  btnPost.addEventListener('click', () => {
-    const texto = postText.value.trim();
-    const nome = userNameInput.value.trim();
-    if(!nome) {
-      mostrarAlerta('Digite seu nome antes de postar!');
-      return;
-    }
-    if(!texto) {
-      mostrarAlerta('Digite algo para postar!');
-      return;
-    }
-
-    postar(texto, nome);
-    postText.value = '';
-    btnPost.disabled = true;
-  });
-
-  function postar(texto, nome) {
-    const post = document.createElement('article');
-    post.classList.add('post');
-
-    // pegar avatar salvo ou placeholder
-    const avatarSrc = localStorage.getItem('profilePic') || 'https://placehold.co/50x50';
-
-    // hora atual formatada
-    const agora = new Date();
-    const horas = String(agora.getHours()).padStart(2, '0');
-    const minutos = String(agora.getMinutes()).padStart(2, '0');
-    const horaFormatada = `${horas}:${minutos}`;
-
-    post.innerHTML = `
-      <img src="${avatarSrc}" alt="Avatar" class="avatar" />
-      <div class="post-content">
-        <div class="post-header">
-          <strong>@${nome}</strong>
-          <time title="${agora.toLocaleString()}">${horaFormatada}</time>
-        </div>
-        <p class="post-text">${escapeHtml(texto)}</p>
+  <!-- FEED -->
+  <section id="feed-page" >
+    <div id="feed-header">
+      <h2>Feed</h2>
+      <div>
+        <button id="theme-toggle-btn">Tema Escuro</button>
+        <button id="logout-btn">Sair</button>
       </div>
-    `;
+    </div>
 
-    feed.prepend(post);
-    feed.scrollTop = 0;
-  }
+    <div id="feed-menu">
+      <button class="feed-menu-btn active" data-theme="Todos">Todos</button>
+      <button class="feed-menu-btn" data-theme="Cultura Pop">Cultura Pop</button>
+      <button class="feed-menu-btn" data-theme="Esportes">Esportes</button>
+      <button class="feed-menu-btn" data-theme="Atualidades">Atualidades</button>
+      <button class="feed-menu-btn" data-theme="Anúncios">Anúncios</button>
+    </div>
 
-  // Escapa HTML para evitar injeção
-  function escapeHtml(text) {
-    return text.replace(/[&<>"']/g, function(m) {
-      return {
-        '&': "&amp;",
-        '<': "&lt;",
-        '>': "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      }[m];
-    });
-  }
-
-  // ALERTA SIMPLES
-  const alertBox = document.getElementById('alert');
-  function mostrarAlerta(msg) {
-    alertBox.textContent = msg;
-    alertBox.classList.add('show');
-    setTimeout(() => alertBox.classList.remove('show'), 2500);
-  }
-</script>
-
-</body>
-</html>
+    <form id="new-post-form">
+      <textarea id="post-content" placeholder="Escreva algo..."></textarea>
+      <select id="post-theme" required>
+        <option value="" disabled selected>Escolha um tema</option>
+        <option value="Cultura Pop">Cultura Pop</option>
+        <option value="Esportes">Esportes</option>
+        <option value="Atualidades">Atualidades</option>
+        <option value="Anúncios">Anúncios</option>
+      </select
