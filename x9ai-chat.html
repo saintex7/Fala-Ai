@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FalaAI - Chat com X9Ai</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="x9ai-style.css">
+</head>
+<body>
+    <div class="x9ai-chat-container">
+        <!-- Cabeçalho do Chat -->
+        <div class="chat-header">
+            <div class="chat-title">
+                <div class="x9ai-avatar">
+                    <img src="https://i.imgur.com/JqYeZ7y.png" alt="X9Ai">
+                </div>
+                <div class="chat-info">
+                    <h3>X9Ai</h3>
+                    <p>Seu assistente escolar</p>
+                </div>
+            </div>
+            <button class="close-chat" id="closeChatBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Área de Mensagens -->
+        <div class="chat-messages" id="chatMessages">
+            <!-- Mensagens serão carregadas aqui -->
+        </div>
+        
+        <!-- Input do Usuário -->
+        <div class="chat-input-area">
+            <div class="input-container">
+                <input type="text" id="userMessageInput" placeholder="Fala aí, qual a boa?..." maxlength="500">
+                <button id="sendMessageBtn" class="send-btn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            <div class="chat-actions">
+                <button class="action-btn" id="clearChatBtn" title="Limpar conversa">
+                    <i class="fas fa-trash"></i>
+                </button>
+                <button class="action-btn" id="toggleStyleBtn" title="Alternar estilo">
+                    <i class="fas fa-graduation-cap"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="x9ai-storage.js"></script>
+    <script src="x9ai.js"></script>
+</body>
+</html>
