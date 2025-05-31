@@ -1,424 +1,940 @@
-// Main Application Script
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize the app
-    initApp();
+/* Reset and Base Styles */
+:root {
+    --primary: #6c5ce7;
+    --primary-light: #a29bfe;
+    --primary-dark: #5649d1;
+    --secondary: #00b894;
+    --secondary-light: #55efc4;
+    --danger: #d63031;
+    --danger-light: #ff7675;
+    --warning: #fdcb6e;
+    --info: #0984e3;
     
-    // Check if user is logged in
-    if (!isLoggedIn()) {
-        window.location.href = 'index.html';
-        return;
-    }
+    --dark: #1e272e;
+    --dark-light: #2d3436;
+    --light: #f5f6fa;
+    --light-dark: #dfe6e9;
+    --gray: #636e72;
+    --gray-light: #b2bec3;
     
-    // Load current user data
-    const currentUser = getCurrentUser();
-    if (!currentUser) {
-        window.location.href = 'index.html';
-        return;
-    }
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    --shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 10px 20px rgba(0,0,0,0.1), 0 6px 6px rgba(0,0,0,0.1);
+    --shadow-lg: 0 15px 25px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.05);
     
-    // Update UI with user data
-    updateUserUI(currentUser);
+    --radius-sm: 6px;
+    --radius: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
     
-    // Check if user is admin
-    if (currentUser.username === 'saintex') {
-        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
-        document.getElementById('manageUsersBtn').style.display = 'inline-block';
-        document.getElementById('moderateContentBtn').style.display = 'inline-block';
-    }
-    
-    // Load initial tab
-    loadTab('feed');
-    
-    // Event listeners
-    setupEventListeners();
-});
-
-function initApp() {
-    // Initialize sample data if localStorage is empty
-    if (!localStorage.getItem('falaai_users')) {
-        const sampleUsers = [
-            {
-                id: 1,
-                name: "Admin User",
-                username: "saintex",
-                password: "ffg..1.",
-                avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-                bio: "Administrador da FalaAI",
-                isPublic: true,
-                showActivity: true,
-                followers: [2, 3, 4],
-                following: [2, 3, 4],
-                createdAt: new Date().toISOString()
-            },
-            {
-                id: 2,
-                name: "João Silva",
-                username: "joaosilva",
-                password: "123456",
-                avatar: "https://randomuser.me/api/portraits/men/2.jpg",
-                bio: "Estudante do 3º ano",
-                isPublic: true,
-                showActivity: true,
-                followers: [1, 3],
-                following: [1, 3, 4],
-                createdAt: new Date().toISOString()
-            },
-            {
-                id: 3,
-                name: "Maria Oliveira",
-                username: "mariaoliveira",
-                password: "123456",
-                avatar: "https://randomuser.me/api/portraits/women/1.jpg",
-                bio: "Amo ler e escrever poesias",
-                isPublic: true,
-                showActivity: true,
-                followers: [1, 2, 4],
-                following: [1, 2],
-                createdAt: new Date().toISOString()
-            },
-            {
-                id: 4,
-                name: "Carlos Souza",
-                username: "carlossouza",
-                password: "123456",
-                avatar: "https://randomuser.me/api/portraits/men/3.jpg",
-                bio: "Fã de jogos e tecnologia",
-                isPublic: false,
-                showActivity: false,
-                followers: [1],
-                following: [1, 2],
-                createdAt: new Date().toISOString()
-            }
-        ];
-        
-        localStorage.setItem('falaai_users', JSON.stringify(sampleUsers));
-    }
-    
-    if (!localStorage.getItem('falaai_posts')) {
-        const samplePosts = [
-            {
-                id: 1,
-                userId: 2,
-                content: "Alguém sabe quando é a prova de matemática?",
-                image: "",
-                likes: [1, 3],
-                comments: [
-                    {
-                        id: 1,
-                        userId: 3,
-                        content: "Acho que é semana que vem, não?",
-                        createdAt: new Date().toISOString()
-                    },
-                    {
-                        id: 2,
-                        userId: 1,
-                        content: "Sim, dia 15 às 10h.",
-                        createdAt: new Date().toISOString()
-                    }
-                ],
-                createdAt: new Date('2023-05-10').toISOString()
-            },
-            {
-                id: 2,
-                userId: 3,
-                content: "Acabei de publicar um novo poema no meu blog! O que acham?",
-                image: "",
-                likes: [1, 2, 4],
-                comments: [
-                    {
-                        id: 3,
-                        userId: 2,
-                        content: "Adorei! Muito profundo.",
-                        createdAt: new Date().toISOString()
-                    }
-                ],
-                createdAt: new Date('2023-05-12').toISOString()
-            },
-            {
-                id: 3,
-                userId: 4,
-                content: "Alguém quer jogar algo hoje à noite?",
-                image: "",
-                likes: [2],
-                comments: [],
-                createdAt: new Date('2023-05-14').toISOString()
-            }
-        ];
-        
-        localStorage.setItem('falaai_posts', JSON.stringify(samplePosts));
-    }
-    
-    if (!localStorage.getItem('falaai_chats')) {
-        const sampleChats = {
-            topics: [
-                {
-                    id: 1,
-                    name: "Cultura Pop",
-                    description: "Filmes, séries, música e celebridades",
-                    icon: "fas fa-film"
-                },
-                {
-                    id: 2,
-                    name: "Atualidades",
-                    description: "Notícias e eventos importantes",
-                    icon: "fas fa-newspaper"
-                },
-                {
-                    id: 3,
-                    name: "Escola",
-                    description: "Dúvidas, trabalhos e provas",
-                    icon: "fas fa-school"
-                },
-                {
-                    id: 4,
-                    name: "Jogos",
-                    description: "Video games e esportes",
-                    icon: "fas fa-gamepad"
-                }
-            ],
-            messages: [
-                {
-                    id: 1,
-                    topicId: 1,
-                    userId: 2,
-                    content: "Alguém viu o novo filme do Homem-Aranha?",
-                    createdAt: new Date('2023-05-10T10:30:00').toISOString()
-                },
-                {
-                    id: 2,
-                    topicId: 1,
-                    userId: 3,
-                    content: "Sim! Está incrível, recomendo muito.",
-                    createdAt: new Date('2023-05-10T11:15:00').toISOString()
-                },
-                {
-                    id: 3,
-                    topicId: 3,
-                    userId: 4,
-                    content: "Alguém tem o gabarito da última prova de física?",
-                    createdAt: new Date('2023-05-11T09:20:00').toISOString()
-                },
-                {
-                    id: 4,
-                    topicId: 3,
-                    userId: 1,
-                    content: "Posso enviar por DM.",
-                    createdAt: new Date('2023-05-11T09:25:00').toISOString()
-                }
-            ]
-        };
-        
-        localStorage.setItem('falaai_chats', JSON.stringify(sampleChats));
-    }
-    
-    if (!localStorage.getItem('falaai_dms')) {
-        const sampleDMs = [
-            {
-                id: 1,
-                participants: [1, 2],
-                messages: [
-                    {
-                        id: 1,
-                        senderId: 2,
-                        content: "Oi admin, tudo bem?",
-                        createdAt: new Date('2023-05-09T14:30:00').toISOString()
-                    },
-                    {
-                        id: 2,
-                        senderId: 1,
-                        content: "Tudo ótimo, e você?",
-                        createdAt: new Date('2023-05-09T14:35:00').toISOString()
-                    }
-                ]
-            },
-            {
-                id: 2,
-                participants: [2, 3],
-                messages: [
-                    {
-                        id: 3,
-                        senderId: 3,
-                        content: "João, você vai no evento hoje?",
-                        createdAt: new Date('2023-05-10T08:15:00').toISOString()
-                    },
-                    {
-                        id: 4,
-                        senderId: 2,
-                        content: "Vou sim, nos vemos lá!",
-                        createdAt: new Date('2023-05-10T08:20:00').toISOString()
-                    }
-                ]
-            }
-        ];
-        
-        localStorage.setItem('falaai_dms', JSON.stringify(sampleDMs));
-    }
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-function isLoggedIn() {
-    return localStorage.getItem('falaai_currentUser') !== null;
+/* Dark Theme Variables */
+.dark-theme {
+    --bg-primary: #1e272e;
+    --bg-secondary: #2d3436;
+    --bg-card: #2d3436;
+    --text-primary: #f5f6fa;
+    --text-secondary: #b2bec3;
+    --border-color: #3d3d3d;
 }
 
-function getCurrentUser() {
-    const userId = JSON.parse(localStorage.getItem('falaai_currentUser'));
-    const users = JSON.parse(localStorage.getItem('falaai_users'));
-    return users.find(user => user.id === userId);
+/* Light Theme Variables */
+.light-theme {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f6fa;
+    --bg-card: #ffffff;
+    --text-primary: #1e272e;
+    --text-secondary: #636e72;
+    --border-color: #dfe6e9;
 }
 
-function updateUserUI(user) {
-    // Update header avatar
-    const headerAvatar = document.getElementById('headerAvatar');
-    if (headerAvatar) {
-        headerAvatar.querySelector('img').src = user.avatar;
-    }
-    
-    // Update profile page if it's the current user's profile
-    if (document.getElementById('profileName')) {
-        document.getElementById('profileName').textContent = user.name;
-        document.getElementById('profileUsername').textContent = `@${user.username}`;
-        document.getElementById('profileAvatarImg').src = user.avatar;
-        document.getElementById('profileBio').textContent = user.bio || "Nenhuma biografia fornecida.";
-        
-        // Update stats
-        document.getElementById('followerCount').textContent = user.followers ? user.followers.length : 0;
-        document.getElementById('followingCount').textContent = user.following ? user.following.length : 0;
-        
-        // Get user posts count
-        const posts = JSON.parse(localStorage.getItem('falaai_posts'));
-        const userPosts = posts.filter(post => post.userId === user.id);
-        document.getElementById('postCount').textContent = userPosts.length;
-        
-        // Hide follow button if it's the current user's profile
-        document.getElementById('followBtn').style.display = 'none';
-    }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-function loadTab(tabId) {
-    // Hide all tab contents
-    document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    
-    // Show selected tab content
-    document.getElementById(tabId).classList.add('active');
-    
-    // Update current tab title
-    const tabTitle = document.getElementById('currentTabTitle');
-    if (tabTitle) {
-        const tabName = document.querySelector(`.nav-item[data-tab="${tabId}"] span`).textContent;
-        tabTitle.textContent = tabName;
-    }
-    
-    // Load tab specific content
-    switch (tabId) {
-        case 'feed':
-            loadFeed();
-            break;
-        case 'explore':
-            loadExplore();
-            break;
-        case 'chats':
-            loadChatTopics();
-            break;
-        case 'messages':
-            loadConversations();
-            break;
-        case 'profile':
-            loadProfile(getCurrentUser().id);
-            break;
-        case 'settings':
-            loadSettings();
-            break;
-    }
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    transition: var(--transition);
 }
 
-function loadFeed() {
-    const feedContainer = document.getElementById('feed');
-    const currentUser = getCurrentUser();
-    const users = JSON.parse(localStorage.getItem('falaai_users'));
-    const posts = JSON.parse(localStorage.getItem('falaai_posts'));
-    
-    // Sort posts by date (newest first)
-    const sortedPosts = [...posts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    
-    feedContainer.innerHTML = '';
-    
-    if (sortedPosts.length === 0) {
-        feedContainer.innerHTML = '<p class="text-muted text-center">Nenhuma postagem encontrada. Seja o primeiro a postar!</p>';
-        return;
-    }
-    
-    sortedPosts.forEach(post => {
-        const user = users.find(u => u.id === post.userId);
-        if (!user) return;
-        
-        const postElement = document.createElement('div');
-        postElement.className = 'post';
-        postElement.dataset.postId = post.id;
-        
-        const isLiked = post.likes && post.likes.includes(currentUser.id);
-        const likeIcon = isLiked ? 'fas fa-heart' : 'far fa-heart';
-        const likeClass = isLiked ? 'active' : '';
-        
-        const commentsCount = post.comments ? post.comments.length : 0;
-        
-        postElement.innerHTML = `
-            <div class="post-header">
-                <div class="user-avatar small">
-                    <img src="${user.avatar}" alt="${user.name}">
-                </div>
-                <div class="post-user">
-                    <div class="post-username">${user.name}</div>
-                    <div class="post-time">${formatDate(post.createdAt)}</div>
-                </div>
-                <div class="post-options">
-                    <button class="post-options-btn">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
-                    <div class="post-options-menu">
-                        ${post.userId === currentUser.id ? `
-                            <button class="post-options-item danger delete-post-btn">
-                                <i class="fas fa-trash"></i>
-                                <span>Excluir</span>
-                            </button>
-                        ` : `
-                            <button class="post-options-item report-post-btn">
-                                <i class="fas fa-flag"></i>
-                                <span>Denunciar</span>
-                            </button>
-                        `}
-                    </div>
-                </div>
-            </div>
-            <div class="post-content">
-                ${post.content}
-            </div>
-            ${post.image ? `
-                <img src="${post.image}" class="post-image" alt="Post image">
-            ` : ''}
-            <div class="post-actions">
-                <button class="post-action like-btn ${likeClass}">
-                    <i class="${likeIcon}"></i>
-                    <span>${post.likes ? post.likes.length : 0}</span>
-                </button>
-                <button class="post-action comment-btn">
-                    <i class="far fa-comment"></i>
-                    <span>${commentsCount}</span>
-                </button>
-                <button class="post-action share-btn">
-                    <i class="fas fa-share"></i>
-                    <span>Compartilhar</span>
-                </button>
-            </div>
-            <div class="post-comments">
-                ${post.comments && post.comments.length > 0 ? `
-                    ${post.comments.map(comment => {
-                        const commentUser = users.find(u => u.id === comment.userId);
-                        return `
-                            <div class="comment" data-comment-id="${comment.id}">
-                                <div class="user-avatar small">
-                                    <img src="${commentUser.avatar}" alt="${commentUser.name}">
-                                </div>
-                                <div class="comment-content">
-                                    <div class="comment-user">${commentUser.name}</div>
-                                   
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: inherit;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.gap-1 {
+    gap: 0.25rem;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+
+.gap-3 {
+    gap: 1rem;
+}
+
+.mb-1 {
+    margin-bottom: 0.25rem;
+}
+
+.mb-2 {
+    margin-bottom: 0.5rem;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+.mb-5 {
+    margin-bottom: 2rem;
+}
+
+.text-sm {
+    font-size: 0.875rem;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-muted {
+    color: var(--text-secondary);
+}
+
+/* Auth Page Styles */
+.auth-page {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.auth-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.auth-hero {
+    flex: 1;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 3rem;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 600px;
+    text-align: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+.logo i {
+    font-size: 2.5rem;
+}
+
+.logo h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+}
+
+.auth-hero h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.auth-hero p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 3rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.feature-card {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    transition: var(--transition);
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.feature-card i {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.feature-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.feature-card p {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.auth-form {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem;
+    background-color: white;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.form-tabs {
+    display: flex;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #eee;
+}
+
+.tab-btn {
+    flex: 1;
+    text-align: center;
+    padding: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--gray);
+    position: relative;
+    transition: var(--transition);
+    background: none;
+    border: none;
+    font-size: 1rem;
+}
+
+.tab-btn:hover {
+    color: var(--primary);
+}
+
+.tab-btn.active {
+    color: var(--primary);
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--primary);
+    border-radius: 3px 3px 0 0;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.5s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--dark);
+}
+
+.input-field {
+    position: relative;
+}
+
+.input-field i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray);
+}
+
+.input-field input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    border: 1px solid #ddd;
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.input-field input:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+}
+
+.toggle-password {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray);
+    cursor: pointer;
+}
+
+.options-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    height: 18px;
+    width: 18px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.checkbox-container:hover .checkmark {
+    background-color: #f1f1f1;
+}
+
+.checkbox-container input:checked ~ .checkmark {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.checkmark::after {
+    content: "";
+    display: none;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-bottom: 2px;
+}
+
+.checkbox-container input:checked ~ .checkmark::after {
+    display: block;
+}
+
+.forgot-password {
+    font-size: 0.9rem;
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+    color: var(--gray);
+}
+
+.divider::before, .divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #eee;
+}
+
+.divider::before {
+    margin-right: 1rem;
+}
+
+.divider::after {
+    margin-left: 1rem;
+}
+
+.avatar-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.avatar-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #f5f6fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+}
+
+.avatar-preview i {
+    font-size: 2rem;
+    color: var(--gray-light);
+}
+
+.terms-check {
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.terms-check a {
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: var(--gray);
+}
+
+.auth-footer a {
+    color: var(--primary);
+    font-weight: 500;
+}
+
+/* Button Styles */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    gap: 0.5rem;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    box-shadow: var(--shadow);
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+.btn-outline:hover {
+    background-color: rgba(108, 92, 231, 0.1);
+}
+
+.btn-text {
+    background: none;
+    color: var(--primary);
+    padding: 0.5rem;
+    font-weight: 500;
+}
+
+.btn-text:hover {
+    text-decoration: underline;
+}
+
+.btn-danger {
+    background-color: var(--danger);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.btn-google {
+    background-color: white;
+    color: #4285F4;
+    border: 1px solid #ddd;
+}
+
+.btn-google:hover {
+    background-color: #f8f9fa;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    transition: var(--transition);
+}
+
+.icon-btn:hover {
+    background-color: var(--border-color);
+}
+
+/* App Layout */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 280px;
+    background-color: var(--bg-secondary);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border-color);
+    transition: var(--transition);
+    position: relative;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.sidebar-header .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0;
+}
+
+.sidebar-header .logo i {
+    font-size: 1.75rem;
+    color: var(--primary);
+}
+
+.sidebar-header .logo h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.main-nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-item {
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: var(--transition);
+    position: relative;
+}
+
+.nav-item:hover {
+    background-color: var(--border-color);
+}
+
+.nav-item.active {
+    background-color: var(--primary);
+    color: white;
+}
+
+.nav-item .badge {
+    position: absolute;
+    right: 1rem;
+    background-color: var(--danger);
+    color: white;
+    font-size: 0.75rem;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: var(--radius);
+    transition: var(--transition);
+    position: relative;
+}
+
+.user-card:hover {
+    background-color: var(--border-color);
+}
+
+.user-avatar {
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.user-avatar.small {
+    width: 40px;
+    height: 40px;
+}
+
+.user-avatar.medium {
+    width: 60px;
+    height: 60px;
+}
+
+.user-avatar.large {
+    width: 100px;
+    height: 100px;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-info {
+    flex: 1;
+}
+
+.user-name {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.user-username {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.user-menu {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: 100%;
+    background-color: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    padding: 0.5rem;
+    z-index: 10;
+    display: none;
+}
+
+.user-menu.show {
+    display: block;
+}
+
+.user-menu a, .user-menu button {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    width: 100%;
+    text-align: left;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+    color: var(--text-primary);
+    background: none;
+    border: none;
+    font-size: 0.9rem;
+}
+
+.user-menu a:hover, .user-menu button:hover {
+    background-color: var(--border-color);
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.main-header {
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-primary);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+.main-header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.content-area {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.tab-content {
+    display: none;
+    padding: 2rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Posts Styles */
+.posts-container {
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.post {
+    background-color: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.post:hover {
+    box-shadow: var(--shadow);
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 0.75rem;
+}
+
+.post-user {
+    flex: 1;
+}
+
+.post-username {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.post-time {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.post-options {
+    position: relative;
+}
+
+.post-options-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.post-options-btn:hover {
+    background-color: var(--border-color);
+}
+
+.post-options-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    padding: 0.5rem 0;
+    z-index: 10;
+    min-width: 200px;
+    display: none;
+}
+
+.post-options-menu.show {
+    display: block;
+}
+
+.post-options-item {
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: var(--transition);
+}
+
+.post-options-item:hover {
+    background-color: var(--border-color);
+}
+
+.post-options-item.danger {
+    color: var(--danger);
+}
+
+.post-content {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.post-image {
+    width: 100%;
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    max-height: 500px;
+    object-fit: cover;
+}
+
+.post-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.post-action {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    transition: var(--transition);
+    background: none;
+    border: none;
+    font-size: 0.9rem;
+}
+
+.post-action:hover
