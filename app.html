@@ -7,18 +7,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="dark-mode">
+<body class="dark-theme">
     <div class="app-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
             <div class="sidebar-header">
-                <h1>FalaAI</h1>
+                <div class="logo">
+                    <i class="fas fa-comments"></i>
+                    <h1>FalaAI</h1>
+                </div>
                 <button id="themeToggle" class="icon-btn">
                     <i class="fas fa-moon"></i>
                 </button>
             </div>
             
-            <nav class="sidebar-nav">
+            <nav class="main-nav">
                 <a href="#" class="nav-item active" data-tab="feed">
                     <i class="fas fa-home"></i>
                     <span>Feed</span>
@@ -35,245 +38,310 @@
                     <i class="fas fa-envelope"></i>
                     <span>Mensagens</span>
                 </a>
+                <a href="#" class="nav-item" data-tab="notifications">
+                    <i class="fas fa-bell"></i>
+                    <span>Notificações</span>
+                    <span class="badge">3</span>
+                </a>
                 <a href="#" class="nav-item" data-tab="profile">
                     <i class="fas fa-user"></i>
                     <span>Perfil</span>
                 </a>
-                <a href="#" class="nav-item" data-tab="settings">
-                    <i class="fas fa-cog"></i>
-                    <span>Configurações</span>
-                </a>
             </nav>
             
-            <div class="sidebar-footer">
-                <button id="logoutBtn" class="btn btn-logout">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Sair</span>
+            <div class="user-card">
+                <div class="user-avatar small">
+                    <img id="sidebarUserAvatar" src="https://via.placeholder.com/40" alt="User">
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebarUserName">Usuário</div>
+                    <div class="user-username" id="sidebarUserUsername">@usuario</div>
+                </div>
+                <button class="icon-btn" id="sidebarMenuBtn">
+                    <i class="fas fa-ellipsis-h"></i>
                 </button>
+                
+                <div class="user-menu">
+                    <a href="#" data-tab="settings">
+                        <i class="fas fa-cog"></i>
+                        Configurações
+                    </a>
+                    <button id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Sair
+                    </button>
+                </div>
             </div>
-        </div>
+        </aside>
         
         <!-- Main Content -->
-        <div class="main-content">
-            <!-- Header -->
+        <main class="main-content">
             <header class="main-header">
                 <h2 id="currentTabTitle">Feed</h2>
                 <div class="header-actions">
-                    <button id="newPostBtn" class="icon-btn">
+                    <button id="newPostBtn" class="btn btn-primary">
                         <i class="fas fa-plus"></i>
+                        <span>Nova Postagem</span>
                     </button>
-                    <button id="notificationsBtn" class="icon-btn">
-                        <i class="fas fa-bell"></i>
-                        <span class="badge">3</span>
+                    <button class="icon-btn" id="searchBtn">
+                        <i class="fas fa-search"></i>
                     </button>
-                    <div class="user-avatar small" id="headerAvatar">
-                        <img src="https://via.placeholder.com/40" alt="User">
-                    </div>
                 </div>
             </header>
             
-            <!-- Tab Content -->
-            <div class="tab-content active" id="feed">
-                <!-- Posts will be loaded here dynamically -->
-            </div>
-            
-            <div class="tab-content" id="explore">
-                <div class="explore-container">
-                    <h3>Tópicos em destaque</h3>
-                    <div class="topics-grid">
-                        <!-- Topics will be loaded here dynamically -->
+            <div class="content-area">
+                <!-- Feed Tab -->
+                <div class="tab-content active" id="feed">
+                    <div class="posts-container" id="postsContainer">
+                        <!-- Posts will be loaded here dynamically -->
                     </div>
                 </div>
-            </div>
-            
-            <div class="tab-content" id="chats">
-                <div class="chats-container">
-                    <div class="chat-topics">
-                        <h3>Canais de Chat</h3>
-                        <ul class="topic-list">
-                            <!-- Chat topics will be loaded here dynamically -->
-                        </ul>
-                    </div>
-                    <div class="chat-window">
-                        <div class="chat-header">
-                            <h4 id="currentChatTopic">Selecione um tópico</h4>
-                        </div>
-                        <div class="chat-messages" id="chatMessages">
-                            <p class="empty-chat">Selecione um tópico para começar a conversar</p>
-                        </div>
-                        <div class="chat-input">
-                            <input type="text" id="chatMessageInput" placeholder="Digite sua mensagem..." disabled>
-                            <button id="sendChatMessage" class="icon-btn" disabled>
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="tab-content" id="messages">
-                <div class="messages-container">
-                    <div class="conversations-list">
-                        <h3>Conversas</h3>
-                        <div class="search-box">
-                            <input type="text" placeholder="Pesquisar conversas...">
+                
+                <!-- Explore Tab -->
+                <div class="tab-content" id="explore">
+                    <div class="explore-container">
+                        <div class="search-bar">
                             <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Pesquisar tópicos, usuários...">
                         </div>
-                        <ul id="conversationsList">
-                            <!-- Conversations will be loaded here dynamically -->
-                        </ul>
+                        
+                        <h3>Tópicos em Destaque</h3>
+                        <div class="topics-grid" id="topicsGrid">
+                            <!-- Topics will be loaded here dynamically -->
+                        </div>
+                        
+                        <h3>Usuários Populares</h3>
+                        <div class="users-list" id="popularUsers">
+                            <!-- Popular users will be loaded here dynamically -->
+                        </div>
                     </div>
-                    <div class="conversation-view">
-                        <div class="conversation-header">
-                            <div id="conversationInfo">
-                                <p class="empty-conversation">Selecione uma conversa</p>
+                </div>
+                
+                <!-- Chats Tab -->
+                <div class="tab-content" id="chats">
+                    <div class="chats-container">
+                        <div class="chat-topics">
+                            <h3>Canais de Chat</h3>
+                            <div class="topics-list" id="chatTopicsList">
+                                <!-- Chat topics will be loaded here dynamically -->
                             </div>
                         </div>
-                        <div class="conversation-messages" id="conversationMessages">
-                            <p class="empty-conversation">Selecione uma conversa para ver as mensagens</p>
+                        <div class="chat-window">
+                            <div class="chat-header">
+                                <h4 id="currentChatTopic">Selecione um tópico</h4>
+                            </div>
+                            <div class="chat-messages" id="chatMessages">
+                                <div class="empty-state">
+                                    <i class="fas fa-comments"></i>
+                                    <p>Selecione um tópico para começar a conversar</p>
+                                </div>
+                            </div>
+                            <div class="chat-input">
+                                <input type="text" id="chatMessageInput" placeholder="Digite sua mensagem..." disabled>
+                                <button id="sendChatMessage" class="btn btn-primary" disabled>
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div class="conversation-input">
-                            <input type="text" id="dmInput" placeholder="Digite sua mensagem..." disabled>
-                            <button id="sendDm" class="icon-btn" disabled>
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
+                    </div>
+                </div>
+                
+                <!-- Messages Tab -->
+                <div class="tab-content" id="messages">
+                    <div class="messages-container">
+                        <div class="conversations-list">
+                            <h3>Conversas</h3>
+                            <div class="search-bar">
+                                <i class="fas fa-search"></i>
+                                <input type="text" placeholder="Pesquisar conversas...">
+                            </div>
+                            <div class="conversations" id="conversationsList">
+                                <!-- Conversations will be loaded here dynamically -->
+                            </div>
+                        </div>
+                        <div class="conversation-view">
+                            <div class="conversation-header" id="conversationHeader">
+                                <div class="empty-state">
+                                    <i class="fas fa-envelope"></i>
+                                    <p>Selecione uma conversa</p>
+                                </div>
+                            </div>
+                            <div class="conversation-messages" id="conversationMessages">
+                                <div class="empty-state">
+                                    <i class="fas fa-comments"></i>
+                                    <p>Nenhuma mensagem selecionada</p>
+                                </div>
+                            </div>
+                            <div class="conversation-input">
+                                <input type="text" id="dmInput" placeholder="Digite sua mensagem..." disabled>
+                                <button id="sendDm" class="btn btn-primary" disabled>
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notifications Tab -->
+                <div class="tab-content" id="notifications">
+                    <div class="notifications-container">
+                        <div class="notifications-header">
+                            <h3>Notificações</h3>
+                            <button class="btn btn-text">Marcar todas como lidas</button>
+                        </div>
+                        <div class="notifications-list" id="notificationsList">
+                            <!-- Notifications will be loaded here dynamically -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profile Tab -->
+                <div class="tab-content" id="profile">
+                    <div class="profile-container">
+                        <div class="profile-header">
+                            <div class="profile-cover"></div>
+                            <div class="profile-info">
+                                <div class="profile-avatar">
+                                    <img id="profileAvatarImg" src="https://via.placeholder.com/120" alt="Profile">
+                                    <button class="btn btn-outline edit-avatar-btn">
+                                        <i class="fas fa-camera"></i>
+                                    </button>
+                                </div>
+                                <div class="profile-details">
+                                    <h3 id="profileName">Nome do Usuário</h3>
+                                    <p id="profileUsername">@usuario</p>
+                                    <p id="profileBio">Biografia do usuário...</p>
+                                </div>
+                                <div class="profile-actions">
+                                    <button id="editProfileBtn" class="btn btn-outline">
+                                        <i class="fas fa-pen"></i>
+                                        Editar Perfil
+                                    </button>
+                                    <button id="followBtn" class="btn btn-primary" style="display: none;">
+                                        Seguir
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-stats">
+                            <div class="stat">
+                                <span class="count" id="postCount">0</span>
+                                <span class="label">Postagens</span>
+                            </div>
+                            <div class="stat">
+                                <span class="count" id="followerCount">0</span>
+                                <span class="label">Seguidores</span>
+                            </div>
+                            <div class="stat">
+                                <span class="count" id="followingCount">0</span>
+                                <span class="label">Seguindo</span>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-tabs">
+                            <button class="profile-tab active" data-tab="profile-posts">Postagens</button>
+                            <button class="profile-tab" data-tab="profile-likes">Curtidas</button>
+                            <button class="profile-tab" data-tab="profile-comments">Comentários</button>
+                            <button class="profile-tab" data-tab="profile-friends">Amigos</button>
+                        </div>
+                        
+                        <div class="profile-content">
+                            <div class="profile-tab-content active" id="profile-posts">
+                                <!-- User posts will be loaded here dynamically -->
+                            </div>
+                            <div class="profile-tab-content" id="profile-likes">
+                                <!-- Liked posts will be loaded here dynamically -->
+                            </div>
+                            <div class="profile-tab-content" id="profile-comments">
+                                <!-- User comments will be loaded here dynamically -->
+                            </div>
+                            <div class="profile-tab-content" id="profile-friends">
+                                <!-- User friends will be loaded here dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Settings Tab -->
+                <div class="tab-content" id="settings">
+                    <div class="settings-container">
+                        <h3>Configurações da Conta</h3>
+                        
+                        <div class="settings-section">
+                            <h4>Informações Pessoais</h4>
+                            <div class="settings-item">
+                                <div class="settings-info">
+                                    <h5>Perfil</h5>
+                                    <p>Atualize suas informações pessoais</p>
+                                </div>
+                                <button class="btn btn-text" id="editPersonalInfoBtn">Editar</button>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-info">
+                                    <h5>Segurança</h5>
+                                    <p>Altere sua senha e configurações de segurança</p>
+                                </div>
+                                <button class="btn btn-text" id="securitySettingsBtn">Editar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-section">
+                            <h4>Privacidade</h4>
+                            <div class="settings-item">
+                                <div class="settings-info">
+                                    <h5>Perfil Público</h5>
+                                    <p>Tornar seu perfil visível para todos</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="publicProfileToggle" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-info">
+                                    <h5>Histórico de Atividades</h5>
+                                    <p>Mostrar minhas curtidas e comentários</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="activityHistoryToggle" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-section admin-section" style="display: none;">
+                            <h4>Administração</h4>
+                            <div class="settings-item">
+                                <div class="settings-info">
+                                    <h5>Gerenciar Usuários</h5>
+                                    <p>Visualizar e gerenciar todos os usuários</p>
+                                </div>
+                                <button class="btn btn-text" id="manageUsersBtn">Acessar</button>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-info">
+                                    <h5>Moderação de Conteúdo</h5>
+                                    <p>Remover postagens e comentários</p>
+                                </div>
+                                <button class="btn btn-text" id="moderateContentBtn">Acessar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-section danger-zone">
+                            <h4>Zona de Perigo</h4>
+                            <div class="settings-item">
+                                <div class="settings-info">
+                                    <h5>Excluir Conta</h5>
+                                    <p>Excluir permanentemente sua conta e todos os dados</p>
+                                </div>
+                                <button class="btn btn-danger" id="deleteAccountBtn">Excluir Conta</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="tab-content" id="profile">
-                <div class="profile-container">
-                    <div class="profile-header">
-                        <div class="profile-avatar">
-                            <img id="profileAvatarImg" src="https://via.placeholder.com/100" alt="Profile">
-                        </div>
-                        <div class="profile-info">
-                            <h3 id="profileName">Nome do Usuário</h3>
-                            <p id="profileUsername">@usuario</p>
-                            <div class="profile-stats">
-                                <div class="stat">
-                                    <span class="count" id="postCount">0</span>
-                                    <span class="label">Postagens</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="count" id="followerCount">0</span>
-                                    <span class="label">Seguidores</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="count" id="followingCount">0</span>
-                                    <span class="label">Seguindo</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="profile-bio">
-                        <p id="profileBio">Biografia do usuário...</p>
-                    </div>
-                    
-                    <div class="profile-actions">
-                        <button id="editProfileBtn" class="btn btn-outline">Editar Perfil</button>
-                        <button id="followBtn" class="btn btn-primary" style="display: none;">Seguir</button>
-                    </div>
-                    
-                    <div class="profile-tabs">
-                        <button class="profile-tab active" data-tab="profile-posts">Postagens</button>
-                        <button class="profile-tab" data-tab="profile-likes">Curtidas</button>
-                        <button class="profile-tab" data-tab="profile-comments">Comentários</button>
-                    </div>
-                    
-                    <div class="profile-content">
-                        <div class="profile-tab-content active" id="profile-posts">
-                            <!-- User posts will be loaded here dynamically -->
-                        </div>
-                        <div class="profile-tab-content" id="profile-likes">
-                            <!-- Liked posts will be loaded here dynamically -->
-                        </div>
-                        <div class="profile-tab-content" id="profile-comments">
-                            <!-- User comments will be loaded here dynamically -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="tab-content" id="settings">
-                <div class="settings-container">
-                    <h3>Configurações</h3>
-                    
-                    <div class="settings-section">
-                        <h4>Conta</h4>
-                        <div class="settings-item">
-                            <div class="settings-info">
-                                <h5>Informações Pessoais</h5>
-                                <p>Atualize seu nome e outras informações</p>
-                            </div>
-                            <button class="btn btn-outline" id="editPersonalInfoBtn">Editar</button>
-                        </div>
-                        <div class="settings-item">
-                            <div class="settings-info">
-                                <h5>Segurança</h5>
-                                <p>Altere sua senha e configurações de segurança</p>
-                            </div>
-                            <button class="btn btn-outline" id="securitySettingsBtn">Editar</button>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-section">
-                        <h4>Privacidade</h4>
-                        <div class="settings-item">
-                            <div class="settings-info">
-                                <h5>Perfil Público</h5>
-                                <p>Tornar seu perfil visível para todos</p>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" id="publicProfileToggle" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="settings-item">
-                            <div class="settings-info">
-                                <h5>Histórico de Atividades</h5>
-                                <p>Mostrar minhas curtidas e comentários</p>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" id="activityHistoryToggle" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-section">
-                        <h4>Administração</h4>
-                        <div class="settings-item">
-                            <div class="settings-info">
-                                <h5>Gerenciar Usuários</h5>
-                                <p>Visualizar e gerenciar todos os usuários</p>
-                            </div>
-                            <button class="btn btn-outline" id="manageUsersBtn" style="display: none;">Acessar</button>
-                        </div>
-                        <div class="settings-item">
-                            <div class="settings-info">
-                                <h5>Moderação de Conteúdo</h5>
-                                <p>Remover postagens e comentários</p>
-                            </div>
-                            <button class="btn btn-outline" id="moderateContentBtn" style="display: none;">Acessar</button>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-section danger-zone">
-                        <h4>Zona de Perigo</h4>
-                        <div class="settings-item">
-                            <div class="settings-info">
-                                <h5>Excluir Conta</h5>
-                                <p>Excluir permanentemente sua conta e todos os dados</p>
-                            </div>
-                            <button class="btn btn-danger" id="deleteAccountBtn">Excluir</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </main>
     </div>
     
     <!-- Modals -->
@@ -344,7 +412,7 @@
     </div>
     
     <div class="modal" id="adminModal">
-        <div class="modal-content">
+        <div class="modal-content large">
             <div class="modal-header">
                 <h3 id="adminModalTitle">Administração</h3>
                 <button class="close-modal">&times;</button>
